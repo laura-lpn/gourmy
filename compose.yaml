@@ -1,0 +1,99 @@
+services:
+  php:
+    container_name: gourmy_back_php
+    networks:
+      - default
+    volumes:
+      - ./:/var/www/html
+    working_dir: /var/www/html
+    restart: unless-stopped
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    entrypoint: "tail -f /dev/null"
+  
+  web:
+    container_name: gourmy_back_web
+    networks:
+      - default
+      - global_reverse_proxy
+    volumes:
+      - ./:/var/www/html
+    working_dir: /var/www/html
+    restart: unless-stopped
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    depends_on:
+      - php
+      - db
+    labels:
+      caddy: "backend.gourmy.aaa"
+      caddy.tls: "internal"
+      caddy.reverse_proxy: "{{upstreams 80}}"
+
+  db:
+    container_name: gourmy_back_db
+    networks:
+      - default
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+    image: postgres:16.3
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: gourmy
+  
+  db_test:
+    container_name: gourmy_back_db_test
+    networks:
+      - default
+    volumes:
+      - postgres_data_test:/var/lib/postgresql/data
+    restart: unless-stopped
+    image: postgres:16.3
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: gourmy_test
+
+  adminer:
+    container_name: gourmy_back_adminer
+    networks:
+      - default
+      - global_reverse_proxy
+    restart: unless-stopped
+    image: adminer
+    labels:
+      caddy: "db.gourmy.aaa"
+      caddy.tls: "internal"
+      caddy.reverse_proxy: "{{upstreams 8080}}"
+    environment:
+      ADMINER_DESIGN: pepa-linha
+    depends_on:
+      - db
+
+  mailer:
+    container_name: gourmy_back_mailer
+    networks:
+      - default
+      - global_reverse_proxy
+    restart: unless-stopped
+    image: maildev/maildev
+    labels:
+      caddy: "mailer.gourmy.aaa"
+      caddy.tls: "internal"
+      caddy.reverse_proxy: "{{upstreams 1080}}"
+
+volumes:
+  postgres_data:
+  postgres_data_test:
+
+networks:
+  default:
+    driver: bridge
+  global_reverse_proxy:
+    external: true
+
+  
