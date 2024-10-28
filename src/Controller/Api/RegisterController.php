@@ -66,9 +66,6 @@ class RegisterController extends AbstractController
     #[Route('/api/verify/email', name: 'api_verify_email')]
     public function verifyUserEmail(Request $request, TranslatorInterface $translator): JsonResponse
     {
-        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
-
-        // validate email confirmation link, sets User::isVerified=true and persists
         try {
             /** @var User $user */
             $user = $this->getUser();
@@ -79,7 +76,6 @@ class RegisterController extends AbstractController
             return new JsonResponse(['message' => 'Erreur lors de la vérification de l\'email'], 400);
         }
 
-        // @TODO Change the redirect on success and handle or remove the flash message in your templates
         $this->addFlash('success', 'Your email address has been verified.');
 
         return new JsonResponse(['message' => 'Email vérifié'], 200);
