@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Controller\Api;
+namespace App\Controller\Api\Auth;
 
 use App\Entity\User;
+use App\Repository\UserRepository;
 use App\Security\EmailVerifier;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
@@ -19,9 +20,7 @@ use SymfonyCasts\Bundle\VerifyEmail\Exception\VerifyEmailExceptionInterface;
 
 class RegisterController extends AbstractController
 {
-    public function __construct(private EmailVerifier $emailVerifier)
-    {
-    }
+    public function __construct(private EmailVerifier $emailVerifier) {}
 
     #[Route('/api/register', name: 'api_register', methods: ['POST'])]
     public function index(Request $request, SerializerInterface $serializer, UserPasswordHasherInterface $passwordHasher, ValidatorInterface $validator, EntityManagerInterface $entityManager): JsonResponse
@@ -33,17 +32,13 @@ class RegisterController extends AbstractController
         if (count($errors) > 0) {
             $errorMessages = [];
             foreach ($errors as $error) {
-                $errorMessages[] = $error->getMessage();
+                $errorMessages[$error->getPropertyPath()] = $error->getMessage();
             }
-
             return new JsonResponse(['errors' => $errorMessages], 400);
         }
 
-        if ($entityManager->getRepository(User::class)->findOneBy(['email' => $user->getEmail()])) {
-            return new JsonResponse(['message' => 'User already exists'], 400);
-        }
-        if ($entityManager->getRepository(User::class)->findOneBy(['username' => $user->getUsername()])) {
-            return new JsonResponse(['message' => 'Username already exists'], 400);
+        if ($entityManager->getRepository(User::class)->findOneBy(['email' => $user->getEmail()]) || $entityManager->getRepository(User::class)->findOneBy(['username' => $user->getUsername()])) {
+            return new JsonResponse(['message' => 'Nom d\'utilisateur ou adresse email déjà utilisé'], 400);
         }
 
         $user->setPassword($passwordHasher->hashPassword($user, $user->getPassword()));
@@ -58,30 +53,33 @@ class RegisterController extends AbstractController
                 (new TemplatedEmail())
                     ->from(new Address('gourmy@gmail.com', 'Gourmy'))
                     ->to((string) $user->getEmail())
-                    ->subject('Please Confirm your Email')
+                    ->subject('Confirmez votre adresse email')
                     ->htmlTemplate('email/confirmation_email.html.twig')
             );
         } catch (\Exception $e) {
-            return new JsonResponse(['message' => 'Failed to send verification email'], 500);
+            return new JsonResponse(['message' => 'Erreur lors de l\'envoi de l\'email de confirmation. Veuillez réessayer plus tard.'], 500);
         }
 
-        return new JsonResponse(['message' => 'Registration successful'], 201);
+        return new JsonResponse(['message' => 'Inscription réussie, veuillez vérifier votre adresse email pour activer votre compte.'], 201);
     }
 
     #[Route('/api/verify/email', name: 'api_verify_email')]
-    public function verifyUserEmail(Request $request, TranslatorInterface $translator): JsonResponse
+    public function verifyUserEmail(Request $request, TranslatorInterface $translator, UserRepository $userRepository): JsonResponse
     {
-        try {
-            /** @var User $user */
-            $user = $this->getUser();
-            $this->emailVerifier->handleEmailConfirmation($request, $user);
-        } catch (VerifyEmailExceptionInterface $exception) {
-            $this->addFlash('verify_email_error', $translator->trans($exception->getReason(), [], 'VerifyEmailBundle'));
+        $uid = $request->query->get('uid');
 
-            return new JsonResponse(['message' => 'Erreur lors de la vérification de l\'email'], 400);
+        if (!$uid) {
+            return new JsonResponse(['message' => 'Uid non trouvé'], 404);
         }
 
-        $this->addFlash('success', 'Your email address has been verified.');
+        $user = $userRepository->findOneBy(['uuid' => $uid]);
+
+        try {
+            $this->emailVerifier->handleEmailConfirmation($request, $user);
+        } catch (VerifyEmailExceptionInterface $exception) {
+
+            return new JsonResponse(['message' => $translator->trans($exception->getReason(), [], 'VerifyEmailBundle')], 400);
+        }
 
         return new JsonResponse(['message' => 'Email vérifié'], 200);
     }

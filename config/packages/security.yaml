@@ -21,6 +21,9 @@ security:
         username_path: email
         password_path: password
 
+      logout:
+        path: api_logout
+
     main:
       lazy: true
       provider: app_user_provider
@@ -29,7 +32,7 @@ security:
         check_path: app_login
         enable_csrf: true
       logout:
-        path: api_logout
+        path: app_logout
 
   # Easy way to control access for large sections of your site
   # Note: Only the *first* access control that matches will be used
