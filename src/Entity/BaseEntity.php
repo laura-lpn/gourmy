@@ -6,7 +6,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Types\UuidType;
 use Symfony\Component\Uid\Uuid;
 
-abstract class AbstractBaseEntity
+abstract class BaseEntity
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]

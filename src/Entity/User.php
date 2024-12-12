@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\UserRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
@@ -12,9 +13,12 @@ use Symfony\Component\Security\Core\User\UserInterface;
 #[ORM\Table(name: '`user`')]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
 #[UniqueEntity(fields: ['username'], message: 'Ce pseudo est déjà utilisé')]
-class User extends AbstractBaseEntity implements UserInterface, PasswordAuthenticatedUserInterface
+class User extends BaseEntity implements UserInterface, PasswordAuthenticatedUserInterface
 {
-    #[ORM\Column(length: 180)]
+    #[ORM\Column(length: 255)]
+    #[Assert\Email(message: 'L\'adresse email n\'est pas valide')]
+    #[Assert\NotBlank(message: 'L\'adresse email est obligatoire')]
+    #[Assert\Length(max: 255, maxMessage: 'L\'adresse email ne doit pas dépasser {{ limit }} caractères')]
     private string $email;
 
     /**
@@ -27,12 +31,21 @@ class User extends AbstractBaseEntity implements UserInterface, PasswordAuthenti
      * @var string The hashed password
      */
     #[ORM\Column]
+    #[Assert\NotBlank(message: 'Le mot de passe est obligatoire.')]
+    #[Assert\Length(min: 8, max: 64, minMessage: 'Le mot de passe doit contenir au moins {{ limit }} caractères.', maxMessage: 'Le mot de passe ne doit pas dépasser {{ limit }} caractères.')]
+    #[Assert\Regex(
+        pattern: '/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/',
+        message: 'Le mot de passe doit contenir au moins une lettre majuscule, une lettre minuscule, un chiffre et un caractère spécial.'
+    )]
     private string $password;
 
     #[ORM\Column(length: 255, unique: true)]
+    #[Assert\NotBlank(message: 'Le nom d\'utilisateur est obligatoire')]
+    #[Assert\Length(min: 3, max: 20, minMessage: "Le nom d'utilisateur doit contenir au moins {{ limit }} caractères.", maxMessage: "Le nom d'utilisateur ne peut pas contenir plus de {{ limit }} caractères.")]
     private string $username;
 
     #[ORM\Column]
+    #[Assert\Type(type: 'bool', message: 'La valeur doit être de type booléen.')]
     private bool $isVerified = false;
 
     public function getEmail(): string
