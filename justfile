@@ -100,8 +100,8 @@ install-php:
 	{{COMPOSER}} install --working-dir={{TOOLS_DIR}}/rector
 
 # Launch PHP CS Fixer (see https://github.com/PHP-CS-Fixer/PHP-CS-Fixer)
-fixer:
-	{{PHP}} {{TOOLS_DIR}}/php-cs-fixer/vendor/bin/php-cs-fixer --config .php-cs-fixer.dist.php fix
+fixer *paths='src':
+	{{PHP}} {{TOOLS_DIR}}/phpcsfixer/vendor/bin/php-cs-fixer fix {{paths}}
 
 # Launch PHPStan (see https://phpstan.org/)
 stan *paths='src':

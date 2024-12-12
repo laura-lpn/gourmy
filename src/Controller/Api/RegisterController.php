@@ -3,12 +3,12 @@
 namespace App\Controller\Api;
 
 use App\Entity\User;
+use App\Security\EmailVerifier;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use App\Security\EmailVerifier;
-use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\Mime\Address;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
@@ -18,14 +18,14 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 use SymfonyCasts\Bundle\VerifyEmail\Exception\VerifyEmailExceptionInterface;
 
 class RegisterController extends AbstractController
-
 {
-    public function __construct(private EmailVerifier $emailVerifier) {}
+    public function __construct(private EmailVerifier $emailVerifier)
+    {
+    }
 
     #[Route('/api/register', name: 'api_register', methods: ['POST'])]
     public function index(Request $request, SerializerInterface $serializer, UserPasswordHasherInterface $passwordHasher, ValidatorInterface $validator, EntityManagerInterface $entityManager): JsonResponse
     {
-
         $data = $request->getContent();
         $user = $serializer->deserialize($data, User::class, 'json');
 
@@ -35,6 +35,7 @@ class RegisterController extends AbstractController
             foreach ($errors as $error) {
                 $errorMessages[] = $error->getMessage();
             }
+
             return new JsonResponse(['errors' => $errorMessages], 400);
         }
 
@@ -50,15 +51,19 @@ class RegisterController extends AbstractController
         $entityManager->persist($user);
         $entityManager->flush();
 
-        $this->emailVerifier->sendEmailConfirmation(
-            'api_verify_email',
-            $user,
-            (new TemplatedEmail())
-                ->from(new Address('gourmy@gmail.com', 'Gourmy'))
-                ->to((string) $user->getEmail())
-                ->subject('Please Confirm your Email')
-                ->htmlTemplate('email/confirmation_email.html.twig')
-        );
+        try {
+            $this->emailVerifier->sendEmailConfirmation(
+                'api_verify_email',
+                $user,
+                (new TemplatedEmail())
+                    ->from(new Address('gourmy@gmail.com', 'Gourmy'))
+                    ->to((string) $user->getEmail())
+                    ->subject('Please Confirm your Email')
+                    ->htmlTemplate('email/confirmation_email.html.twig')
+            );
+        } catch (\Exception $e) {
+            return new JsonResponse(['message' => 'Failed to send verification email'], 500);
+        }
 
         return new JsonResponse(['message' => 'Registration successful'], 201);
     }

@@ -12,10 +12,10 @@ use Symfony\Component\Security\Core\User\UserInterface;
 #[ORM\Table(name: '`user`')]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
 #[UniqueEntity(fields: ['username'], message: 'Ce pseudo est déjà utilisé')]
-class User extends BaseEntity implements UserInterface, PasswordAuthenticatedUserInterface
+class User extends AbstractBaseEntity implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Column(length: 180)]
-    private ?string $email = null;
+    private string $email;
 
     /**
      * @var list<string> The user roles
@@ -27,15 +27,15 @@ class User extends BaseEntity implements UserInterface, PasswordAuthenticatedUse
      * @var string The hashed password
      */
     #[ORM\Column]
-    private ?string $password = null;
+    private string $password;
 
     #[ORM\Column(length: 255, unique: true)]
-    private ?string $username = null;
+    private string $username;
 
     #[ORM\Column]
     private bool $isVerified = false;
 
-    public function getEmail(): ?string
+    public function getEmail(): string
     {
         return $this->email;
     }
@@ -84,7 +84,7 @@ class User extends BaseEntity implements UserInterface, PasswordAuthenticatedUse
     /**
      * @see PasswordAuthenticatedUserInterface
      */
-    public function getPassword(): ?string
+    public function getPassword(): string
     {
         return $this->password;
     }
@@ -105,7 +105,7 @@ class User extends BaseEntity implements UserInterface, PasswordAuthenticatedUse
         // $this->plainPassword = null;
     }
 
-    public function getUsername(): ?string
+    public function getUsername(): string
     {
         return $this->username;
     }

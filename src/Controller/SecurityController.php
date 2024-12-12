@@ -37,7 +37,6 @@ class SecurityController extends AbstractController
     #[Route(path: '/register', name: 'app_register')]
     public function register(Request $request, UserPasswordHasherInterface $userPasswordHasher, EntityManagerInterface $entityManager, Security $security): Response
     {
-
         if ($this->getUser()) {
             return $this->redirectToRoute('app_admin');
         }
