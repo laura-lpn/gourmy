@@ -20,7 +20,9 @@ use SymfonyCasts\Bundle\VerifyEmail\Exception\VerifyEmailExceptionInterface;
 
 class RegisterController extends AbstractController
 {
-    public function __construct(private EmailVerifier $emailVerifier) {}
+    public function __construct(private EmailVerifier $emailVerifier)
+    {
+    }
 
     #[Route('/api/register', name: 'api_register', methods: ['POST'])]
     public function index(Request $request, SerializerInterface $serializer, UserPasswordHasherInterface $passwordHasher, ValidatorInterface $validator, EntityManagerInterface $entityManager): JsonResponse
@@ -34,6 +36,7 @@ class RegisterController extends AbstractController
             foreach ($errors as $error) {
                 $errorMessages[$error->getPropertyPath()] = $error->getMessage();
             }
+
             return new JsonResponse(['errors' => $errorMessages], 400);
         }
 
@@ -77,7 +80,6 @@ class RegisterController extends AbstractController
         try {
             $this->emailVerifier->handleEmailConfirmation($request, $user);
         } catch (VerifyEmailExceptionInterface $exception) {
-
             return new JsonResponse(['message' => $translator->trans($exception->getReason(), [], 'VerifyEmailBundle')], 400);
         }
 
