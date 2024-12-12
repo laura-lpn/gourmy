@@ -16,7 +16,9 @@ use Symfony\Component\Security\Http\Attribute\CurrentUser;
 
 class LoginController extends AbstractController
 {
-    public function __construct(private EmailVerifier $emailVerifier) {}
+    public function __construct(private EmailVerifier $emailVerifier)
+    {
+    }
 
     #[Route('/api/login', name: 'api_login', methods: ['POST'])]
     public function apiLogin(#[CurrentUser] ?User $user): JsonResponse
@@ -33,7 +35,7 @@ class LoginController extends AbstractController
     }
 
     #[Route('/api/me', name: 'api_me', methods: ['GET'])]
-    public function me(#[CurrentUser] ?User $user): JsonResponse
+    public function apiMe(#[CurrentUser] ?User $user): JsonResponse
     {
         if (null === $user) {
             return new JsonResponse(['message' => 'Retente ta chance'], 401);
@@ -43,7 +45,7 @@ class LoginController extends AbstractController
     }
 
     #[Route('/api/resend-confirmation-email', name: 'api_resend_confirmation_email', methods: ['POST'])]
-    public function resendConfirmationEmail(Request $request, UserRepository $userRepository): JsonResponse
+    public function apiResendConfirmationEmail(Request $request, UserRepository $userRepository): JsonResponse
     {
         $data = json_decode($request->getContent(), true);
         if (null === $data) {
