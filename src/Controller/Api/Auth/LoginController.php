@@ -3,34 +3,73 @@
 namespace App\Controller\Api\Auth;
 
 use App\Entity\User;
+use App\Repository\UserRepository;
+use App\Security\EmailVerifier;
+use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\Mime\Address;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\CurrentUser;
 
 class LoginController extends AbstractController
 {
+    public function __construct(private EmailVerifier $emailVerifier) {}
+
     #[Route('/api/login', name: 'api_login', methods: ['POST'])]
-    public function apiLogin(#[CurrentUser] ?User $user): Response
+    public function apiLogin(#[CurrentUser] ?User $user): JsonResponse
     {
         if (null === $user) {
-            return $this->json(['message' => 'Retente ta chance'], Response::HTTP_UNAUTHORIZED);
+            return new JsonResponse(['message' => 'Retente ta chance'], 401);
         }
 
         if (!$user->isVerified()) {
-            return $this->json(['message' => 'Veuillez confirmer votre adresse email'], Response::HTTP_FORBIDDEN);
+            return new JsonResponse(['message' => 'Veuillez confirmer votre adresse email pour vous connecter'], 403);
         }
 
-        return $this->json(['email' => $user->getEmail()], Response::HTTP_OK);
+        return new JsonResponse(['email' => $user->getEmail()], 200);
     }
 
     #[Route('/api/me', name: 'api_me', methods: ['GET'])]
-    public function me(#[CurrentUser] ?User $user): Response
+    public function me(#[CurrentUser] ?User $user): JsonResponse
     {
         if (null === $user) {
-            return $this->json(['message' => 'Retente ta chance'], Response::HTTP_UNAUTHORIZED);
+            return new JsonResponse(['message' => 'Retente ta chance'], 401);
         }
 
-        return $this->json(['email' => $user->getEmail()], Response::HTTP_OK);
+        return new JsonResponse(['email' => $user->getEmail()], 200);
+    }
+
+    #[Route('/api/resend-confirmation-email', name: 'api_resend_confirmation_email', methods: ['POST'])]
+    public function resendConfirmationEmail(Request $request, UserRepository $userRepository): JsonResponse
+    {
+        $data = json_decode($request->getContent(), true);
+        if (!isset($data['email'])) {
+            throw new BadRequestHttpException('L\'adresse email est obligatoire.');
+        }
+
+        $email = $data['email'];
+
+        $user = $userRepository->findOneBy(['email' => $email]);
+
+        if ($user && !$user->isVerified()) {
+            try {
+                $this->emailVerifier->sendEmailConfirmation(
+                    'api_verify_email',
+                    $user,
+                    (new TemplatedEmail())
+                        ->from(new Address('gourmy@gmail.com', 'Gourmy'))
+                        ->to((string) $user->getEmail())
+                        ->subject('Confirmez votre adresse email')
+                        ->htmlTemplate('email/confirmation_email.html.twig')
+                );
+            } catch (\Exception $e) {
+                return new JsonResponse(['message' => 'Erreur lors de l\'envoi de l\'email de confirmation. Veuillez réessayer plus tard.'], 500);
+            }
+        }
+
+        return new JsonResponse(['message' => 'Si un utilisateur est trouvé, un email de confirmation sera envoyé.'], 200);
     }
 }
