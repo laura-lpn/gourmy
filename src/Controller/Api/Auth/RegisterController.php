@@ -20,12 +20,10 @@ use SymfonyCasts\Bundle\VerifyEmail\Exception\VerifyEmailExceptionInterface;
 
 class RegisterController extends AbstractController
 {
-    public function __construct(private EmailVerifier $emailVerifier)
-    {
-    }
+    public function __construct(private EmailVerifier $emailVerifier) {}
 
     #[Route('/api/register', name: 'api_register', methods: ['POST'])]
-    public function index(Request $request, SerializerInterface $serializer, UserPasswordHasherInterface $passwordHasher, ValidatorInterface $validator, EntityManagerInterface $entityManager): JsonResponse
+    public function apiRegister(Request $request, SerializerInterface $serializer, UserPasswordHasherInterface $passwordHasher, ValidatorInterface $validator, EntityManagerInterface $entityManager): JsonResponse
     {
         $data = $request->getContent();
         $user = $serializer->deserialize($data, User::class, 'json');
@@ -67,7 +65,7 @@ class RegisterController extends AbstractController
     }
 
     #[Route('/api/verify/email', name: 'api_verify_email')]
-    public function verifyUserEmail(Request $request, TranslatorInterface $translator, UserRepository $userRepository): JsonResponse
+    public function apiVerifyUserEmail(Request $request, TranslatorInterface $translator, UserRepository $userRepository): JsonResponse
     {
         $uid = $request->query->get('uid');
 
