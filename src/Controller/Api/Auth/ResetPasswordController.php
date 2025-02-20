@@ -27,8 +27,9 @@ class ResetPasswordController extends AbstractController
 
     public function __construct(
         private ResetPasswordHelperInterface $resetPasswordHelper,
-        private EntityManagerInterface $entityManager
-    ) {}
+        private EntityManagerInterface $entityManager,
+    ) {
+    }
 
     #[Route('/api/forgot-password', name: 'api_forgot_password', methods: ['POST'])]
     public function apiForgotPassword(Request $request, MailerInterface $mailer, TranslatorInterface $translator, UserRepository $userRepository, ValidatorInterface $validator): JsonResponse
@@ -48,7 +49,6 @@ class ResetPasswordController extends AbstractController
             return new JsonResponse(['message' => implode(', ', $errors)], 400);
         }
 
-
         $user = $userRepository->findOneBy(['email' => $email]);
 
         if (!$user) {
@@ -63,6 +63,7 @@ class ResetPasswordController extends AbstractController
 
         return new JsonResponse(['message' => 'Un email de réinitialisation de mot de passe a été envoyé.'], 200);
     }
+
     #[Route('/api/reset-password/{token}', name: 'api_reset_password', methods: ['POST'])]
     public function apiResetPassword(Request $request, ValidatorInterface $validator, UserPasswordHasherInterface $passwordHasher, TranslatorInterface $translator, ?string $token = null): JsonResponse
     {
@@ -127,7 +128,6 @@ class ResetPasswordController extends AbstractController
         try {
             $resetToken = $this->resetPasswordHelper->generateResetToken($user);
         } catch (ResetPasswordExceptionInterface $e) {
-
             return new JsonResponse(['message' => $translator->trans($e->getReason())], 500);
         }
 
@@ -161,6 +161,7 @@ class ResetPasswordController extends AbstractController
 
         return $errors;
     }
+
     private function validatePassword(string $password, ValidatorInterface $validator): array
     {
         // Définition des contraintes de validation
@@ -170,12 +171,12 @@ class ResetPasswordController extends AbstractController
                 'min' => 8,
                 'max' => 64,
                 'minMessage' => 'Le mot de passe doit contenir au moins {{ limit }} caractères.',
-                'maxMessage' => 'Le mot de passe ne doit pas dépasser {{ limit }} caractères.'
+                'maxMessage' => 'Le mot de passe ne doit pas dépasser {{ limit }} caractères.',
             ]),
             new Assert\Regex([
                 'pattern' => '/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/',
-                'message' => 'Le mot de passe doit contenir au moins une lettre majuscule, une lettre minuscule, un chiffre et un caractère spécial.'
-            ])
+                'message' => 'Le mot de passe doit contenir au moins une lettre majuscule, une lettre minuscule, un chiffre et un caractère spécial.',
+            ]),
         ]);
 
         // Collecte des erreurs
