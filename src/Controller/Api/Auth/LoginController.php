@@ -2,6 +2,7 @@
 
 namespace App\Controller\Api\Auth;
 
+use App\Attribute\SkipCsrf;
 use App\Entity\User;
 use App\Repository\UserRepository;
 use App\Security\EmailVerifier;
@@ -16,11 +17,10 @@ use Symfony\Component\Security\Http\Attribute\CurrentUser;
 
 class LoginController extends AbstractController
 {
-    public function __construct(private EmailVerifier $emailVerifier)
-    {
-    }
+    public function __construct(private EmailVerifier $emailVerifier) {}
 
     #[Route('/api/login', name: 'api_login', methods: ['POST'])]
+    #[SkipCsrf]
     public function apiLogin(#[CurrentUser] ?User $user): JsonResponse
     {
         if (null === $user) {
@@ -31,7 +31,10 @@ class LoginController extends AbstractController
             return new JsonResponse(['message' => 'Veuillez confirmer votre adresse email pour vous connecter'], 403);
         }
 
-        return new JsonResponse(['email' => $user->getEmail()], 200);
+        // passer le csrf token pour le mettre dans le header de la requête
+        $scrfToken = $this->container->get('security.csrf.token_manager')->getToken('authenticate')->getValue();
+
+        return new JsonResponse(['email' => $user->getEmail(), 'csrf_token' => $scrfToken], 200);
     }
 
     #[Route('/api/me', name: 'api_me', methods: ['GET'])]
@@ -45,6 +48,7 @@ class LoginController extends AbstractController
     }
 
     #[Route('/api/resend-confirmation-email', name: 'api_resend_confirmation_email', methods: ['POST'])]
+    #[SkipCsrf]
     public function apiResendConfirmationEmail(Request $request, UserRepository $userRepository): JsonResponse
     {
         $data = json_decode($request->getContent(), true);

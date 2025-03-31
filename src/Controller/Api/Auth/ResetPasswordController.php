@@ -2,6 +2,7 @@
 
 namespace App\Controller\Api\Auth;
 
+use App\Attribute\SkipCsrf;
 use App\Entity\User;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -28,10 +29,10 @@ class ResetPasswordController extends AbstractController
     public function __construct(
         private ResetPasswordHelperInterface $resetPasswordHelper,
         private EntityManagerInterface $entityManager,
-    ) {
-    }
+    ) {}
 
     #[Route('/api/forgot-password', name: 'api_forgot_password', methods: ['POST'])]
+    #[SkipCsrf]
     public function apiForgotPassword(Request $request, MailerInterface $mailer, TranslatorInterface $translator, UserRepository $userRepository, ValidatorInterface $validator): JsonResponse
     {
         $data = json_decode($request->getContent(), true);
@@ -65,6 +66,7 @@ class ResetPasswordController extends AbstractController
     }
 
     #[Route('/api/reset-password/{token}', name: 'api_reset_password', methods: ['POST'])]
+    #[SkipCsrf]
     public function apiResetPassword(Request $request, ValidatorInterface $validator, UserPasswordHasherInterface $passwordHasher, TranslatorInterface $translator, ?string $token = null): JsonResponse
     {
         if ($token) {

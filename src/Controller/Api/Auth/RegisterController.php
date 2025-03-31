@@ -2,6 +2,7 @@
 
 namespace App\Controller\Api\Auth;
 
+use App\Attribute\SkipCsrf;
 use App\Entity\User;
 use App\Repository\UserRepository;
 use App\Security\EmailVerifier;
@@ -20,11 +21,10 @@ use SymfonyCasts\Bundle\VerifyEmail\Exception\VerifyEmailExceptionInterface;
 
 class RegisterController extends AbstractController
 {
-    public function __construct(private EmailVerifier $emailVerifier)
-    {
-    }
+    public function __construct(private EmailVerifier $emailVerifier) {}
 
     #[Route('/api/register', name: 'api_register', methods: ['POST'])]
+    #[SkipCsrf]
     public function apiRegister(Request $request, SerializerInterface $serializer, UserPasswordHasherInterface $passwordHasher, ValidatorInterface $validator, EntityManagerInterface $entityManager): JsonResponse
     {
         $data = $request->getContent();
