@@ -1,6 +1,6 @@
 services:
   php:
-    container_name: gourmy_back_php
+    container_name: gourmy_php
     networks:
       - default
     volumes:
@@ -13,7 +13,7 @@ services:
     entrypoint: "tail -f /dev/null"
   
   web:
-    container_name: gourmy_back_web
+    container_name: gourmy_web
     networks:
       - default
       - global_reverse_proxy
@@ -28,12 +28,12 @@ services:
       - php
       - db
     labels:
-      caddy: "backend.gourmy.aaa"
+      caddy: "gourmy.aaa"
       caddy.tls: "internal"
       caddy.reverse_proxy: "{{upstreams 80}}"
 
   db:
-    container_name: gourmy_back_db
+    container_name: gourmy_db
     networks:
       - default
     volumes:
@@ -46,7 +46,7 @@ services:
       POSTGRES_DB: gourmy
   
   db_test:
-    container_name: gourmy_back_db_test
+    container_name: gourmy_db_test
     networks:
       - default
     volumes:
@@ -59,7 +59,7 @@ services:
       POSTGRES_DB: gourmy_test
 
   adminer:
-    container_name: gourmy_back_adminer
+    container_name: gourmy_adminer
     networks:
       - default
       - global_reverse_proxy
@@ -75,7 +75,7 @@ services:
       - db
 
   mailer:
-    container_name: gourmy_back_mailer
+    container_name: gourmy_mailer
     networks:
       - default
       - global_reverse_proxy

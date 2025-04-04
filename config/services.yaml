@@ -20,8 +20,5 @@ services:
             - '../src/Entity/'
             - '../src/Kernel.php'
 
-    App\EventListener\CsrfRequestListener:
-        tags:
-            - { name: kernel.event_listener, event: kernel.controller, method: onKernelController }
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
