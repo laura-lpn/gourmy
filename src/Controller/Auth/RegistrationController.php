@@ -36,6 +36,19 @@ class RegistrationController extends AbstractController
             /** @var string $plainPassword */
             $plainPassword = $form->get('plainPassword')->getData();
 
+            $existingUser = $entityManager->getRepository(User::class)->findOneBy([
+                'email' => $user->getEmail()
+            ]) || $entityManager->getRepository(User::class)->findOneBy([
+                'username' => $user->getUsername()
+            ]);
+
+            if ($existingUser) {
+                $this->addFlash('error', 'Un utilisateur avec cet email ou ce nom d\'utilisateur existe déjà.');
+                return $this->render('auth/register.html.twig', [
+                    'registrationForm' => $form,
+                ]);
+            }
+
             $user->setPassword($userPasswordHasher->hashPassword($user, $plainPassword));
 
             $entityManager->persist($user);
