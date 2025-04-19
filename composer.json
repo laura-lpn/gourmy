@@ -42,11 +42,13 @@
         "symfony/translation": "7.1.*",
         "symfony/twig-bundle": "7.1.*",
         "symfony/uid": "7.1.*",
+        "symfony/ux-react": "^2.23",
         "symfony/ux-turbo": "^2.19",
         "symfony/validator": "7.1.*",
         "symfony/web-link": "7.1.*",
         "symfony/yaml": "7.1.*",
         "symfonycasts/reset-password-bundle": "^1.23",
+        "symfonycasts/tailwind-bundle": "^0.9.0",
         "symfonycasts/verify-email-bundle": "^1.17",
         "twig/extra-bundle": "^2.12|^3.0",
         "twig/twig": "^2.12|^3.0"
