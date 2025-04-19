@@ -4,18 +4,19 @@ namespace App\Form;
 
 use App\Entity\Restaurant;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\CountryType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\UrlType;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\TelType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Regex;
 
-class RestaurantType extends AbstractType
+class CreateRestaurantType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
@@ -25,10 +26,6 @@ class RestaurantType extends AbstractType
                 'constraints' => [
                     new NotBlank(),
                 ]
-            ])
-            ->add('slug', TextType::class, [
-                'label' => 'Slug',
-                'required' => true,
             ])
             ->add('siret', TextType::class, [
                 'label' => 'Numéro SIRET',
@@ -94,8 +91,21 @@ class RestaurantType extends AbstractType
                     ])
                 ]
             ])
-            ->add('priceRange', TextType::class, [
-                'label' => 'Plage de prix',
+            ->add('phoneNumber', TelType::class, [
+                'label' => 'Numéro de téléphone',
+            ])
+            ->add('openingHours', TextareaType::class, [
+                'label' => 'Horaires d’ouverture',
+                'required' => false,
+            ])
+            ->add('priceRange', ChoiceType::class, [
+                'label' => 'Fourchette de prix',
+                'choices' => [
+                    '€' => '€',
+                    '€€' => '€€',
+                    '€€€' => '€€€',
+                    '€€€€' => '€€€€',
+                ],
                 'constraints' => [
                     new NotBlank(),
                 ]
@@ -111,13 +121,10 @@ class RestaurantType extends AbstractType
                 ]
             ])
             ->add('banner', TextType::class, [
-                'label' => 'Bannière (URL)',
+                'label' => 'Bannière',
                 'constraints' => [
                     new NotBlank(),
                 ]
-            ])
-            ->add('submit', SubmitType::class, [
-                'label' => 'Soumettre',
             ])
         ;
     }

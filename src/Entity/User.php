@@ -52,7 +52,7 @@ class User extends BaseEntity implements UserInterface, PasswordAuthenticatedUse
     #[Assert\Type(type: 'bool', message: 'La valeur doit être de type booléen.')]
     private bool $isVerified = false;
 
-    #[ORM\OneToOne(mappedBy: 'owner', cascade: ['persist', 'remove'], orphanRemoval: true)]
+    #[ORM\OneToOne(inversedBy: 'owner', cascade: ['persist', 'remove'], orphanRemoval: true)]
     private ?Restaurant $restaurant = null;
 
     public function getEmail(): string
@@ -156,16 +156,6 @@ class User extends BaseEntity implements UserInterface, PasswordAuthenticatedUse
 
     public function setRestaurant(?Restaurant $restaurant): static
     {
-        // Detach old restaurant
-        if ($this->restaurant !== null && $restaurant === null) {
-            $this->restaurant->setOwner(null);
-        }
-
-        // Sync inverse side
-        if ($restaurant !== null && $restaurant->getOwner() !== $this) {
-            $restaurant->setOwner($this);
-        }
-
         $this->restaurant = $restaurant;
 
         return $this;

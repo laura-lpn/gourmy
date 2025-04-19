@@ -24,7 +24,6 @@ class Restaurant
     private ?string $name = null;
 
     #[ORM\Column(length: 255)]
-    #[Assert\NotBlank]
     #[Assert\Length(max: 255)]
     private ?string $slug = null;
 
@@ -97,8 +96,22 @@ class Restaurant
     #[ORM\Column(nullable: true)]
     private ?bool $isValided = null;
 
-    #[ORM\OneToOne(inversedBy: 'restaurant', cascade: ['persist', 'remove'])]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\Column(length: 20)]
+    #[Assert\NotBlank(message: 'Le numéro de téléphone est obligatoire.')]
+    #[Assert\Regex(
+        pattern: '/^\+?[0-9\s\-().]{7,20}$/',
+        message: 'Le numéro de téléphone n’est pas valide.'
+    )]
+    private ?string $phoneNumber = null;
+
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[Assert\Length(
+        max: 1000,
+        maxMessage: 'Les horaires d’ouverture ne doivent pas dépasser {{ limit }} caractères.'
+    )]
+    private ?string $openingHours = null;
+
+    #[ORM\OneToOne(mappedBy: 'restaurant', cascade: ['persist', 'remove'])]
     private ?User $owner = null;
 
     public function getId(): ?int
@@ -274,6 +287,30 @@ class Restaurant
         return $this;
     }
 
+    public function getPhoneNumber(): ?string
+    {
+        return $this->phoneNumber;
+    }
+
+    public function setPhoneNumber(string $phoneNumber): static
+    {
+        $this->phoneNumber = $phoneNumber;
+
+        return $this;
+    }
+
+    public function getOpeningHours(): ?string
+    {
+        return $this->openingHours;
+    }
+
+    public function setOpeningHours(?string $openingHours): static
+    {
+        $this->openingHours = $openingHours;
+
+        return $this;
+    }
+
     public function getOwner(): ?User
     {
         return $this->owner;
@@ -281,12 +318,12 @@ class Restaurant
 
     public function setOwner(?User $owner): static
     {
-        // Detach old owner
-        if ($this->owner !== null && $owner === null) {
+        // unset the owning side of the relation if necessary
+        if ($owner === null && $this->owner !== null) {
             $this->owner->setRestaurant(null);
         }
 
-        // Sync inverse side
+        // set the owning side of the relation if necessary
         if ($owner !== null && $owner->getRestaurant() !== $this) {
             $owner->setRestaurant($this);
         }
