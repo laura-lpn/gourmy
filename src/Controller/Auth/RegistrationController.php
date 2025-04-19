@@ -64,7 +64,8 @@ class RegistrationController extends AbstractController
                     ->htmlTemplate('email/confirmation_email.html.twig')
             );
 
-            return $security->login($user, 'form_login', 'main');
+            $this->addFlash('success', 'Votre compte a bien été créé. Veuillez confirmer votre adresse email pour pouvoir vous connecter.');
+            return $this->redirectToRoute('app_login');
         }
 
         return $this->render('auth/register.html.twig', [
@@ -94,14 +95,13 @@ class RegistrationController extends AbstractController
 
         try {
             $this->emailVerifier->handleEmailConfirmation($request, $user);
+            $this->addFlash('success', 'Votre adresse email a bien été confirmée. Vous pouvez maintenant vous connecter.');
         } catch (VerifyEmailExceptionInterface $exception) {
             $this->addFlash('verify_email_error', $translator->trans($exception->getReason(), [], 'VerifyEmailBundle'));
 
             return $this->redirectToRoute('app_register');
         }
 
-        $this->redirectToRoute('app_login');
-
-        return $this->redirectToRoute('app_register');
+        return $this->redirectToRoute('app_login');
     }
 }

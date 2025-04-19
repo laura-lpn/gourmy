@@ -21,29 +21,35 @@ class LoginController extends AbstractController
     #[Route(path: '/connexion', name: 'app_login')]
     public function login(AuthenticationUtils $authenticationUtils, UserRepository $userRepository): Response
     {
+        if ($this->getUser()) {
+            return $this->redirectToRoute('app_home');
+        }
         $error = $authenticationUtils->getLastAuthenticationError();
         $lastUsername = $authenticationUtils->getLastUsername();
 
         $user = $userRepository->findOneBy(['email' => $lastUsername]);
 
-        if ($user && !$user->isVerified()) {
-            $this->addFlash('error', 'Votre compte n\'est pas encore confirmé. Vérifiez votre boîte de réception.');
-            return $this->redirectToRoute('app_resend_confirmation_email', ['email' => $lastUsername]);
-        }
-
         if ($error) {
-            $this->addFlash('error', 'L\'email ou le mot de passe est incorrect.');
+            $user = $userRepository->findOneBy(['email' => $lastUsername]);
+
+            if ($user && !$user->isVerified()) {
+                $this->addFlash('error', 'L\'email ou le mot de passe est incorrect. Si votre email n\'est pas encore confirmé, vous pouvez <a href="' . $this->generateUrl('app_resend_confirmation_email', ['email' => $lastUsername]) . '">renvoyer l\'email de confirmation ici</a>.');
+            } else {
+                $this->addFlash('error', 'L\'email ou le mot de passe est incorrect.');
+            }
         }
 
         return $this->render('auth/login.html.twig', [
-            'last_username' => $lastUsername,
-            'error' => $error,
+            'last_username' => $lastUsername
         ]);
     }
 
     #[Route('/renvoie-confirmation-email', name: 'app_resend_confirmation_email')]
     public function resendConfirmationEmail(Request $request, UserRepository $userRepository): Response
     {
+        if ($this->getUser()) {
+            return $this->redirectToRoute('app_home');
+        }
         $email = $request->query->get('email', '');
 
         $form = $this->createForm(ResendConfirmationEmailType::class, ['email' => $email]);
@@ -63,7 +69,7 @@ class LoginController extends AbstractController
                         ->subject('Veuillez confirmer votre adresse email')
                         ->htmlTemplate('email/confirmation_email.html.twig')
                 );
-                $this->addFlash('success', 'Si un compte avec cet email existe, un email de confirmation a été renvoyé.');
+                $this->addFlash('success', 'Si un compte avec cet email existe, un email de confirmation sera renvoyé.');
             } else {
                 $this->addFlash('error', 'Aucun compte trouvé avec cette adresse email ou le compte est déjà confirmé.');
             }
