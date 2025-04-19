@@ -34,6 +34,9 @@ shell:
 # Application
 # *******************************
 
+build:
+	{{SYMFONY}} tailwind:build
+
 # Clear caches
 cc env='dev':
 	{{SYMFONY}} console cache:clear --env={{env}}
