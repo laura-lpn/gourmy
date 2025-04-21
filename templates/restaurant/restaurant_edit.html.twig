@@ -1,11 +1,11 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Ajouter un restaurant
+{% block title %}Éditer mon restaurant
 {% endblock %}
 
 {% block body %}
 
-	<h1>Ajouter un restaurant</h1>
+	<h1>Éditer mon restaurant</h1>
 
 	{% for label, messages in app.flashes %}
 		{% for message in messages %}
@@ -30,11 +30,11 @@
 	{{ form_row(restaurantForm.city) }}
 	{{ form_row(restaurantForm.country) }}
 	{{ react_component('MapPreview', {
-        address: restaurant.address ?: '',
-        postalCode: restaurant.postalCode ?: '',
-        city: restaurant.city ?: '',
-        country: restaurant.country ?: ''
-    }) }}
+		address: restaurant.address,
+		postalCode: restaurant.postalCode,
+		city: restaurant.city,
+		country: restaurant.country
+  }) }}
 	{{ form_row(restaurantForm.phoneNumber) }}
 	{{ form_row(restaurantForm.website) }}
 
@@ -42,8 +42,7 @@
 	{{ form_row(restaurantForm.openingHours) }}
 	{{ form_row(restaurantForm.priceRange) }}
 
-	<button type="submit" class="btn">Créer</button>
+	<button type="submit" class="btn">Modifier</button>
 	{{ form_end(restaurantForm) }}
-	<a href="{{ path('app_restaurateur') }}" class="btn">Annuler</a>
 
 {% endblock %}

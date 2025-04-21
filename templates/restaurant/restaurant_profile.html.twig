@@ -1,13 +1,47 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Restaurant{% endblock %}
+{% block title %}Restaurant
+{% endblock %}
 
 {% block body %}
 
-    <h1>Restaurant</h1>
-    {% for label, messages in app.flashes %}
-        {% for message in messages %}
-            <div class="alert alert-{{ label }}">{% autoescape false %}{{ message }}{% endautoescape %}</div>
-        {% endfor %}
-    {% endfor %}
+	<h1>Restaurant</h1>
+	{% for label, messages in app.flashes %}
+		{% for message in messages %}
+			<div class="alert alert-{{ label }}">
+				{% autoescape false %}
+					{{ message }}
+				{% endautoescape %}
+			</div>
+		{% endfor %}
+	{% endfor %}
+
+	<div>
+		<h2>{{ restaurant.name ~ ' (' ~ restaurant.slug ~ ')' }}</h2>
+		{% if restaurant.bannerName %}
+			<img src="{{ vich_uploader_asset(restaurant, 'bannerFile') }}" alt="Bannière" class="w-1/2">
+		{% endif %}
+		<p>{{ restaurant.description }}</p>
+		<p>Adresse:
+			{{ restaurant.address ~ ' ' ~ restaurant.postalCode ~ ' ' ~ restaurant.city ~ ', ' ~ restaurant.country }}</p>
+		<p>Price Range:
+			{{ restaurant.priceRange }}</p>
+		<p>Opening Hours:
+			{{ restaurant.openingHours }}</p>
+		{% if restaurant.phoneNumber is not null %}
+			<p>Contact:
+				{{ restaurant.phoneNumber }}</p>
+		{% endif %}
+		{% if restaurant.website is not null %}
+			<p>Website:
+				<a href="{{ restaurant.website }}">{{ restaurant.website }}</a>
+			</p>
+		{% endif %}
+	</div>
+	{{ react_component('MapPreview', {
+        address: restaurant.address,
+        postalCode: restaurant.postalCode,
+        city: restaurant.city,
+        country: restaurant.country
+    }) }}
 {% endblock %}
