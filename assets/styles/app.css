@@ -2,3 +2,14 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer components {
+  .my-input-file {
+    @apply file:mr-4 file:py-2 file:px-4 file:rounded-lg file:cursor-pointer file:border-0 file:text-sm file:font-medium file:bg-white/20 file:text-black;
+  }
+}
+
+@layer base {
+  input[type="file"] {
+    @apply my-input-file;
+  }
+}

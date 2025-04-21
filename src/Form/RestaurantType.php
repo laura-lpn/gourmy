@@ -3,23 +3,28 @@
 namespace App\Form;
 
 use App\Entity\Restaurant;
+use FOS\CKEditorBundle\Form\Type\CKEditorType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\CountryType;
-use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\UrlType;
 use Symfony\Component\Form\Extension\Core\Type\TelType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\Image;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Regex;
+use Symfony\Component\Validator\Constraints\Url;
+use Vich\UploaderBundle\Form\Type\VichImageType;
 
-class CreateRestaurantType extends AbstractType
+class RestaurantType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+        $restaurant = $options['data'];
+
         $builder
             ->add('name', TextType::class, [
                 'label' => 'Nom du restaurant',
@@ -37,11 +42,29 @@ class CreateRestaurantType extends AbstractType
                     ])
                 ]
             ])
-            ->add('description', TextareaType::class, [
+            ->add('bannerFile', VichImageType::class, [
+                'label' => 'Image de couverture',
+                'required' => !$restaurant->getBannerName(),
+                'download_uri' => false,
+                'allow_delete' => false,
+                'image_uri' => true,
+                'constraints' => [
+                    new Image([
+                        'maxSize' => '2M',
+                        'mimeTypes' => ['image/jpeg', 'image/png', 'image/webp'],
+                        'mimeTypesMessage' => 'Veuillez uploader une image valide (JPEG, PNG ou WebP)',
+                        'maxSizeMessage' => 'L\'image ne doit pas dépasser 2 Mo.',
+                    ])
+                ]
+            ])
+            ->add('description', CKEditorType::class, [
                 'label' => 'Description',
+                'config' => [
+                    'toolbar' => 'basic',
+                ],
                 'constraints' => [
                     new NotBlank(),
-                ],
+                ]
             ])
             ->add('address', TextType::class, [
                 'label' => 'Adresse',
@@ -71,28 +94,14 @@ class CreateRestaurantType extends AbstractType
                     new NotBlank(),
                 ]
             ])
-            ->add('latitude', NumberType::class, [
-                'label' => 'Latitude',
-                'constraints' => [
-                    new NotBlank(),
-                    new Regex([
-                        'pattern' => '/^[-+]?[0-9]*\.?[0-9]+$/',
-                        'message' => 'Veuillez entrer une latitude valide.',
-                    ])
-                ]
-            ])
-            ->add('longitude', NumberType::class, [
-                'label' => 'Longitude',
-                'constraints' => [
-                    new NotBlank(),
-                    new Regex([
-                        'pattern' => '/^[-+]?[0-9]*\.?[0-9]+$/',
-                        'message' => 'Veuillez entrer une longitude valide.',
-                    ])
-                ]
-            ])
             ->add('phoneNumber', TelType::class, [
                 'label' => 'Numéro de téléphone',
+                'constraints' => [
+                    new Regex([
+                        'pattern' => '/^\+?[0-9\s\-().]{7,}$/',
+                        'message' => 'Veuillez entrer un numéro de téléphone valide.',
+                    ])
+                ],
             ])
             ->add('openingHours', TextareaType::class, [
                 'label' => 'Horaires d’ouverture',
@@ -114,16 +123,9 @@ class CreateRestaurantType extends AbstractType
                 'label' => 'Site Web',
                 'required' => false,
                 'constraints' => [
-                    new Regex([
-                        'pattern' => '/^(https?|ftp):\/\/[^\s/$.?#].[^\s]*$/i',
+                    new Url([
                         'message' => 'Veuillez entrer une URL valide.',
                     ])
-                ]
-            ])
-            ->add('banner', TextType::class, [
-                'label' => 'Bannière',
-                'constraints' => [
-                    new NotBlank(),
                 ]
             ])
         ;

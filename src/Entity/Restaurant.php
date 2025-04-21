@@ -5,19 +5,20 @@ namespace App\Entity;
 use App\Repository\RestaurantRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Mapping\HasLifecycleCallbacks;
+use Doctrine\ORM\Mapping\PrePersist;
+use Doctrine\ORM\Mapping\PreUpdate;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\HttpFoundation\File\File;
+use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
 #[ORM\Entity(repositoryClass: RestaurantRepository::class)]
-#[UniqueEntity(fields: ['slug'], message: 'Ce slug est déjà utilisé.')]
 #[UniqueEntity(fields: ['name'], message: 'Ce nom de restaurant est déjà utilisé.')]
-class Restaurant
+#[Vich\Uploadable]
+#[HasLifecycleCallbacks]
+class Restaurant extends BaseEntity
 {
-    #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column]
-    private ?int $id = null;
-
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank]
     #[Assert\Length(max: 255)]
@@ -71,16 +72,18 @@ class Restaurant
     private ?string $priceRange = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Assert\Url(
-        protocols: ['http', 'https'],
-        message: 'L\'URL du site web doit être valide et commencer par http:// ou https://.'
-    )]
+    #[Assert\Url(message: 'L\'URL fournie n\'est pas valide.')]
     private ?string $website = null;
 
-    #[ORM\Column(length: 255)]
-    #[Assert\NotBlank]
-    #[Assert\Length(max: 255)]
-    private ?string $banner = null;
+    #[Vich\UploadableField(mapping: 'restaurants_banner', fileNameProperty: 'bannerName')]
+
+    private ?File $bannerFile = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?string $bannerName = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?\DateTimeImmutable $bannerUpdatedAt = null;
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank]
@@ -94,7 +97,7 @@ class Restaurant
     private ?string $country = null;
 
     #[ORM\Column(nullable: true)]
-    private ?bool $isValided = null;
+    private ?bool $isValided = false;
 
     #[ORM\Column(length: 20)]
     #[Assert\NotBlank(message: 'Le numéro de téléphone est obligatoire.')]
@@ -113,6 +116,22 @@ class Restaurant
 
     #[ORM\OneToOne(mappedBy: 'restaurant', cascade: ['persist', 'remove'])]
     private ?User $owner = null;
+
+    #[PrePersist]
+    public function setSlug(): void
+    {
+        if (null === $this->slug) {
+            $this->slug = strtolower(str_replace(' ', '-', $this->name));
+        }
+    }
+
+    #[PreUpdate]
+    public function updateSlug(): void
+    {
+        if (null !== $this->name) {
+            $this->slug = strtolower(str_replace(' ', '-', $this->name));
+        }
+    }
 
     public function getId(): ?int
     {
@@ -134,13 +153,6 @@ class Restaurant
     public function getSlug(): ?string
     {
         return $this->slug;
-    }
-
-    public function setSlug(string $slug): static
-    {
-        $this->slug = $slug;
-
-        return $this;
     }
 
     public function getDescription(): ?string
@@ -239,16 +251,33 @@ class Restaurant
         return $this;
     }
 
-    public function getBanner(): ?string
+    public function setBannerFile(?File $banner = null): void
     {
-        return $this->banner;
+        $this->bannerFile = $banner;
+
+        if (null !== $banner) {
+            $this->bannerUpdatedAt = new \DateTimeImmutable();
+        }
     }
 
-    public function setBanner(string $banner): static
+    public function getBannerFile(): ?File
     {
-        $this->banner = $banner;
+        return $this->bannerFile;
+    }
 
-        return $this;
+    public function setBannerName(?string $bannerName): void
+    {
+        $this->bannerName = $bannerName;
+    }
+
+    public function getBannerName(): ?string
+    {
+        return $this->bannerName;
+    }
+
+    public function getBannerUpdatedAt(): ?\DateTimeImmutable
+    {
+        return $this->bannerUpdatedAt;
     }
 
     public function getSiret(): ?string
@@ -331,5 +360,19 @@ class Restaurant
         $this->owner = $owner;
 
         return $this;
+    }
+
+    public function __serialize(): array
+    {
+        $data = get_object_vars($this);
+        unset($data['bannerFile']);
+        return $data;
+    }
+
+    public function __unserialize(array $data): void
+    {
+        foreach ($data as $key => $value) {
+            $this->$key = $value;
+        }
     }
 }

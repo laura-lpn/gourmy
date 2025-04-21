@@ -35,7 +35,7 @@ shell:
 # *******************************
 
 build:
-	{{SYMFONY}} tailwind:build
+	{{SYMFONY}} console tailwind:build
 
 # Clear caches
 cc env='dev':

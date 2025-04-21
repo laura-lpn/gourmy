@@ -30,7 +30,11 @@ security:
     - { path: ^/admin, roles: ROLE_ADMIN }
     - { path: ^/profile, roles: ROLE_USER }
     - { path: ^/restaurateur, roles: ROLE_USER }
-    - {path: ^/restaurateur/mon-restauran, roles: ROLE_RESTAURATEUR}
+    - {path: ^/restaurateur/mon-restaurant, roles: ROLE_RESTAURATEUR}
+
+  role_hierarchy:
+    ROLE_ADMIN: [ROLE_USER, ROLE_RESTAURATEUR]
+    ROLE_RESTAURATEUR: [ROLE_USER]
 
 when@test:
   security:
