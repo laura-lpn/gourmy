@@ -1,0 +1,14 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+	Nos restaurants partenaires
+{% endblock %}
+
+{% block body %}
+
+	<h1>Nos restaurants partenaires</h1>
+	{% for restaurant in restaurants %}
+		<h2>{{restaurant.name}}</h2>
+
+	{% endfor %}
+{% endblock %}

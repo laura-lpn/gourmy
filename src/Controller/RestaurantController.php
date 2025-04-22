@@ -21,7 +21,7 @@ class RestaurantController extends AbstractController
             $this->addFlash('error', 'Vous devez être connecté pour accéder à cette page.');
             return $this->redirectToRoute('app_login');
         }
-        return $this->render('restaurant/index.html.twig');
+        return $this->render('restaurant/dashboard.html.twig');
     }
 
     #[Route('/restaurateur/creer-un-restaurant', name: 'app_restaurant_create')]
@@ -64,7 +64,7 @@ class RestaurantController extends AbstractController
                 $restaurant->setLongitude($location['lng']);
             } else {
                 $this->addFlash('error', 'Impossible de géolocaliser cette adresse.');
-                return $this->render('restaurant/restaurant_create.html.twig', [
+                return $this->render('restaurant/create.html.twig', [
                     'restaurantForm' => $form->createView(),
                 ]);
             }
@@ -79,7 +79,7 @@ class RestaurantController extends AbstractController
             return $this->redirectToRoute('app_restaurant_profile');
         }
 
-        return $this->render('restaurant/restaurant_create.html.twig', [
+        return $this->render('restaurant/create.html.twig', [
             'restaurantForm' => $form->createView(),
             'restaurant' => $restaurant,
         ]);
@@ -115,7 +115,7 @@ class RestaurantController extends AbstractController
             $this->addFlash('warning', 'Votre restaurant n\'a pas encore été validé.');
         }
 
-        return $this->render('restaurant/restaurant_profile.html.twig', [
+        return $this->render('restaurant/profile.html.twig', [
             'restaurant' => $restaurant,
             'isValidated' => $isValidated
         ]);
@@ -166,7 +166,7 @@ class RestaurantController extends AbstractController
             return $this->redirectToRoute('app_restaurant_profile');
         }
 
-        return $this->render('restaurant/restaurant_edit.html.twig', [
+        return $this->render('restaurant/edit.html.twig', [
             'restaurantForm' => $form->createView(),
             'restaurant' => $restaurant
         ]);
@@ -191,9 +191,38 @@ class RestaurantController extends AbstractController
         $restaurant = $user->getRestaurant();
         $user->setRestaurant(null);
 
+        $roles = $user->getRoles();
+        $roles = array_filter($roles, fn($role) => $role !== 'ROLE_RESTAURATEUR');
+        $user->setRoles($roles);
+
         $em->remove($restaurant);
         $em->flush();
 
-        return $this->redirectToRoute('app_restaureur');
+        return $this->redirectToRoute('app_restaurateur');
     }
+
+    #[Route('/restaurants/{slug}', name: 'app_restaurant_show')]
+    public function showRestaurant($slug, RestaurantRepository $restaurantRepository): Response
+    {
+    $restaurant = $restaurantRepository->findOneBy(['slug' => $slug]);
+    
+    if (!$restaurant) {
+        throw $this->createNotFoundException('Restaurant introuvable.');
+    }
+
+    return $this->render('restaurant/show.html.twig', [
+        'restaurant' => $restaurant,
+    ]);
+    }
+
+    #[Route('/restaurants', name: 'app_restaurant_list')]
+    public function listRestaurant(RestaurantRepository $restaurantRepository): Response
+    {
+        $restaurants = $restaurantRepository->findAll();
+
+        return $this->render('restaurant/list.html.twig', [
+            'restaurants' => $restaurants,
+        ]);
+    }
+
 }
