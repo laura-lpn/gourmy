@@ -1,0 +1,50 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Ajouter un restaurant
+{% endblock %}
+
+{% block body %}
+
+	<h1>Ajouter un restaurant</h1>
+
+	{% for label, messages in app.flashes %}
+		{% for message in messages %}
+			<div class="alert alert-{{ label }}">
+				{% autoescape false %}
+					{{ message }}
+				{% endautoescape %}
+			</div>
+		{% endfor %}
+	{% endfor %}
+
+	{{ form_start(restaurantForm) }}
+	<h2>Informations générales</h2>
+	{{ form_row(restaurantForm.name) }}
+	{{ form_row(restaurantForm.siret) }}
+	{{ form_row(restaurantForm.bannerFile) }}
+	{{ form_row(restaurantForm.description) }}
+
+	<h2>Coordonnées</h2>
+	{{ form_row(restaurantForm.address) }}
+	{{ form_row(restaurantForm.postalCode) }}
+	{{ form_row(restaurantForm.city) }}
+	{{ form_row(restaurantForm.country) }}
+	{{ react_component('MapPreview', {
+		address: restaurant.address ?: null,
+		postalCode: restaurant.postalCode ?: null,
+		city: restaurant.city ?: null,
+		country: restaurant.country ?: null
+	}) }}
+
+	{{ form_row(restaurantForm.phoneNumber) }}
+
+	<h2>Infos pratiques</h2>
+	{{ form_row(restaurantForm.openingHours) }}
+	{{ form_row(restaurantForm.priceRange) }}
+	{{ form_row(restaurantForm.website) }}
+
+	<button type="submit" class="btn">Créer</button>
+	{{ form_end(restaurantForm) }}
+	<a href="{{ path('app_restaurateur') }}" class="btn">Annuler</a>
+
+{% endblock %}

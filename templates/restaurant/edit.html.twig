@@ -1,0 +1,49 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Éditer mon restaurant
+{% endblock %}
+
+{% block body %}
+
+	<h1>Éditer mon restaurant</h1>
+
+	{% for label, messages in app.flashes %}
+		{% for message in messages %}
+			<div class="alert alert-{{ label }}">
+				{% autoescape false %}
+					{{ message }}
+				{% endautoescape %}
+			</div>
+		{% endfor %}
+	{% endfor %}
+
+	{{ form_start(restaurantForm) }}
+	<h2>Informations générales</h2>
+	{{ form_row(restaurantForm.name) }}
+	{{ form_row(restaurantForm.siret) }}
+	{{ form_row(restaurantForm.bannerFile) }}
+	{{ form_row(restaurantForm.description) }}
+
+	<h2>Coordonnées</h2>
+	{{ form_row(restaurantForm.address) }}
+	{{ form_row(restaurantForm.postalCode) }}
+	{{ form_row(restaurantForm.city) }}
+	{{ form_row(restaurantForm.country) }}
+	{{ react_component('MapPreview', {
+		address: restaurant.address,
+		postalCode: restaurant.postalCode,
+		city: restaurant.city,
+		country: restaurant.country
+  }) }}
+	{{ form_row(restaurantForm.phoneNumber) }}
+
+	<h2>Infos pratiques</h2>
+	{{ form_row(restaurantForm.openingHours) }}
+	{{ form_row(restaurantForm.priceRange) }}
+	{{ form_row(restaurantForm.website) }}
+
+	<button type="submit" class="btn">Modifier</button>
+	{{ form_end(restaurantForm) }}
+	<a href="{{ path('app_restaurant_profile') }}" class="btn">Annuler</a>
+
+{% endblock %}
