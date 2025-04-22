@@ -8,7 +8,7 @@ const MapPreview = ({ address, postalCode, city, country }) => {
 
   useEffect(() => {
     if (!address || !postalCode || !city || !country) {
-      return;
+      return null;
     }
 
     const fullAddress = `${address}, ${postalCode} ${city}, ${country}`;
@@ -47,9 +47,13 @@ const MapPreview = ({ address, postalCode, city, country }) => {
   return (
     <div>
       <h2>Prévisualisation de la carte</h2>
-      <div id="map" style={{ height: '400px', width: '100%' }}></div>
-      {latitude && longitude && (
-        <p>Latitude: {latitude} | Longitude: {longitude}</p>
+      {latitude && longitude ? (
+        <div>
+          <div id="map" style={{ height: '400px', width: '100%' }}></div>
+          <p>Latitude: {latitude} | Longitude: {longitude}</p>
+        </div>
+      ) : (
+        <p>Veuillez remplir l'adresse pour afficher la carte.</p>
       )}
     </div>
   );

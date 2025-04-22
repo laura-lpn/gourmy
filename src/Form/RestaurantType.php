@@ -105,7 +105,9 @@ class RestaurantType extends AbstractType
             ])
             ->add('openingHours', TextareaType::class, [
                 'label' => 'Horaires d’ouverture',
-                'required' => false,
+                'constraints' => [
+                    new NotBlank(),
+                ]
             ])
             ->add('priceRange', ChoiceType::class, [
                 'label' => 'Fourchette de prix',
@@ -135,6 +137,9 @@ class RestaurantType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => Restaurant::class,
+            'validation_groups' => function ($form) {
+                return ['Default', 'FormSansCoords'];
+            },
         ]);
     }
 }

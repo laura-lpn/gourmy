@@ -30,17 +30,18 @@
 	{{ form_row(restaurantForm.city) }}
 	{{ form_row(restaurantForm.country) }}
 	{{ react_component('MapPreview', {
-        address: restaurant.address ?: '',
-        postalCode: restaurant.postalCode ?: '',
-        city: restaurant.city ?: '',
-        country: restaurant.country ?: ''
-    }) }}
+		address: restaurant.address ?: null,
+		postalCode: restaurant.postalCode ?: null,
+		city: restaurant.city ?: null,
+		country: restaurant.country ?: null
+	}) }}
+
 	{{ form_row(restaurantForm.phoneNumber) }}
-	{{ form_row(restaurantForm.website) }}
 
 	<h2>Infos pratiques</h2>
 	{{ form_row(restaurantForm.openingHours) }}
 	{{ form_row(restaurantForm.priceRange) }}
+	{{ form_row(restaurantForm.website) }}
 
 	<button type="submit" class="btn">Créer</button>
 	{{ form_end(restaurantForm) }}

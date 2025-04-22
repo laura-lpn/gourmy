@@ -36,13 +36,14 @@
 		country: restaurant.country
   }) }}
 	{{ form_row(restaurantForm.phoneNumber) }}
-	{{ form_row(restaurantForm.website) }}
 
 	<h2>Infos pratiques</h2>
 	{{ form_row(restaurantForm.openingHours) }}
 	{{ form_row(restaurantForm.priceRange) }}
+	{{ form_row(restaurantForm.website) }}
 
 	<button type="submit" class="btn">Modifier</button>
 	{{ form_end(restaurantForm) }}
+	<a href="{{ path('app_restaurant_profile') }}" class="btn">Annuler</a>
 
 {% endblock %}

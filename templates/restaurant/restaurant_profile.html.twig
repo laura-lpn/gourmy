@@ -24,6 +24,12 @@
 		<p>{{ restaurant.description }}</p>
 		<p>Adresse:
 			{{ restaurant.address ~ ' ' ~ restaurant.postalCode ~ ' ' ~ restaurant.city ~ ', ' ~ restaurant.country }}</p>
+		{{ react_component('MapPreview', {
+        address: restaurant.address,
+        postalCode: restaurant.postalCode,
+        city: restaurant.city,
+        country: restaurant.country
+    }) }}
 		<p>Price Range:
 			{{ restaurant.priceRange }}</p>
 		<p>Opening Hours:
@@ -34,14 +40,14 @@
 		{% endif %}
 		{% if restaurant.website is not null %}
 			<p>Website:
-				<a href="{{ restaurant.website }}">{{ restaurant.website }}</a>
+				<a target="_blank" href="{{ restaurant.website }}">{{ restaurant.website }}</a>
 			</p>
 		{% endif %}
 	</div>
-	{{ react_component('MapPreview', {
-        address: restaurant.address,
-        postalCode: restaurant.postalCode,
-        city: restaurant.city,
-        country: restaurant.country
-    }) }}
+	<div>
+		<a href="{{ path('app_restaurant_edit') }}">Modifier</a>
+		<a href="{{ path('app_restaurant_delete') }}">Supprimer</a>
+	</div>
+
+
 {% endblock %}
