@@ -52,7 +52,8 @@ class User extends BaseEntity implements UserInterface, PasswordAuthenticatedUse
     #[Assert\Type(type: 'bool', message: 'La valeur doit être de type booléen.')]
     private bool $isVerified = false;
 
-    #[ORM\OneToOne(inversedBy: 'owner', cascade: ['persist', 'remove'], orphanRemoval: true)]
+    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
     private ?Restaurant $restaurant = null;
 
     public function getEmail(): string

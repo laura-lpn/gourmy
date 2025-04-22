@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Restaurant;
 use App\Form\RestaurantType;
 use App\Repository\RestaurantRepository;
+use App\Service\GeocodingService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -24,7 +25,7 @@ class RestaurantController extends AbstractController
     }
 
     #[Route('/restaurateur/creer-un-restaurant', name: 'app_restaurant_create')]
-    public function createRestaurant(Request $request, EntityManagerInterface $em): Response
+    public function createRestaurant(Request $request, EntityManagerInterface $em, GeocodingService $geocodingService): Response
     {
         $user = $this->getUser();
         if (!$user) {
@@ -48,12 +49,32 @@ class RestaurantController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $fullAddress = sprintf(
+                '%s, %s %s, %s',
+                $restaurant->getAddress(),
+                $restaurant->getPostalCode(),
+                $restaurant->getCity(),
+                $restaurant->getCountry()
+            );
+
+            $location = $geocodingService->geocode($fullAddress);
+
+            if ($location) {
+                $restaurant->setLatitude($location['lat']);
+                $restaurant->setLongitude($location['lng']);
+            } else {
+                $this->addFlash('error', 'Impossible de géolocaliser cette adresse.');
+                return $this->render('restaurant/restaurant_create.html.twig', [
+                    'restaurantForm' => $form->createView(),
+                ]);
+            }
+
             $em->persist($restaurant);
             $user->setRestaurant($restaurant);
             $em->persist($user);
             $em->flush();
 
-            $this->addFlash('success', 'Votre demande de création de restaurant a bien été envoyée...');
+            $this->addFlash('success', 'Votre demande de création de restaurant a bien été envoyée.');
 
             return $this->redirectToRoute('app_restaurant_profile');
         }
@@ -61,12 +82,11 @@ class RestaurantController extends AbstractController
         return $this->render('restaurant/restaurant_create.html.twig', [
             'restaurantForm' => $form->createView(),
             'restaurant' => $restaurant,
-            'google_maps_api_key' => $_ENV['GOOGLE_MAPS_API_KEY'],
         ]);
     }
 
     #[Route('/restaurateur/mon-restaurant', name: 'app_restaurant_profile')]
-    public function restaurant(RestaurantRepository $restaurantRepository): Response
+    public function restaurantProfile(RestaurantRepository $restaurantRepository): Response
     {
         if (!$this->getUser()) {
             $this->addFlash('error', 'Vous devez être connecté pour accéder à cette page.');
@@ -97,13 +117,12 @@ class RestaurantController extends AbstractController
 
         return $this->render('restaurant/restaurant_profile.html.twig', [
             'restaurant' => $restaurant,
-            'isValidated' => $isValidated,
-            'google_maps_api_key' => $_ENV['GOOGLE_MAPS_API_KEY'],
+            'isValidated' => $isValidated
         ]);
     }
 
     #[Route('/restaurateur/mon-restaurant/modifier', name: 'app_restaurant_edit')]
-    public function editRestaurant(Request $request, EntityManagerInterface $em): Response
+    public function editRestaurant(Request $request, EntityManagerInterface $em, GeocodingService $geocodingService): Response
     {
         if (!$this->getUser()) {
             $this->addFlash('error', 'Vous devez être connecté pour accéder à cette page.');
@@ -119,11 +138,29 @@ class RestaurantController extends AbstractController
         }
 
         $restaurant = $user->getRestaurant();
-        $form = $this->createForm(RestaurantType::class, $restaurant);
+        $form = $this->createForm(RestaurantType::class, $restaurant, [
+            'allow_file_upload' => true,
+            'csrf_protection' => true
+        ]);
 
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $fullAddress = sprintf(
+                '%s, %s %s, %s',
+                $restaurant->getAddress(),
+                $restaurant->getPostalCode(),
+                $restaurant->getCity(),
+                $restaurant->getCountry()
+            );
+
+            $location = $geocodingService->geocode($fullAddress);
+
+            if ($location) {
+                $restaurant->setLatitude($location['lat']);
+                $restaurant->setLongitude($location['lng']);
+            }
+
             $em->flush();
 
             return $this->redirectToRoute('app_restaurant_profile');
@@ -131,8 +168,32 @@ class RestaurantController extends AbstractController
 
         return $this->render('restaurant/restaurant_edit.html.twig', [
             'restaurantForm' => $form->createView(),
-            'restaurant' => $restaurant,
-            'google_maps_api_key' => $_ENV['GOOGLE_MAPS_API_KEY'],
+            'restaurant' => $restaurant
         ]);
+    }
+
+    #[Route('/restaurateur/mon-restaurant/supprimer', name: 'app_restaurant_delete')]
+    public function deleteRestaurant(EntityManagerInterface $em): Response
+    {
+        if (!$this->getUser()) {
+            $this->addFlash('error', 'Vous devez être connecté pour accéder à cette page.');
+            return $this->redirectToRoute('app_login');
+        }
+
+        /** @var \App\Entity\User $user */
+        $user = $this->getUser();
+
+        if (!$user->getRestaurant()) {
+            $this->addFlash('error', 'Vous n\'avez pas de restaurant associé à votre compte.');
+            return $this->redirectToRoute('app_restaurant_create');
+        }
+
+        $restaurant = $user->getRestaurant();
+        $user->setRestaurant(null);
+
+        $em->remove($restaurant);
+        $em->flush();
+
+        return $this->redirectToRoute('app_restaureur');
     }
 }

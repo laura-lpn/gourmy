@@ -20,7 +20,7 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
 class Restaurant extends BaseEntity
 {
     #[ORM\Column(length: 255)]
-    #[Assert\NotBlank]
+    #[Assert\NotBlank(groups: ['Default'])]
     #[Assert\Length(max: 255)]
     private ?string $name = null;
 
@@ -29,21 +29,21 @@ class Restaurant extends BaseEntity
     private ?string $slug = null;
 
     #[ORM\Column(type: Types::TEXT)]
-    #[Assert\NotBlank]
+    #[Assert\NotBlank(groups: ['Default'])]
     private ?string $description = null;
 
     #[ORM\Column(length: 255)]
-    #[Assert\NotBlank]
+    #[Assert\NotBlank(groups: ['Default'])]
     #[Assert\Length(max: 255)]
     private ?string $address = null;
 
     #[ORM\Column(length: 255)]
-    #[Assert\NotBlank]
+    #[Assert\NotBlank(groups: ['Default'])]
     #[Assert\Length(max: 255)]
     private ?string $city = null;
 
     #[ORM\Column(length: 255)]
-    #[Assert\NotBlank]
+    #[Assert\NotBlank(groups: ['Default'])]
     #[Assert\Regex(
         pattern: '/^(0[1-9]|[1-8][0-9]|9[0-5])[0-9]{3}$/',
         message: 'Le code postal doit être valide (5 chiffres, ex : 75001).'
@@ -51,7 +51,7 @@ class Restaurant extends BaseEntity
     private ?string $postalCode = null;
 
     #[ORM\Column]
-    #[Assert\NotNull]
+    #[Assert\NotNull(groups: ['strict'])]
     #[Assert\Regex(
         pattern: '/^(-?([0-8]?[0-9](\.\d+)?|90(\.0+)?))$/',
         message: 'La latitude doit être un nombre entre -90 et 90.'
@@ -59,7 +59,7 @@ class Restaurant extends BaseEntity
     private ?float $latitude = null;
 
     #[ORM\Column]
-    #[Assert\NotNull]
+    #[Assert\NotNull(groups: ['strict'])]
     #[Assert\Regex(
         pattern: '/^(-?((1[0-7][0-9]|0?\d{1,2})(\.\d+)?|180(\.0+)?))$/',
         message: 'La longitude doit être un nombre entre -180 et 180.'
@@ -67,7 +67,7 @@ class Restaurant extends BaseEntity
     private ?float $longitude = null;
 
     #[ORM\Column(length: 255)]
-    #[Assert\NotBlank]
+    #[Assert\NotBlank(groups: ['Default'])]
     #[Assert\Choice(choices: ['€', '€€', '€€€', '€€€€'], message: 'Choisissez une fourchette de prix valide.')]
     private ?string $priceRange = null;
 
@@ -86,7 +86,7 @@ class Restaurant extends BaseEntity
     private ?\DateTimeImmutable $bannerUpdatedAt = null;
 
     #[ORM\Column(length: 255)]
-    #[Assert\NotBlank]
+    #[Assert\NotBlank(groups: ['Default'])]
     #[Assert\Regex(
         pattern: '/^\d{14}$/',
         message: 'Le numéro SIRET doit contenir exactement 14 chiffres.'
@@ -100,21 +100,22 @@ class Restaurant extends BaseEntity
     private ?bool $isValided = false;
 
     #[ORM\Column(length: 20)]
-    #[Assert\NotBlank(message: 'Le numéro de téléphone est obligatoire.')]
+    #[Assert\NotBlank(message: 'Le numéro de téléphone est obligatoire.', groups: ['Default'])]
     #[Assert\Regex(
         pattern: '/^\+?[0-9\s\-().]{7,20}$/',
         message: 'Le numéro de téléphone n’est pas valide.'
     )]
     private ?string $phoneNumber = null;
 
-    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[ORM\Column(type: Types::TEXT)]
+    #[Assert\NotBlank(groups: ['Default'])]
     #[Assert\Length(
         max: 1000,
         maxMessage: 'Les horaires d’ouverture ne doivent pas dépasser {{ limit }} caractères.'
     )]
     private ?string $openingHours = null;
 
-    #[ORM\OneToOne(mappedBy: 'restaurant', cascade: ['persist', 'remove'])]
+    #[ORM\OneToOne(mappedBy: 'restaurant', targetEntity: User::class)]
     private ?User $owner = null;
 
     #[PrePersist]
