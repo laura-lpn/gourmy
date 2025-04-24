@@ -3,7 +3,6 @@
 namespace App\Form;
 
 use App\Entity\Review;
-use FOS\CKEditorBundle\Form\Type\CKEditorType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
@@ -21,12 +20,8 @@ class ReviewType extends AbstractType
         $isReply = $options['is_reply'] ?? false;
 
         $builder
-            ->add('comment', CKEditorType::class, [
+            ->add('comment', TextareaType::class, [
                 'label' => 'Commentaire',
-                'required' => true,
-                'config' => [
-                    'toolbar' => 'basic',
-                ],
                 'attr' => [
                     'rows' => 5,
                     'placeholder' => 'Écrivez votre commentaire ici...',

@@ -57,10 +57,11 @@ class RestaurantType extends AbstractType
                     ])
                 ]
             ])
-            ->add('description', CKEditorType::class, [
+            ->add('description', TextareaType::class, [
                 'label' => 'Description',
-                'config' => [
-                    'toolbar' => 'basic',
+                'attr' => [
+                    'rows' => 5,
+                    'placeholder' => 'Écrivez une description de votre restaurant ici...',
                 ],
                 'constraints' => [
                     new NotBlank(),
