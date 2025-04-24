@@ -7,7 +7,10 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+use Symfony\Component\Security\Http\Logout\LogoutUrlGenerator;
 
 final class UserController extends AbstractController
 {
@@ -48,5 +51,27 @@ final class UserController extends AbstractController
             'user' => $user,
             'userForm' => $form->createView(),
         ]);
+    }
+
+    #[Route('/profil/supprimer', name: 'app_user_delete')]
+    public function delete(
+        EntityManagerInterface $em,
+        LogoutUrlGenerator $logoutUrlGenerator,
+        TokenStorageInterface $tokenStorage,
+        SessionInterface $session
+    ): Response {
+        $user = $this->getUser();
+        if (!$user) {
+            return $this->redirectToRoute('app_login');
+        }
+
+        $tokenStorage->setToken(null);
+        $session->invalidate();
+
+        $em->remove($user);
+        $em->flush();
+
+        $this->addFlash('success', 'Votre compte a bien été supprimé');
+        return $this->redirect($logoutUrlGenerator->getLogoutPath());
     }
 }

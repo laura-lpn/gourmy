@@ -20,13 +20,12 @@
 		{% if user.avatarName %}
 			<img src="{{ vich_uploader_asset(user, 'avatarFile') }}" alt="Avatar" class="w-1/2">
 		{% endif %}
-		<p>Email:
-			{{ user.email }}</p>
 		<p>Nom d'utilisateur:
 			{{ user.username }}</p>
 		<p>Email:
 			{{ user.email }}</p>
 
 		<a href="{{path('app_user_edit')}}">Éditer</a>
+        <a href="{{ path('app_user_delete') }}">Supprimer</a>
     </div>
 	{% endblock %}
