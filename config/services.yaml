@@ -24,5 +24,7 @@ services:
     App\Service\GeocodingService:
         arguments:
             $googleApiKey: '%google.maps.api_key%'
+
+    Symfony\Component\Security\Http\Logout\LogoutUrlGenerator: '@security.logout_url_generator'
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones

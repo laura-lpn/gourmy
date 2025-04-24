@@ -1,0 +1,31 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Profil
+{% endblock %}
+
+{% block body %}
+	<h1>Profil</h1>
+
+	{% for label, messages in app.flashes %}
+		{% for message in messages %}
+			<div class="alert alert-{{ label }}">
+				{% autoescape false %}
+					{{ message }}
+				{% endautoescape %}
+			</div>
+		{% endfor %}
+	{% endfor %}
+	<div>
+		<h2>{{ user.firstName ~ ' ' ~ user.lastName }}</h2>
+		{% if user.avatarName %}
+			<img src="{{ vich_uploader_asset(user, 'avatarFile') }}" alt="Avatar" class="w-1/2">
+		{% endif %}
+		<p>Nom d'utilisateur:
+			{{ user.username }}</p>
+		<p>Email:
+			{{ user.email }}</p>
+
+		<a href="{{path('app_user_edit')}}">Éditer</a>
+        <a href="{{ path('app_user_delete') }}">Supprimer</a>
+    </div>
+	{% endblock %}

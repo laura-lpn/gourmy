@@ -1,0 +1,29 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier le profil
+{% endblock %}
+
+{% block body %}
+	<h1>Modifier le profil</h1>
+
+	{% for label, messages in app.flashes %}
+		{% for message in messages %}
+			<div class="alert alert-{{ label }}">
+				{% autoescape false %}
+					{{ message }}
+				{% endautoescape %}
+			</div>
+		{% endfor %}
+	{% endfor %}
+	<div>
+		{{ form_start(userForm) }}
+		{{ form_row(userForm.avatarFile) }}
+		{{ form_row(userForm.firstName) }}
+		{{ form_row(userForm.lastName) }}
+		{{ form_row(userForm.email) }}
+		{{ form_row(userForm.username) }}
+		{{ form_row(userForm.plainPassword) }}
+		<button type="submit" class="btn">Modifier</button>
+		{{ form_end(userForm) }}
+
+	{% endblock %}
