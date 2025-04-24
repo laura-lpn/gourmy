@@ -1,10 +1,75 @@
 {% extends 'base.html.twig' %}
 
 {% block title %}
-	{{restaurant.name}}
+	{{ restaurant.name }}
 {% endblock %}
 
 {% block body %}
+	<h1>{{ restaurant.name }}</h1>
 
-	<h1>{{restaurant.name }}</h1>
+	{% if restaurant.bannerName %}
+		<img src="{{ vich_uploader_asset(restaurant, 'bannerFile') }}" alt="Bannière" class="w-1/2">
+	{% endif %}
+	<h2>{{ restaurant.name ~ ' (' ~ restaurant.slug ~ ')' }}</h2>
+	<p>{{ restaurant.description }}</p>
+	<p>Adresse:
+		{{ restaurant.address ~ ' ' ~ restaurant.postalCode ~ ' ' ~ restaurant.city ~ ', ' ~ restaurant.country }}</p>
+	{{ react_component('MapPreview', {
+				address: restaurant.address,
+				postalCode: restaurant.postalCode,
+				city: restaurant.city,
+				country: restaurant.country
+		}) }}
+	<p>Price Range:
+		{{ restaurant.priceRange }}</p>
+	<p>Opening Hours:
+		{{ restaurant.openingHours }}</p>
+	{% if restaurant.phoneNumber is not null %}
+		<p>Contact:
+			{{ restaurant.phoneNumber }}</p>
+	{% endif %}
+	{% if restaurant.website is not null %}
+		<p>Website:
+			<a target="_blank" href="{{ restaurant.website }}">{{ restaurant.website }}</a>
+		</p>
+	{% endif %}
+
+
+	{# Formulaire de commentaire #}
+	{% if app.user and app.user != restaurant.owner %}
+		<h2>Ajouter un commentaire</h2>
+		{{ form_start(reviewForm, { attr: { 'data-turbo': 'false' }, method: 'POST' }) }}
+		{{form_row(reviewForm.title)}}
+		{{form_row(reviewForm.imageFile)}}
+		{{form_row(reviewForm.rating)}}
+		{{ form_row(reviewForm.comment) }}
+		<button type="submit">Ajouter un commentaire</button>
+		{{ form_end(reviewForm) }}
+	{% endif %}
+
+	<h2>Commentaires</h2>
+	{% if reviews is empty %}
+		<p>Aucun commentaire pour l’instant</p>
+	{% endif %}
+
+	{# Affichage des commentaires #}
+	{% for review in reviews %}
+		<div class="border p-4 my-2">
+			<h3>{{ review.title }}</h3>
+			{% if review.imageName %}
+				<img src="{{ vich_uploader_asset(review, 'imageFile') }}" alt="Image" class="w-1/2">
+			{% endif %}
+			<p>{{ review.comment }}</p>
+			<p>
+				<strong>Note :</strong>
+				{{ review.rating }}/5</p>
+			{% if review.response %}
+				<div class="mt-2 p-2 bg-blue-50 border-l-4 border-blue-400">
+					<strong>Réponse du restaurateur :</strong>
+					<p>{{ review.response.comment }}</p>
+				</div>
+			{% endif %}
+
+		</div>
+	{% endfor %}
 {% endblock %}

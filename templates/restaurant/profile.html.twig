@@ -1,11 +1,11 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Restaurant
+{% block title %}Mon restaurant
 {% endblock %}
 
 {% block body %}
 
-	<h1>Restaurant</h1>
+	<h1>Mon restaurant</h1>
 	{% for label, messages in app.flashes %}
 		{% for message in messages %}
 			<div class="alert alert-{{ label }}">
@@ -47,6 +47,43 @@
 	<div>
 		<a href="{{ path('app_restaurant_edit') }}">Modifier</a>
 		<a href="{{ path('app_restaurant_delete') }}">Supprimer</a>
+	</div>
+
+	<div class="mt-8">
+		<h2 class="text-xl font-semibold mb-4">Avis clients</h2>
+
+		{% for review in reviews %}
+			<div class="border p-4 mb-4">
+				<p>
+					<strong>{{ review.author.username }}</strong>
+					a noté
+					{{ review.rating }}/5</p>
+				{% if review.title %}
+					<h3 class="text-lg font-bold">{{ review.title }}</h3>
+				{% endif %}
+				<p>{{ review.comment }}</p>
+
+				{% if review.imageName %}
+					<img src="{{ vich_uploader_asset(review, 'imageFile') }}" alt="Image de l'avis" class="w-1/4 mt-2">
+				{% endif %}
+
+				{% if review.response %}
+					<div class="mt-2 p-2 border-l-4 border-gray-300 bg-gray-100">
+						<p class="italic">Réponse :</p>
+						<p>{{ review.response.comment }}</p>
+					</div>
+				{% elseif isOwner %}
+					<div class="mt-4">
+						{{ form_start(responseForms[review.id]) }}
+						{{ form_row(responseForms[review.id].comment) }}
+						<button class="btn btn-primary">Répondre</button>
+						{{ form_end(responseForms[review.id]) }}
+					</div>
+				{% endif %}
+			</div>
+		{% else %}
+			<p>Aucun avis pour l'instant.</p>
+		{% endfor %}
 	</div>
 
 

@@ -7,12 +7,14 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\HttpFoundation\File\File;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 #[ORM\Entity(repositoryClass: ReviewRepository::class)]
 #[Vich\Uploadable]
 class Review extends BaseEntity
 {
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $title = null;
 
     #[ORM\Column(type: Types::TEXT)]
@@ -53,6 +55,22 @@ class Review extends BaseEntity
     public function canBeAnswered(): bool
     {
         return $this->response === null;
+    }
+
+    #[Assert\Callback]
+    public function validateRating(ExecutionContextInterface $context): void
+    {
+        if ($this->originalReview === null && $this->rating === null) {
+            $context->buildViolation('La note est obligatoire pour un avis.')
+                ->atPath('rating')
+                ->addViolation();
+        }
+
+        if ($this->originalReview !== null && $this->rating !== null) {
+            $context->buildViolation('Une réponse ne doit pas contenir de note.')
+                ->atPath('rating')
+                ->addViolation();
+        }
     }
 
     public function getTitle(): ?string

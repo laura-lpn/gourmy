@@ -3,8 +3,11 @@
 namespace App\Controller;
 
 use App\Entity\Restaurant;
+use App\Entity\Review;
 use App\Form\RestaurantType;
+use App\Form\ReviewType;
 use App\Repository\RestaurantRepository;
+use App\Repository\ReviewRepository;
 use App\Service\GeocodingService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -17,6 +20,12 @@ class RestaurantController extends AbstractController
     #[Route('/restaurateur', name: 'app_restaurateur')]
     public function restaurateur(): Response
     {
+        $user = $this->getUser();
+
+        /** @var \App\Entity\User $user */
+        if ($user && $user->getRestaurant()) {
+            return $this->redirectToRoute('app_restaurant_profile');
+        }
         return $this->render('restaurant/dashboard.html.twig');
     }
 
@@ -111,9 +120,12 @@ class RestaurantController extends AbstractController
             $this->addFlash('warning', 'Votre restaurant n\'a pas encore été validé.');
         }
 
+        $reviews = $restaurant->getReviews();
+
         return $this->render('restaurant/profile.html.twig', [
             'restaurant' => $restaurant,
-            'isValidated' => $isValidated
+            'isValidated' => $isValidated,
+            'reviews' => $reviews,
         ]);
     }
 
@@ -198,17 +210,45 @@ class RestaurantController extends AbstractController
     }
 
     #[Route('/restaurants/{slug}', name: 'app_restaurant_show')]
-    public function showRestaurant($slug, RestaurantRepository $restaurantRepository): Response
+    public function showRestaurant(Request $request, $slug, RestaurantRepository $restaurantRepository, EntityManagerInterface $em, ReviewRepository $reviewRepository): Response
     {
-    $restaurant = $restaurantRepository->findOneBy(['slug' => $slug]);
-    
-    if (!$restaurant) {
-        throw $this->createNotFoundException('Restaurant introuvable.');
-    }
+        $restaurant = $restaurantRepository->findOneBy(['slug' => $slug]);
 
-    return $this->render('restaurant/show.html.twig', [
-        'restaurant' => $restaurant,
-    ]);
+        if (!$restaurant) {
+            throw $this->createNotFoundException('Restaurant introuvable.');
+        }
+
+        /** @var \App\Entity\User $user */
+        $user = $this->getUser();
+
+        $review = new Review();
+        $review->setRestaurant($restaurant);
+        $review->setAuthor($user);
+
+        $form = $this->createForm(ReviewType::class, $review);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $em->persist($review);
+            $em->flush();
+            $this->addFlash('success', 'Votre commentaire a bien été ajouté.');
+            return $this->redirectToRoute('app_restaurant_show', ['slug' => $slug]);
+        }
+
+        $reviews = $reviewRepository->findBaseReviewsByRestaurant($restaurant);
+
+        if ($user && $user->getRestaurant()) {
+            $isOwner = $user->getRestaurant()->getId() === $restaurant->getId();
+        } else {
+            $isOwner = false;
+        }
+
+        return $this->render('restaurant/show.html.twig', [
+            'restaurant' => $restaurant,
+            'reviews' => $reviews,
+            'isOwner' => $isOwner,
+            'reviewForm' => $form->createView(),
+        ]);
     }
 
     #[Route('/restaurants', name: 'app_restaurant_list')]
@@ -220,5 +260,4 @@ class RestaurantController extends AbstractController
             'restaurants' => $restaurants,
         ]);
     }
-
 }
