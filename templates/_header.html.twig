@@ -1,0 +1,22 @@
+{% set current_route = app.request.attributes.get('_route') %}
+
+<header class="sticky py-4 top-0 z-10 mx-36">
+	<div class="bg-white/90 mx-12 py-3 px-8 flex justify-between items-center rounded-2xl">
+		<a href="{{path('app_home')}}"><img src="{{ asset('images/favicon.svg') }}" alt="Logo Gourmy" class="h-16">
+		</a>
+		<nav class="flex gap-8 font-second text-md items-center">
+			<a class="my-nav {{ current_route == 'app_home' ? 'my-nav-actif' }}" href="{{path('app_home')}}">Accueil</a>
+			<a class="my-nav" href="">Nos roads trips</a>
+			<a class="my-nav {{ current_route == 'app_restaurant_list' ? 'my-nav-actif' }}" href="{{path('app_restaurant_list')}}">Nos Partenaires</a>
+			<a class="my-nav{{ current_route == 'app_restaurateur' ? ' my-nav-actif' }}" href="{{path('app_restaurateur')}}">Espace Restaurateur</a>
+
+			{% if is_granted('ROLE_USER') %}
+				{# <a class="my-nav" href="{{path('app_profile')}}">Mon Profil</a> #}
+				<a class="my-nav" href="{{path('app_logout')}}">Déconnexion</a>
+			{% else %}
+				<a class="my-nav{{ current_route == 'app_login' ? ' my-nav-actif' }}" href="{{path('app_login')}}">Connexion</a>
+				<a class="my-nav{{ current_route == 'app_register' ? ' my-nav-actif' }}" href="{{path('app_register')}}">Inscription</a>
+			{% endif %}
+		</nav>
+	</div>
+</header>

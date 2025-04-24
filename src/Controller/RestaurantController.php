@@ -17,10 +17,6 @@ class RestaurantController extends AbstractController
     #[Route('/restaurateur', name: 'app_restaurateur')]
     public function restaurateur(): Response
     {
-        if (!$this->getUser()) {
-            $this->addFlash('error', 'Vous devez être connecté pour accéder à cette page.');
-            return $this->redirectToRoute('app_login');
-        }
         return $this->render('restaurant/dashboard.html.twig');
     }
 

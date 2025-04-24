@@ -1,0 +1,30 @@
+<footer class="w-full flex flex-col items-center justify-center gap-2 bg-paleBlue py-4 mt-6">
+	<div class="flex items-center gap-24 mx-auto">
+		<a href="{{path('app_home')}}">
+			<img src="{{ asset('images/logo.svg') }}" alt="Logo Gourmy" class="h-24">
+		</a>
+		<div class="text-blue flex items-center gap-6">
+			<a href="">
+				<i class="fa-brands fa-instagram text-3xl"></i>
+			</a>
+			<a href="">
+				<i class="fa-brands fa-tiktok text-3xl"></i>
+			</a>
+		</div>
+		<div class="flex items-center gap-8 mx-auto font-light">
+			<nav class="flex flex-col gap-4">
+				<a href="{{path('app_home')}}" class="hover:text-blue">Accueil</a>
+				<a href="" class="hover:text-blue">Nos roads trips</a>
+			</nav>
+			<nav class="flex flex-col gap-4">
+				<a href="{{path('app_restaurant_list')}}" class="hover:text-blue">Nos partenaires</a>
+				<a href="{{path('app_restaurateur')}}" class="hover:text-blue">Espace Restaurateur</a>
+			</nav>
+			<nav class="flex flex-col gap-4">
+				<a href="{{path('app_login')}}" class="hover:text-blue">Connexion</a>
+				<a href="{{path('app_register')}}" class="hover:text-blue">Inscription</a>
+			</nav>
+		</div>
+	</div>
+	<p class="text-orange text-center text-xs">© Copyright Gourmy 2025</p>
+</footer>

@@ -29,7 +29,7 @@ security:
   access_control:
     - { path: ^/admin, roles: ROLE_ADMIN }
     - { path: ^/profile, roles: ROLE_USER }
-    - { path: ^/restaurateur, roles: ROLE_USER }
+    - { path: ^/restaurateur/, roles: ROLE_USER }
     - {path: ^/restaurateur/mon-restaurant, roles: ROLE_RESTAURATEUR}
 
   role_hierarchy:

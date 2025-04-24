@@ -2,9 +2,19 @@
 @tailwind components;
 @tailwind utilities;
 
+@import url(https://fonts.bunny.net/css?family=kodchasan:200,200i,300,300i,400,400i,500,500i,600,600i,700,700i|poppins:100,100i,200,200i,300,300i,400,400i,500,500i,600,600i,700,700i,800,800i,900,900i);
+
 @layer components {
   .my-input-file {
     @apply file:mr-4 file:py-2 file:px-4 file:rounded-lg file:cursor-pointer file:border-0 file:text-sm file:font-medium file:bg-white/20 file:text-black;
+  }
+
+  .my-nav {
+    @apply relative duration-500 block hover:text-blue after:absolute after:content-[''] after:top-full after:h-0.5 after:w-full after:left-0 after:bg-blue after:rounded-full after:origin-right after:scale-x-0 after:transition-transform after:duration-500 hover:after:origin-left hover:after:scale-x-100;
+  }
+
+  .my-nav-actif {
+    @apply text-blue after:scale-x-100;
   }
 }
 
