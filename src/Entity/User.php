@@ -8,11 +8,15 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\HttpFoundation\File\File;
+use Vich\UploaderBundle\Mapping\Annotation as Vich;
+
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
 #[UniqueEntity(fields: ['username'], message: 'Ce nom d\'utilisateur est déjà utilisé')]
+#[Vich\Uploadable]
 class User extends BaseEntity implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Column(length: 255)]
@@ -55,6 +59,34 @@ class User extends BaseEntity implements UserInterface, PasswordAuthenticatedUse
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
     private ?Restaurant $restaurant = null;
+
+    #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: 'Le prénom est obligatoire')]
+    #[Assert\Length(max: 255, maxMessage: 'Le prénom ne doit pas dépasser {{ limit }} caractères')]
+    #[Assert\Regex(
+        pattern: '/^[a-zA-ZÀ-ÿ\s-]+$/',
+        message: 'Le prénom ne doit contenir que des lettres, des espaces et des tirets.',
+    )]
+    private ?string $firstName = null;
+
+    #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: 'Le nom de famille est obligatoire')]
+    #[Assert\Length(max: 255, maxMessage: 'Le nom de famille ne doit pas dépasser {{ limit }} caractères')]
+    #[Assert\Regex(
+        pattern: '/^[a-zA-ZÀ-ÿ\s-]+$/',
+        message: 'Le nom de famille ne doit contenir que des lettres, des espaces et des tirets.',
+    )]
+    private ?string $lastName = null;
+
+    #[Vich\UploadableField(mapping: 'users_avatar', fileNameProperty: 'avatarName')]
+
+    private ?File $avatarFile = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?string $avatarName = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?\DateTimeImmutable $avatarUpdatedAt = null;
 
     public function getEmail(): string
     {
@@ -160,5 +192,75 @@ class User extends BaseEntity implements UserInterface, PasswordAuthenticatedUse
         $this->restaurant = $restaurant;
 
         return $this;
+    }
+
+    public function getFirstName(): ?string
+    {
+        return $this->firstName;
+    }
+
+    public function setFirstName(string $firstName): static
+    {
+        $this->firstName = $firstName;
+
+        return $this;
+    }
+
+    public function getLastName(): ?string
+    {
+        return $this->lastName;
+    }
+
+    public function setLastName(string $lastName): static
+    {
+        $this->lastName = $lastName;
+
+        return $this;
+    }
+
+    public function setAvatarFile(?File $avatar = null): void
+    {
+        $this->avatarFile = $avatar;
+
+        if (null !== $avatar) {
+            $this->avatarUpdatedAt = new \DateTimeImmutable();
+        }
+    }
+
+    public function getAvatarFile(): ?File
+    {
+        return $this->avatarFile;
+    }
+
+    public function setAvatarName(?string $avatarName): void
+    {
+        $this->avatarName = $avatarName;
+    }
+
+    public function getAvatarName(): ?string
+    {
+        return $this->avatarName;
+    }
+
+    public function getAvatarUpdatedAt(): ?\DateTimeImmutable
+    {
+        return $this->avatarUpdatedAt;
+    }
+
+    public function __serialize(): array
+    {
+        $data = get_object_vars($this);
+        unset($data['avatarFile']);
+        return $data;
+    }
+
+    public function __unserialize(array $data): void
+    {
+        foreach ($data as $key => $value) {
+            $this->$key = $value;
+            if ($key === 'avatarFile') {
+                $this->avatarUpdatedAt = new \DateTimeImmutable();
+            }
+        }
     }
 }
