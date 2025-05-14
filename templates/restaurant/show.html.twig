@@ -10,66 +10,35 @@
 	{% if restaurant.bannerName %}
 		<img src="{{ vich_uploader_asset(restaurant, 'bannerFile') }}" alt="Bannière" class="w-1/2">
 	{% endif %}
+
 	<h2>{{ restaurant.name ~ ' (' ~ restaurant.slug ~ ')' }}</h2>
 	<p>{{ restaurant.description }}</p>
 	<p>Adresse:
 		{{ restaurant.address ~ ' ' ~ restaurant.postalCode ~ ' ' ~ restaurant.city ~ ', ' ~ restaurant.country }}</p>
-	{{ react_component('MapPreview', {
-				address: restaurant.address,
-				postalCode: restaurant.postalCode,
-				city: restaurant.city,
-				country: restaurant.country
-		}) }}
+
+	<script type="module" src="{{ asset('webcomponents/MapPreview.js') }}"></script>
+	<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCDWeDyCsZGLwzEDg6JpQ7tuOAoJQcv2L4" async defer></script>
+	<map-preview address="{{ restaurant.address|e('html_attr') }}" postal-code="{{ restaurant.postalCode|e('html_attr') }}" city="{{ restaurant.city|e('html_attr') }}" country="{{ restaurant.country|e('html_attr') }}"></map-preview>
+
 	<p>Price Range:
 		{{ restaurant.priceRange }}</p>
 	<p>Opening Hours:
 		{{ restaurant.openingHours }}</p>
+
 	{% if restaurant.phoneNumber is not null %}
 		<p>Contact:
 			{{ restaurant.phoneNumber }}</p>
 	{% endif %}
+
 	{% if restaurant.website is not null %}
 		<p>Website:
 			<a target="_blank" href="{{ restaurant.website }}">{{ restaurant.website }}</a>
 		</p>
 	{% endif %}
 
+	<hr>
 
-	{# Formulaire de commentaire #}
-	{% if app.user and app.user != restaurant.owner %}
-		<h2>Ajouter un commentaire</h2>
-		{{ form_start(reviewForm, { attr: { 'data-turbo': 'false' }, method: 'POST' }) }}
-		{{form_row(reviewForm.title)}}
-		{{form_row(reviewForm.imageFile)}}
-		{{form_row(reviewForm.rating)}}
-		{{ form_row(reviewForm.comment) }}
-		<button type="submit">Ajouter un commentaire</button>
-		{{ form_end(reviewForm) }}
-	{% endif %}
+	<script type="module" src="{{ asset('webcomponents/ReviewSection.js') }}"></script>
+	<review-section restaurant-id="{{ restaurant.id }}" user='{{ app.user ? { id: app.user.id, username: app.user.username }|json_encode|e('html_attr') : ' ' }}'></review-section>
 
-	<h2>Commentaires</h2>
-	{% if reviews is empty %}
-		<p>Aucun commentaire pour l’instant</p>
-	{% endif %}
-
-	{# Affichage des commentaires #}
-	{% for review in reviews %}
-		<div class="border p-4 my-2">
-			<h3>{{ review.title }}</h3>
-			{% if review.imageName %}
-				<img src="{{ vich_uploader_asset(review, 'imageFile') }}" alt="Image" class="w-1/2">
-			{% endif %}
-			<p>{{ review.comment }}</p>
-			<p>
-				<strong>Note :</strong>
-				{{ review.rating }}/5</p>
-			{% if review.response %}
-				<div class="mt-2 p-2 bg-blue-50 border-l-4 border-blue-400">
-					<strong>Réponse du restaurateur :</strong>
-					<p>{{ review.response.comment }}</p>
-				</div>
-			{% endif %}
-
-		</div>
-	{% endfor %}
 {% endblock %}

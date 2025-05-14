@@ -5,9 +5,7 @@ namespace App\Controller;
 use App\Entity\Restaurant;
 use App\Entity\Review;
 use App\Form\RestaurantType;
-use App\Form\ReviewType;
 use App\Repository\RestaurantRepository;
-use App\Repository\ReviewRepository;
 use App\Service\GeocodingService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -210,7 +208,7 @@ class RestaurantController extends AbstractController
     }
 
     #[Route('/restaurants/{slug}', name: 'app_restaurant_show')]
-    public function showRestaurant(Request $request, $slug, RestaurantRepository $restaurantRepository, EntityManagerInterface $em, ReviewRepository $reviewRepository): Response
+    public function showRestaurant($slug, RestaurantRepository $restaurantRepository): Response
     {
         $restaurant = $restaurantRepository->findOneBy(['slug' => $slug]);
 
@@ -220,23 +218,6 @@ class RestaurantController extends AbstractController
 
         /** @var \App\Entity\User $user */
         $user = $this->getUser();
-
-        $review = new Review();
-        $review->setRestaurant($restaurant);
-        $review->setAuthor($user);
-
-        $form = $this->createForm(ReviewType::class, $review);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $em->persist($review);
-            $em->flush();
-            $this->addFlash('success', 'Votre commentaire a bien été ajouté.');
-            return $this->redirectToRoute('app_restaurant_show', ['slug' => $slug]);
-        }
-
-        $reviews = $reviewRepository->findBaseReviewsByRestaurant($restaurant);
-
         if ($user && $user->getRestaurant()) {
             $isOwner = $user->getRestaurant()->getId() === $restaurant->getId();
         } else {
@@ -245,9 +226,7 @@ class RestaurantController extends AbstractController
 
         return $this->render('restaurant/show.html.twig', [
             'restaurant' => $restaurant,
-            'reviews' => $reviews,
             'isOwner' => $isOwner,
-            'reviewForm' => $form->createView(),
         ]);
     }
 
@@ -259,5 +238,27 @@ class RestaurantController extends AbstractController
         return $this->render('restaurant/list.html.twig', [
             'restaurants' => $restaurants,
         ]);
+    }
+
+    #[Route('/commentaires/{id}/supprimer', name: 'app_review_delete')]
+    public function deleteReview(Review $review, EntityManagerInterface $em): Response
+    {
+        if (!$this->getUser()) {
+            $this->addFlash('error', 'Vous devez être connecté pour accéder à cette page.');
+            return $this->redirectToRoute('app_login');
+        }
+
+        /** @var \App\Entity\User $user */
+        $user = $this->getUser();
+
+        if ($user->getId() !== $review->getAuthor()->getId()) {
+            $this->addFlash('error', 'Vous ne pouvez pas supprimer cet avis.');
+            return $this->redirectToRoute('app_restaurant_show', ['slug' => $review->getRestaurant()->getSlug()]);
+        } else {
+            $em->remove($review);
+            $em->flush();
+            $this->addFlash('success', 'Votre avis a bien été supprimé');
+        }
+        return $this->redirectToRoute('app_restaurant_show', ['slug' => $review->getRestaurant()->getSlug()]);
     }
 }

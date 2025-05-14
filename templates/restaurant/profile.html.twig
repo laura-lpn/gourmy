@@ -24,12 +24,8 @@
 		<p>{{ restaurant.description }}</p>
 		<p>Adresse:
 			{{ restaurant.address ~ ' ' ~ restaurant.postalCode ~ ' ' ~ restaurant.city ~ ', ' ~ restaurant.country }}</p>
-		{{ react_component('MapPreview', {
-        address: restaurant.address,
-        postalCode: restaurant.postalCode,
-        city: restaurant.city,
-        country: restaurant.country
-    }) }}
+		<script type="module" src="{{ asset('webcomponents/MapPreview.js') }}"></script>
+		<map-preview address="{{ restaurant.address|e('html_attr') }}" postal-code="{{ restaurant.postalCode|e('html_attr') }}" city="{{ restaurant.city|e('html_attr') }}" country="{{ restaurant.country|e('html_attr') }}"></map-preview>
 		<p>Price Range:
 			{{ restaurant.priceRange }}</p>
 		<p>Opening Hours:
@@ -72,17 +68,14 @@
 						<p class="italic">Réponse :</p>
 						<p>{{ review.response.comment }}</p>
 					</div>
-				{% elseif isOwner %}
 					<div class="mt-4">
 						{{ form_start(responseForms[review.id]) }}
 						{{ form_row(responseForms[review.id].comment) }}
 						<button class="btn btn-primary">Répondre</button>
 						{{ form_end(responseForms[review.id]) }}
 					</div>
-				{% endif %}
-			</div>
-		{% else %}
-			<p>Aucun avis pour l'instant.</p>
+				</div>
+			{% endif %}
 		{% endfor %}
 	</div>
 
