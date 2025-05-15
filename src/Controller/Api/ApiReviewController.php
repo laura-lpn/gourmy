@@ -107,10 +107,10 @@ class ApiReviewController extends AbstractController
 
         $qb = $reviewRepository->createQueryBuilder('r')
             ->leftJoin('r.response', 'resp')
-            ->leftJoin('r.originalReview', 'original') // ✅ alias corrigé
+            ->leftJoin('r.originalReview', 'original')
             ->addSelect('resp')
             ->where('r.restaurant = :restaurant')
-            ->andWhere('original IS NULL') // ✅ condition corrigée
+            ->andWhere('original IS NULL')
             ->orderBy('r.createdAt', 'DESC')
             ->setFirstResult($offset)
             ->setMaxResults($limit)

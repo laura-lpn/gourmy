@@ -48,35 +48,39 @@
 	<div class="mt-8">
 		<h2 class="text-xl font-semibold mb-4">Avis clients</h2>
 
-		{% for review in reviews %}
-			<div class="border p-4 mb-4">
-				<p>
-					<strong>{{ review.author.username }}</strong>
-					a noté
-					{{ review.rating }}/5</p>
-				{% if review.title %}
-					<h3 class="text-lg font-bold">{{ review.title }}</h3>
-				{% endif %}
-				<p>{{ review.comment }}</p>
+		<div>
+			{% for review in reviews %}
+				<div class="p-4 mb-4">
+					<p>
+						<strong>{{ review.author.username }}</strong>
+						a noté
+						{{ review.rating }}/5</p>
+					{% if review.title %}
+						<h3 class="text-lg font-bold">{{ review.title }}</h3>
+					{% endif %}
+					<p>{{ review.comment }}</p>
 
-				{% if review.imageName %}
-					<img src="{{ vich_uploader_asset(review, 'imageFile') }}" alt="Image de l'avis" class="w-1/4 mt-2">
-				{% endif %}
+					{% if review.imageName %}
+						<img src="{{ vich_uploader_asset(review, 'imageFile') }}" alt="Image de l'avis" class="w-1/4 mt-2">
+					{% endif %}
 
-				{% if review.response %}
-					<div class="mt-2 p-2 border-l-4 border-gray-300 bg-gray-100">
-						<p class="italic">Réponse :</p>
-						<p>{{ review.response.comment }}</p>
-					</div>
-					<div class="mt-4">
-						{{ form_start(responseForms[review.id]) }}
-						{{ form_row(responseForms[review.id].comment) }}
-						<button class="btn btn-primary">Répondre</button>
-						{{ form_end(responseForms[review.id]) }}
-					</div>
+					{% if review.response %}
+						<div class="mt-2 p-2">
+							<div>
+								<p class="italic">Réponse :</p>
+								<p>{{ review.response.comment }}</p>
+							</div>
+							<div class="mt-4">
+								{{ form_start(responseForms[review.id]) }}
+								{{ form_row(responseForms[review.id].comment) }}
+								<button class="btn btn-primary">Répondre</button>
+								{{ form_end(responseForms[review.id]) }}
+							</div>
+						</div>
+					{% endif %}
 				</div>
-			{% endif %}
-		{% endfor %}
+			{% endfor %}
+		</div>
 	</div>
 
 
