@@ -29,12 +29,6 @@
 	{{ form_row(restaurantForm.postalCode) }}
 	{{ form_row(restaurantForm.city) }}
 	{{ form_row(restaurantForm.country) }}
-	{{ react_component('MapPreview', {
-		address: restaurant.address ?: null,
-		postalCode: restaurant.postalCode ?: null,
-		city: restaurant.city ?: null,
-		country: restaurant.country ?: null
-	}) }}
 
 	{{ form_row(restaurantForm.phoneNumber) }}
 
