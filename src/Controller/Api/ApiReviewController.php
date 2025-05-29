@@ -92,6 +92,49 @@ class ApiReviewController extends AbstractController
         return new JsonResponse(['message' => 'Avis supprimé avec succès.'], Response::HTTP_OK);
     }
 
+    #[Route('/api/reviews/{id}', name: 'api_review_update', methods: ['PUT'])]
+    public function update(
+        int $id,
+        Request $request,
+        EntityManagerInterface $em,
+        ReviewRepository $reviewRepository,
+        ValidatorInterface $validator
+    ): JsonResponse {
+        $user = $this->getUser();
+        if (!$user) {
+            return new JsonResponse(['message' => 'Non authentifié.'], Response::HTTP_UNAUTHORIZED);
+        }
+
+        $review = $reviewRepository->find($id);
+        if (!$review) {
+            return new JsonResponse(['message' => 'Avis non trouvé.'], Response::HTTP_NOT_FOUND);
+        }
+
+        if ($review->getAuthor() !== $user) {
+            return new JsonResponse(['message' => 'Non autorisé.'], Response::HTTP_FORBIDDEN);
+        }
+
+        $data = json_decode($request->getContent(), true);
+
+        $review->setTitle($data['title'] ?? $review->getTitle());
+        $review->setComment($data['comment'] ?? $review->getComment());
+        $review->setRating(isset($data['rating']) ? (float)$data['rating'] : $review->getRating());
+
+        $errors = $validator->validate($review);
+        if (count($errors) > 0) {
+            $errorMessages = [];
+            foreach ($errors as $error) {
+                $errorMessages[$error->getPropertyPath()] = $error->getMessage();
+            }
+            return $this->json(['errors' => $errorMessages], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        $em->flush();
+
+        return new JsonResponse(['message' => 'Avis mis à jour.'], Response::HTTP_OK);
+    }
+
+
     #[Route('/api/restaurants/{id}/reviews', name: 'api_restaurant_reviews', methods: ['GET'])]
     public function listForRestaurant(int $id, Request $request, RestaurantRepository $restaurantRepository, ReviewRepository $reviewRepository): JsonResponse
     {
@@ -134,7 +177,10 @@ class ApiReviewController extends AbstractController
                 'title' => $review->getTitle(),
                 'comment' => $review->getComment(),
                 'rating' => $review->getRating(),
-                'author' => $review->getAuthor()->getUsername(),
+                'author' => [
+                    'id' => $review->getAuthor()->getId(),
+                    'username' => $review->getAuthor()->getUsername()
+                ],
                 'image' => $review->getImageName()
                     ? '/uploads/reviews/' . $review->getImageName()
                     : null,

@@ -37,8 +37,7 @@
 	{% endif %}
 
 	<hr>
-
 	<script type="module" src="{{ asset('webcomponents/ReviewSection.js') }}"></script>
-	<review-section restaurant-id="{{ restaurant.id }}" user='{{ app.user ? { id: app.user.id, username: app.user.username }|json_encode|e('html_attr') : ' ' }}'></review-section>
+	<review-section restaurant-id="{{ restaurant.id }}" is-owner="{{ isOwner }}" user-id="{{ app.user.id }}" user-username="{{ app.user.username }}"></review-section>
 
 {% endblock %}
