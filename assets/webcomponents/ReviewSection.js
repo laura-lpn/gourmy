@@ -18,7 +18,7 @@ export class ReviewSection extends HTMLElement {
     this.fetchReviews();
 
     if (this.user) {
-      this.shadowRoot.querySelector('#review-form').addEventListener('submit', (e) => this.handleSubmit(e));
+      this.shadowRoot.querySelector('#review-form')?.addEventListener('submit', (e) => this.handleSubmit(e));
     }
 
     this.shadowRoot.querySelector('#prev-page').addEventListener('click', () => {
@@ -41,59 +41,65 @@ export class ReviewSection extends HTMLElement {
       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
       <style>
         .border { border: 1px solid #ccc; padding: 10px; margin: 10px 0; border-radius: 8px; }
+        .response {
+          margin-left: 1.5rem;
+          background-color: #f1f5f9;
+          padding: 10px;
+          border-left: 4px solid #0d9488;
+          border-radius: 6px;
+          margin-top: 10px;
+        }
         .pagination { margin-top: 10px; }
         .btn-icon { background: none; border: none; cursor: pointer; margin-left: 5px; }
+
         .modal {
-        display: none;
-        position: fixed;
-        z-index: 1000;
-        top: 0; left: 0;
-        width: 100%; height: 100%;
-        background-color: rgba(0, 0, 0, 0.5);
-        justify-content: center;
-        align-items: center;
-      }
+          display: none;
+          position: fixed;
+          z-index: 1000;
+          top: 0; left: 0;
+          width: 100%; height: 100%;
+          background-color: rgba(0, 0, 0, 0.5);
+          justify-content: center;
+          align-items: center;
+        }
 
-      .modal.active {
-        display: flex;
-      }
+        .modal.active {
+          display: flex;
+        }
 
-      .modal-content {
-        background: white;
-        padding: 20px;
-        border-radius: 10px;
-        max-width: 90%;
-        text-align: center;
-      }
+        .modal-content {
+          background: white;
+          padding: 20px;
+          border-radius: 10px;
+          max-width: 90%;
+          text-align: center;
+        }
 
-      .modal button {
-        margin: 10px;
-        padding: 8px 16px;
-        border: none;
-        border-radius: 6px;
-        cursor: pointer;
-      }
+        .modal button {
+          margin: 10px;
+          padding: 8px 16px;
+          border: none;
+          border-radius: 6px;
+          cursor: pointer;
+        }
 
-      .confirm-btn { background-color: #dc2626; color: white; }
-      .cancel-btn { background-color: #e5e7eb; color: #111827; }
-    </style>
+        .confirm-btn { background-color: #dc2626; color: white; }
+        .cancel-btn { background-color: #e5e7eb; color: #111827; }
+      </style>
 
       <div>
         <h2>Commentaires</h2>
         ${this.isOwner === '1' ? `
-          <p>Vous êtes le propriétaire de ce restaurant. Pour répondre aux avis aller à la section <a href="/restaurateur/mon-restaurant#commantaires">Gestion des avis</a>.</p>`
-        : `
-        ${this.user.id ? `
+          <p>Vous êtes le propriétaire de ce restaurant. Pour répondre aux avis allez à la section <a href="/restaurateur/mon-restaurant#commantaires">Gestion des avis</a>.</p>`
+        : this.user.id ? `
           <form id="review-form" enctype="multipart/form-data">
             <input type="text" name="title" placeholder="Titre" required><br>
             <input type="number" name="rating" min="1" max="5" value="5"><br>
             <textarea name="comment" placeholder="Commentaire" required></textarea><br>
             <input type="file" name="imageFile"><br>
             <button type="submit">Envoyer</button>
-          </form>
-          ` : `
-          <p><a href="/connexion">Connectez-vous pour laisser un commentaire</a></p>
-          `}`
+          </form>` : `
+          <p><a href="/connexion">Connectez-vous pour laisser un commentaire</a></p>`
         }
 
         <div id="reviews-container"></div>
@@ -132,17 +138,21 @@ export class ReviewSection extends HTMLElement {
             <p>${r.comment}</p>
             <p><strong>Note:</strong> ${r.rating}/5</p>
             <p>${r.author.username}</p>
-            ${r.response ? `
-              <div class="response">
-                <p><strong>Réponse du restaurateur:</strong> ${r.response.comment}</p>
-                <p>${r.response.author}</p>
-              </div>
-            ` : ''}
             ${(this.user.id && parseInt(this.user.id) === r.author.id) ? `
               <button class="btn-icon edit-btn" data-id="${r.id}" aria-label="Éditer"><i class="fa-solid fa-pen"></i></button>
               <button class="btn-icon delete-btn" data-id="${r.id}" aria-label="Supprimer"><i class="fa-solid fa-trash"></i></button>
             ` : ''}
           `;
+
+          if (r.response) {
+            const responseDiv = document.createElement('div');
+            responseDiv.classList.add('response');
+            responseDiv.innerHTML = `
+              <p><strong>Réponse du restaurateur :</strong> ${r.response.comment}</p>
+              <p>${r.response.author}</p>
+            `;
+            div.appendChild(responseDiv);
+          }
 
           container.appendChild(div);
         });
@@ -193,6 +203,8 @@ export class ReviewSection extends HTMLElement {
     const comment = div.querySelector('p:nth-of-type(1)').textContent;
     const rating = div.querySelector('p:nth-of-type(2)').textContent.match(/\d+/)[0];
 
+    const responseHTML = div.querySelector('.response')?.outerHTML || '';
+
     div.innerHTML = `
       <form class="edit-review-form">
         <input type="text" name="title" value="${title}" required><br>
@@ -201,6 +213,7 @@ export class ReviewSection extends HTMLElement {
         <button type="submit">Mettre à jour</button>
         <button type="button" class="cancel-edit">Annuler</button>
       </form>
+      ${responseHTML}
     `;
 
     div.querySelector('.edit-review-form').addEventListener('submit', (e) => this.submitEdit(e, id));

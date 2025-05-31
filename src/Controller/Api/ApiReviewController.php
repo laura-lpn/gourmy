@@ -134,10 +134,13 @@ class ApiReviewController extends AbstractController
         return new JsonResponse(['message' => 'Avis mis à jour.'], Response::HTTP_OK);
     }
 
-
     #[Route('/api/restaurants/{id}/reviews', name: 'api_restaurant_reviews', methods: ['GET'])]
-    public function listForRestaurant(int $id, Request $request, RestaurantRepository $restaurantRepository, ReviewRepository $reviewRepository): JsonResponse
-    {
+    public function listForRestaurant(
+        int $id,
+        Request $request,
+        RestaurantRepository $restaurantRepository,
+        ReviewRepository $reviewRepository
+    ): JsonResponse {
         $restaurant = $restaurantRepository->find($id);
 
         if (!$restaurant) {
@@ -148,30 +151,27 @@ class ApiReviewController extends AbstractController
         $limit = max(1, (int) $request->query->get('limit', 10));
         $offset = ($page - 1) * $limit;
 
-        $qb = $reviewRepository->createQueryBuilder('r')
+        // On récupère tous les avis du restaurant
+        $allReviews = $reviewRepository->createQueryBuilder('r')
+            ->leftJoin('r.author', 'a')
             ->leftJoin('r.response', 'resp')
-            ->leftJoin('r.originalReview', 'original')
-            ->addSelect('resp')
+            ->leftJoin('resp.author', 'ra')
+            ->addSelect('a', 'resp', 'ra')
             ->where('r.restaurant = :restaurant')
-            ->andWhere('original IS NULL')
-            ->orderBy('r.createdAt', 'DESC')
-            ->setFirstResult($offset)
-            ->setMaxResults($limit)
-            ->setParameter('restaurant', $restaurant);
-
-        $total = $reviewRepository->createQueryBuilder('r')
-            ->leftJoin('r.originalReview', 'original')
-            ->select('COUNT(r.id)')
-            ->where('r.restaurant = :restaurant')
-            ->andWhere('original IS NULL')
             ->setParameter('restaurant', $restaurant)
+            ->orderBy('r.createdAt', 'DESC')
             ->getQuery()
-            ->getSingleScalarResult();
+            ->getResult();
 
+        // Filtrer les avis principaux (ceux qui ne sont pas des réponses)
+        $mainReviews = array_filter($allReviews, fn(Review $r) => $r->getOriginalReview() === null);
 
-        $reviews = $qb->getQuery()->getResult();
+        // Pagination manuelle
+        $paginated = array_slice($mainReviews, $offset, $limit);
 
-        $data = array_map(function ($review) {
+        $data = array_map(function (Review $review) {
+            $response = $review->getResponse();
+
             return [
                 'id' => $review->getId(),
                 'title' => $review->getTitle(),
@@ -185,20 +185,75 @@ class ApiReviewController extends AbstractController
                     ? '/uploads/reviews/' . $review->getImageName()
                     : null,
                 'createdAt' => $review->getCreatedAt()?->format('Y-m-d H:i:s'),
-                'response' => $review->getResponse() ? [
-                    'id' => $review->getResponse()->getId(),
-                    'comment' => $review->getResponse()->getComment(),
-                    'author' => $review->getResponse()->getAuthor()->getUsername(),
-                    'createdAt' => $review->getResponse()->getCreatedAt()?->format('Y-m-d H:i:s'),
-                ] : null
+                'response' => $response ? [
+                    'id' => $response->getId(),
+                    'comment' => $response->getComment(),
+                    'author' => $response->getAuthor()->getUsername(),
+                    'createdAt' => $response->getCreatedAt()?->format('Y-m-d H:i:s'),
+                ] : null,
             ];
-        }, $reviews);
+        }, $paginated);
 
         return $this->json([
-            'total' => (int) $total,
+            'total' => count($mainReviews),
             'page' => $page,
             'limit' => $limit,
             'data' => $data,
+        ]);
+    }
+
+    #[Route('/api/reviews/{id}/response', name: 'api_review_response', methods: ['POST'])]
+    public function respondToReview(
+        int $id,
+        Request $request,
+        ReviewRepository $reviewRepository,
+        EntityManagerInterface $em,
+        ValidatorInterface $validator
+    ): JsonResponse {
+        $user = $this->getUser();
+        if (!$user || !in_array('ROLE_RESTAURATEUR', $user->getRoles())) {
+            return new JsonResponse(['message' => 'Non autorisé'], Response::HTTP_FORBIDDEN);
+        }
+
+        $original = $reviewRepository->find($id);
+        if (!$original) {
+            return new JsonResponse(['message' => 'Avis non trouvé'], Response::HTTP_NOT_FOUND);
+        }
+
+        if ($original->getResponse()) {
+            return new JsonResponse(['message' => 'Réponse déjà enregistrée'], Response::HTTP_BAD_REQUEST);
+        }
+
+        $data = json_decode($request->getContent(), true);
+        $comment = $data['comment'] ?? '';
+
+        if (empty($comment)) {
+            return new JsonResponse(['message' => 'Commentaire requis'], Response::HTTP_BAD_REQUEST);
+        }
+
+        $response = new Review();
+        $response->setComment($comment);
+        $response->setAuthor($user);
+        $response->setRestaurant($original->getRestaurant());
+        $response->setOriginalReview($original);
+        $original->setResponse($response);
+
+        $errors = $validator->validate($response);
+        if (count($errors) > 0) {
+            $errorMessages = [];
+            foreach ($errors as $error) {
+                $errorMessages[$error->getPropertyPath()] = $error->getMessage();
+            }
+            return $this->json(['message' => 'Validation échouée', 'errors' => $errorMessages], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+
+        $em->persist($response);
+        $em->flush();
+
+        return $this->json([
+            'comment' => $response->getComment(),
+            'author' => $response->getAuthor()->getUsername()
         ]);
     }
 }
