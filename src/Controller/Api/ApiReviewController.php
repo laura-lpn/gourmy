@@ -116,9 +116,16 @@ class ApiReviewController extends AbstractController
 
         $data = json_decode($request->getContent(), true);
 
-        $review->setTitle($data['title'] ?? $review->getTitle());
+        if (!$data) {
+            return new JsonResponse(['message' => 'Données invalides.'], Response::HTTP_BAD_REQUEST);
+        }
+        if (!$review->isResponse() && array_key_exists('title', $data)) {
+            $review->setTitle($data['title']);
+        }
         $review->setComment($data['comment'] ?? $review->getComment());
-        $review->setRating(isset($data['rating']) ? (float)$data['rating'] : $review->getRating());
+        if (!$review->isResponse() && array_key_exists('rating', $data)) {
+            $review->setRating((float) $data['rating']);
+        }
 
         $errors = $validator->validate($review);
         if (count($errors) > 0) {

@@ -32,7 +32,7 @@ class Review extends BaseEntity
     private ?User $author = null;
 
     #[ORM\OneToOne(targetEntity: self::class, cascade: ['persist', 'remove'])]
-    #[ORM\JoinColumn(name: "response_id", referencedColumnName: "id", nullable: true, onDelete: "CASCADE")]
+    #[ORM\JoinColumn(name: "response_id", referencedColumnName: "id", nullable: true, onDelete: "SET NULL")]
     private ?self $response = null;
 
     #[ORM\OneToOne(mappedBy: 'response', targetEntity: self::class)]

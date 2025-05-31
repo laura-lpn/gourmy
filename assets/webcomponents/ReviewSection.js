@@ -144,6 +144,7 @@ export class ReviewSection extends HTMLElement {
             ` : ''}
           `;
 
+          // Ajoute la réponse s’il y en a une
           if (r.response) {
             const responseDiv = document.createElement('div');
             responseDiv.classList.add('response');

@@ -118,12 +118,9 @@ class RestaurantController extends AbstractController
             $this->addFlash('warning', 'Votre restaurant n\'a pas encore été validé.');
         }
 
-        $reviews = $restaurant->getReviews();
-
         return $this->render('restaurant/profile.html.twig', [
             'restaurant' => $restaurant,
-            'isValidated' => $isValidated,
-            'reviews' => $reviews,
+            'isValidated' => $isValidated
         ]);
     }
 
