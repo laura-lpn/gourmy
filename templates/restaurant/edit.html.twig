@@ -29,16 +29,11 @@
 	{{ form_row(restaurantForm.postalCode) }}
 	{{ form_row(restaurantForm.city) }}
 	{{ form_row(restaurantForm.country) }}
-	{{ react_component('MapPreview', {
-		address: restaurant.address,
-		postalCode: restaurant.postalCode,
-		city: restaurant.city,
-		country: restaurant.country
-  }) }}
 	{{ form_row(restaurantForm.phoneNumber) }}
 
 	<h2>Infos pratiques</h2>
 	{{ form_row(restaurantForm.openingHours) }}
+	{{ form_row(restaurantForm.types) }}
 	{{ form_row(restaurantForm.priceRange) }}
 	{{ form_row(restaurantForm.website) }}
 

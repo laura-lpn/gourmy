@@ -30,6 +30,12 @@
 			{{ restaurant.priceRange }}</p>
 		<p>Opening Hours:
 			{{ restaurant.openingHours }}</p>
+		{% if restaurant.types is not empty %}
+			<h3>Types:</h3>
+			{% for type in restaurant.types %}
+				<p>{{ type.name }}</p>
+			{% endfor %}
+		{% endif %}
 		{% if restaurant.phoneNumber is not null %}
 			<p>Contact:
 				{{ restaurant.phoneNumber }}</p>
@@ -52,6 +58,4 @@
 
 		<restaurant-review-manager restaurant-id="{{ restaurant.id }}" csrf="{{ csrf_token('review_response') }}"></restaurant-review-manager>
 	</div>
-
-
 {% endblock %}
