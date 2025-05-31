@@ -126,10 +126,17 @@ class Restaurant extends BaseEntity
     #[ORM\OneToMany(targetEntity: Review::class, mappedBy: 'restaurant', orphanRemoval: true, cascade: ['remove'])]
     private Collection $reviews;
 
+    /**
+     * @var Collection<int, TypeRestaurant>
+     */
+    #[ORM\ManyToMany(targetEntity: TypeRestaurant::class, inversedBy: 'restaurants')]
+    private Collection $types;
+
     public function __construct()
     {
         parent::__construct();
         $this->reviews = new ArrayCollection();
+        $this->types = new ArrayCollection();
     }
 
     #[PrePersist]
@@ -417,6 +424,30 @@ class Restaurant extends BaseEntity
                 $review->setRestaurant(null);
             }
         }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, TypeRestaurant>
+     */
+    public function getTypes(): Collection
+    {
+        return $this->types;
+    }
+
+    public function addTypes(TypeRestaurant $types): static
+    {
+        if (!$this->types->contains($types)) {
+            $this->types->add($types);
+        }
+
+        return $this;
+    }
+
+    public function removeTypes(TypeRestaurant $types): static
+    {
+        $this->types->removeElement($types);
 
         return $this;
     }

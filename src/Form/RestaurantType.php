@@ -4,6 +4,7 @@ namespace App\Form;
 
 use App\Entity\Restaurant;
 use FOS\CKEditorBundle\Form\Type\CKEditorType;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\CountryType;
@@ -121,6 +122,13 @@ class RestaurantType extends AbstractType
                 'constraints' => [
                     new NotBlank(),
                 ]
+            ])
+            ->add('types', EntityType::class, [
+                'label' => 'Types de cuisine',
+                'class' => 'App\Entity\TypeRestaurant',
+                'choice_label' => 'name',
+                'multiple' => true,
+                'expanded' => true,
             ])
             ->add('website', UrlType::class, [
                 'label' => 'Site Web',

@@ -25,6 +25,12 @@
 	<p>Opening Hours:
 		{{ restaurant.openingHours }}</p>
 
+	{% if restaurant.types is not empty %}
+		<h3>Types:</h3>
+		{% for type in restaurant.types %}
+			<p>{{ type.name }}</p>
+		{% endfor %}
+	{% endif %}
 	{% if restaurant.phoneNumber is not null %}
 		<p>Contact:
 			{{ restaurant.phoneNumber }}</p>
