@@ -58,7 +58,7 @@ class TypeRestaurant
     {
         if (!$this->restaurants->contains($restaurant)) {
             $this->restaurants->add($restaurant);
-            $restaurant->addType($this);
+            $restaurant->addTypes($this);
         }
 
         return $this;
@@ -67,7 +67,7 @@ class TypeRestaurant
     public function removeRestaurant(Restaurant $restaurant): static
     {
         if ($this->restaurants->removeElement($restaurant)) {
-            $restaurant->removeType($this);
+            $restaurant->removeTypes($this);
         }
 
         return $this;

@@ -1,0 +1,25 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+	{{ roadtrip.title }}
+{% endblock %}
+
+{% block body %}
+	<h1 class="text-2xl font-bold mb-4">{{ roadtrip.title }}</h1>
+
+	{% for label, messages in app.flashes %}
+		{% for message in messages %}
+			<div class="alert alert-{{ label }}">
+				{% autoescape false %}
+					{{ message }}
+				{% endautoescape %}
+			</div>
+		{% endfor %}
+	{% endfor %}
+
+	<div class="bg-white p-4 rounded shadow">
+		<p>{{ roadtrip.description }}</p>
+	</div>
+
+	<a href="{{ path('app_roadtrips') }}" class="mt-4 inline-block text-blue-500 hover:underline">Retour à la liste des roadtrips</a>
+{% endblock %}

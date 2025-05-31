@@ -96,10 +96,17 @@ class User extends BaseEntity implements UserInterface, PasswordAuthenticatedUse
     #[ORM\OneToMany(targetEntity: Review::class, mappedBy: 'author', orphanRemoval: true)]
     private Collection $reviews;
 
+    /**
+     * @var Collection<int, Roadtrip>
+     */
+    #[ORM\OneToMany(targetEntity: Roadtrip::class, mappedBy: 'author', orphanRemoval: true)]
+    private Collection $roadtrips;
+
     public function __construct()
     {
         parent::__construct();
         $this->reviews = new ArrayCollection();
+        $this->roadtrips = new ArrayCollection();
     }
 
     public function getEmail(): string
@@ -302,6 +309,36 @@ class User extends BaseEntity implements UserInterface, PasswordAuthenticatedUse
             // set the owning side to null (unless already changed)
             if ($review->getAuthor() === $this) {
                 $review->setAuthor(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Roadtrip>
+     */
+    public function getRoadtrips(): Collection
+    {
+        return $this->roadtrips;
+    }
+
+    public function addRoadtrip(Roadtrip $roadtrip): static
+    {
+        if (!$this->roadtrips->contains($roadtrip)) {
+            $this->roadtrips->add($roadtrip);
+            $roadtrip->setAuthor($this);
+        }
+
+        return $this;
+    }
+
+    public function removeRoadtrip(Roadtrip $roadtrip): static
+    {
+        if ($this->roadtrips->removeElement($roadtrip)) {
+            // set the owning side to null (unless already changed)
+            if ($roadtrip->getAuthor() === $this) {
+                $roadtrip->setAuthor(null);
             }
         }
 
