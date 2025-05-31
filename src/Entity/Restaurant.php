@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\RestaurantRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\HasLifecycleCallbacks;
@@ -117,6 +119,18 @@ class Restaurant extends BaseEntity
 
     #[ORM\OneToOne(mappedBy: 'restaurant', targetEntity: User::class)]
     private ?User $owner = null;
+
+    /**
+     * @var Collection<int, Review>
+     */
+    #[ORM\OneToMany(targetEntity: Review::class, mappedBy: 'restaurant', orphanRemoval: true, cascade: ['remove'])]
+    private Collection $reviews;
+
+    public function __construct()
+    {
+        parent::__construct();
+        $this->reviews = new ArrayCollection();
+    }
 
     #[PrePersist]
     public function setSlug(): void
@@ -375,5 +389,35 @@ class Restaurant extends BaseEntity
         foreach ($data as $key => $value) {
             $this->$key = $value;
         }
+    }
+
+    /**
+     * @return Collection<int, Review>
+     */
+    public function getReviews(): Collection
+    {
+        return $this->reviews;
+    }
+
+    public function addReview(Review $review): static
+    {
+        if (!$this->reviews->contains($review)) {
+            $this->reviews->add($review);
+            $review->setRestaurant($this);
+        }
+
+        return $this;
+    }
+
+    public function removeReview(Review $review): static
+    {
+        if ($this->reviews->removeElement($review)) {
+            // set the owning side to null (unless already changed)
+            if ($review->getRestaurant() === $this) {
+                $review->setRestaurant(null);
+            }
+        }
+
+        return $this;
     }
 }

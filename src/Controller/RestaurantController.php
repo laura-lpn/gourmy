@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Restaurant;
+use App\Entity\Review;
 use App\Form\RestaurantType;
 use App\Repository\RestaurantRepository;
 use App\Service\GeocodingService;
@@ -17,6 +18,12 @@ class RestaurantController extends AbstractController
     #[Route('/restaurateur', name: 'app_restaurateur')]
     public function restaurateur(): Response
     {
+        $user = $this->getUser();
+
+        /** @var \App\Entity\User $user */
+        if ($user && $user->getRestaurant()) {
+            return $this->redirectToRoute('app_restaurant_profile');
+        }
         return $this->render('restaurant/dashboard.html.twig');
     }
 
@@ -200,15 +207,24 @@ class RestaurantController extends AbstractController
     #[Route('/restaurants/{slug}', name: 'app_restaurant_show')]
     public function showRestaurant($slug, RestaurantRepository $restaurantRepository): Response
     {
-    $restaurant = $restaurantRepository->findOneBy(['slug' => $slug]);
-    
-    if (!$restaurant) {
-        throw $this->createNotFoundException('Restaurant introuvable.');
-    }
+        $restaurant = $restaurantRepository->findOneBy(['slug' => $slug]);
 
-    return $this->render('restaurant/show.html.twig', [
-        'restaurant' => $restaurant,
-    ]);
+        if (!$restaurant) {
+            throw $this->createNotFoundException('Restaurant introuvable.');
+        }
+
+        /** @var \App\Entity\User $user */
+        $user = $this->getUser();
+        if ($user && $user->getRestaurant()) {
+            $isOwner = $user->getRestaurant()->getId() === $restaurant->getId();
+        } else {
+            $isOwner = false;
+        }
+
+        return $this->render('restaurant/show.html.twig', [
+            'restaurant' => $restaurant,
+            'isOwner' => $isOwner,
+        ]);
     }
 
     #[Route('/restaurants', name: 'app_restaurant_list')]
@@ -221,4 +237,25 @@ class RestaurantController extends AbstractController
         ]);
     }
 
+    #[Route('/commentaires/{id}/supprimer', name: 'app_review_delete')]
+    public function deleteReview(Review $review, EntityManagerInterface $em): Response
+    {
+        if (!$this->getUser()) {
+            $this->addFlash('error', 'Vous devez être connecté pour accéder à cette page.');
+            return $this->redirectToRoute('app_login');
+        }
+
+        /** @var \App\Entity\User $user */
+        $user = $this->getUser();
+
+        if ($user->getId() !== $review->getAuthor()->getId()) {
+            $this->addFlash('error', 'Vous ne pouvez pas supprimer cet avis.');
+            return $this->redirectToRoute('app_restaurant_show', ['slug' => $review->getRestaurant()->getSlug()]);
+        } else {
+            $em->remove($review);
+            $em->flush();
+            $this->addFlash('success', 'Votre avis a bien été supprimé');
+        }
+        return $this->redirectToRoute('app_restaurant_show', ['slug' => $review->getRestaurant()->getSlug()]);
+    }
 }

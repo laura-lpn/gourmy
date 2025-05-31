@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20250422093415 extends AbstractMigration
+final class Version20250531190507 extends AbstractMigration
 {
     public function getDescription(): string
     {
@@ -21,13 +21,10 @@ final class Version20250422093415 extends AbstractMigration
     {
         // this up() migration is auto-generated, please modify it to your needs
         $this->addSql(<<<'SQL'
-            ALTER TABLE restaurant ALTER opening_hours SET NOT NULL
+            ALTER TABLE review DROP CONSTRAINT FK_794381C6FBF32840
         SQL);
         $this->addSql(<<<'SQL'
-            ALTER TABLE "user" DROP CONSTRAINT FK_8D93D649B1E7706E
-        SQL);
-        $this->addSql(<<<'SQL'
-            ALTER TABLE "user" ADD CONSTRAINT FK_8D93D649B1E7706E FOREIGN KEY (restaurant_id) REFERENCES restaurant (id) ON DELETE SET NULL NOT DEFERRABLE INITIALLY IMMEDIATE
+            ALTER TABLE review ADD CONSTRAINT FK_794381C6FBF32840 FOREIGN KEY (response_id) REFERENCES review (id) ON DELETE SET NULL NOT DEFERRABLE INITIALLY IMMEDIATE
         SQL);
     }
 
@@ -38,13 +35,10 @@ final class Version20250422093415 extends AbstractMigration
             CREATE SCHEMA public
         SQL);
         $this->addSql(<<<'SQL'
-            ALTER TABLE restaurant ALTER opening_hours DROP NOT NULL
+            ALTER TABLE review DROP CONSTRAINT fk_794381c6fbf32840
         SQL);
         $this->addSql(<<<'SQL'
-            ALTER TABLE "user" DROP CONSTRAINT fk_8d93d649b1e7706e
-        SQL);
-        $this->addSql(<<<'SQL'
-            ALTER TABLE "user" ADD CONSTRAINT fk_8d93d649b1e7706e FOREIGN KEY (restaurant_id) REFERENCES restaurant (id) NOT DEFERRABLE INITIALLY IMMEDIATE
+            ALTER TABLE review ADD CONSTRAINT fk_794381c6fbf32840 FOREIGN KEY (response_id) REFERENCES review (id) ON DELETE CASCADE NOT DEFERRABLE INITIALLY IMMEDIATE
         SQL);
     }
 }

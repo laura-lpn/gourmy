@@ -16,7 +16,7 @@
 		{% endfor %}
 	{% endfor %}
 	<div>
-		{{ form_start(userForm) }}
+		{{ form_start(userForm, { attr: { 'data-turbo': 'false' }, method: 'POST' }) }}
 		{{ form_row(userForm.avatarFile) }}
 		{{ form_row(userForm.firstName) }}
 		{{ form_row(userForm.lastName) }}

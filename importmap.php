@@ -16,25 +16,16 @@ return [
         'path' => './assets/app.js',
         'entrypoint' => true,
     ],
-    '@hotwired/stimulus' => [
-        'version' => '3.2.2',
-    ],
     '@symfony/stimulus-bundle' => [
         'path' => './vendor/symfony/stimulus-bundle/assets/dist/loader.js',
     ],
+    '@hotwired/stimulus' => [
+        'version' => '3.2.2',
+    ],
     '@hotwired/turbo' => [
-        'version' => '7.3.0',
-    ],
-    'react' => [
-        'version' => '18.3.1',
-    ],
-    'react-dom' => [
-        'version' => '18.3.1',
+        'version' => '8.0.13',
     ],
     'scheduler' => [
         'version' => '0.23.2',
-    ],
-    '@symfony/ux-react' => [
-        'path' => './vendor/symfony/ux-react/assets/dist/loader.js',
     ],
 ];

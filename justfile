@@ -33,7 +33,8 @@ shell:
 # *******************************
 # Application
 # *******************************
-
+component *name:
+	{{SYMFONY}} console make:twig-component {{name}}
 build:
 	{{SYMFONY}} console tailwind:build
 

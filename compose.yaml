@@ -74,18 +74,6 @@ services:
     depends_on:
       - db
 
-  mailer:
-    container_name: gourmy_mailer
-    networks:
-      - default
-      - global_reverse_proxy
-    restart: unless-stopped
-    image: maildev/maildev
-    labels:
-      caddy: "mailer.gourmy.aaa"
-      caddy.tls: "internal"
-      caddy.reverse_proxy: "{{upstreams 1080}}"
-
 volumes:
   postgres_data:
   postgres_data_test:
