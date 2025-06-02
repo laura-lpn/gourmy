@@ -18,22 +18,10 @@ final class RoadtripController extends AbstractController
     #[Route('/roadtrips', name: 'app_roadtrips')]
     public function index(RoadtripRepository $roadtripRepository): Response
     {
-        $roadtrips = $roadtripRepository->findAll();
+        $roadtrips = $roadtripRepository->findBy(['isPublic' => true]);
+
         return $this->render('roadtrips/index.html.twig', [
             'roadtrips' => $roadtrips,
-        ]);
-    }
-
-    #[Route('/roadtrips/{id}', name: 'app_roadtrip_show')]
-    public function show(int $id, RoadtripRepository $roadtripRepository): Response
-    {
-        $roadtrip = $roadtripRepository->find($id);
-        if (!$roadtrip) {
-            throw $this->createNotFoundException('Roadtrip not found');
-        }
-
-        return $this->render('roadtrips/show.html.twig', [
-            'roadtrip' => $roadtrip,
         ]);
     }
 
@@ -53,7 +41,7 @@ final class RoadtripController extends AbstractController
                 $town,
                 (!empty($cuisine) ? (is_array($cuisine) ? $cuisine : [$cuisine]) : null),
                 $meals
-            );                      
+            );
 
             $results[] = [
                 'town' => $town,
@@ -128,5 +116,18 @@ final class RoadtripController extends AbstractController
 
         $this->addFlash('success', 'Votre roadtrip a bien été enregistré.');
         return $this->redirectToRoute('app_roadtrip_show', ['id' => $roadtrip->getId()]);
+    }
+
+    #[Route('/roadtrips/{id}', name: 'app_roadtrip_show')]
+    public function show(int $id, RoadtripRepository $roadtripRepository): Response
+    {
+        $roadtrip = $roadtripRepository->find($id);
+        if (!$roadtrip) {
+            throw $this->createNotFoundException('Roadtrip not found');
+        }
+
+        return $this->render('roadtrips/show.html.twig', [
+            'roadtrip' => $roadtrip,
+        ]);
     }
 }

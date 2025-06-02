@@ -230,7 +230,7 @@ class RestaurantController extends AbstractController
     #[Route('/restaurants', name: 'app_restaurant_list')]
     public function listRestaurant(RestaurantRepository $restaurantRepository): Response
     {
-        $restaurants = $restaurantRepository->findAll();
+        $restaurants = $restaurantRepository->findBy(['isValided' => true], ['name' => 'ASC']);
 
         return $this->render('restaurant/list.html.twig', [
             'restaurants' => $restaurants,

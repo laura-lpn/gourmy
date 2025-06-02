@@ -1,4 +1,4 @@
-class MapPreview extends HTMLElement {
+export class MapPreview extends HTMLElement {
   constructor() {
     super();
     this.state = {
