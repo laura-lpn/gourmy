@@ -122,8 +122,16 @@ final class RoadtripController extends AbstractController
     public function show(int $id, RoadtripRepository $roadtripRepository): Response
     {
         $roadtrip = $roadtripRepository->find($id);
+
         if (!$roadtrip) {
-            throw $this->createNotFoundException('Roadtrip not found');
+            throw $this->createNotFoundException('Roadtrip introuvable');
+        }
+
+        if (!$roadtrip->isPublic()) {
+            $user = $this->getUser();
+            if (!$user || $roadtrip->getAuthor() !== $user) {
+                return $this->redirectToRoute('app_roadtrips');
+            }
         }
 
         return $this->render('roadtrips/show.html.twig', [
