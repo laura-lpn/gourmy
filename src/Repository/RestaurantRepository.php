@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Restaurant;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\DBAL\Connection;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -16,28 +17,50 @@ class RestaurantRepository extends ServiceEntityRepository
         parent::__construct($registry, Restaurant::class);
     }
 
-    //    /**
-    //     * @return Restaurant[] Returns an array of Restaurant objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('r')
-    //            ->andWhere('r.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('r.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
+    public function findRandomByCriteria(string $town, ?array $cuisineNames, int $limit): array
+    {
+        $conn = $this->getEntityManager()->getConnection();
 
-    //    public function findOneBySomeField($value): ?Restaurant
-    //    {
-    //        return $this->createQueryBuilder('r')
-    //            ->andWhere('r.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+        $params = ['town' => $town, 'limit' => $limit];
+        $types = [\PDO::PARAM_STR, \PDO::PARAM_INT];
+
+        $sql = '
+        SELECT r.id, RANDOM() as rand
+        FROM restaurant r
+        LEFT JOIN restaurant_type_restaurant rtr ON r.id = rtr.restaurant_id
+        LEFT JOIN type_restaurant t ON t.id = rtr.type_restaurant_id
+        WHERE LOWER(r.city) = LOWER(:town)
+          AND r.is_valided = TRUE';
+
+        // Dynamically build cuisine filter
+        if (!empty($cuisineNames)) {
+            $placeholders = [];
+            foreach ($cuisineNames as $i => $cuisine) {
+                $placeholder = ':cuisine' . $i;
+                $placeholders[] = $placeholder;
+                $params['cuisine' . $i] = $cuisine;
+                $types[] = \PDO::PARAM_STR;
+            }
+            $sql .= ' AND t.name IN (' . implode(', ', $placeholders) . ')';
+        }
+
+        $sql .= ' ORDER BY rand LIMIT :limit';
+
+        $stmt = $conn->prepare($sql);
+        $result = $stmt->executeQuery($params);
+
+        $ids = array_column($result->fetchAllAssociative(), 'id');
+
+        if (empty($ids)) {
+            return [];
+        }
+
+        return $this->createQueryBuilder('r')
+            ->addSelect('t')
+            ->leftJoin('r.types', 't')
+            ->where('r.id IN (:ids)')
+            ->setParameter('ids', $ids)
+            ->getQuery()
+            ->getResult();
+    }
 }

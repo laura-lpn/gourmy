@@ -19,7 +19,7 @@ class LoginController extends AbstractController
     public function __construct(private EmailVerifier $emailVerifier) {}
 
     #[Route(path: '/connexion', name: 'app_login')]
-    public function login(AuthenticationUtils $authenticationUtils, UserRepository $userRepository): Response
+    public function login(AuthenticationUtils $authenticationUtils, UserRepository $userRepository, Request $request): Response
     {
         if ($this->getUser()) {
             return $this->redirectToRoute('app_home');
@@ -39,8 +39,12 @@ class LoginController extends AbstractController
             }
         }
 
+        $target = $request->query->get('target');
+
         return $this->render('auth/login.html.twig', [
-            'last_username' => $lastUsername
+            'last_username' => $authenticationUtils->getLastUsername(),
+            'error' => $authenticationUtils->getLastAuthenticationError(),
+            'target' => $target,
         ]);
     }
 

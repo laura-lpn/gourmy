@@ -16,7 +16,7 @@
 	<p>Adresse:
 		{{ restaurant.address ~ ' ' ~ restaurant.postalCode ~ ' ' ~ restaurant.city ~ ', ' ~ restaurant.country }}</p>
 
-	<script type="module" src="{{ asset('webcomponents/MapPreview.js') }}"></script>
+	<script type="module" src="{{ asset('webcomponents/maps/MapPreview.js') }}"></script>
 	<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCDWeDyCsZGLwzEDg6JpQ7tuOAoJQcv2L4" async defer></script>
 	<map-preview address="{{ restaurant.address|e('html_attr') }}" postal-code="{{ restaurant.postalCode|e('html_attr') }}" city="{{ restaurant.city|e('html_attr') }}" country="{{ restaurant.country|e('html_attr') }}"></map-preview>
 
@@ -42,8 +42,9 @@
 		</p>
 	{% endif %}
 
-	<hr>
-	<script type="module" src="{{ asset('webcomponents/ReviewSection.js') }}"></script>
-	<review-section restaurant-id="{{ restaurant.id }}" is-owner="{{ isOwner }}" user-id="{{ app.user.id }}" user-username="{{ app.user.username }}"></review-section>
+	<script type="module" src="{{ asset('webcomponents/reviews/ReviewList.js') }}"></script>
+	<script type="module" src="{{ asset('webcomponents/ModalConfirm.js') }}"></script>
+
+	<review-list restaurant-id="{{ restaurant.id }}" user-id="{{ app.user ? app.user.id : '' }}" user-username="{{ app.user ? app.user.username : '' }}" is-owner="{{ isOwner ? '1' : '0' }}" editable="true" added="true"></review-list>
 
 {% endblock %}

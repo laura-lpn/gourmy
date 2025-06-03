@@ -26,6 +26,32 @@
 			{{ user.email }}</p>
 
 		<a href="{{path('app_user_edit')}}">Éditer</a>
-        <a href="{{ path('app_user_delete') }}">Supprimer</a>
-    </div>
-	{% endblock %}
+		<a href="{{ path('app_user_delete') }}">Supprimer</a>
+	</div>
+
+	<script type="module" src="{{ asset('webcomponents/TabView.js') }}"></script>
+
+	<tab-view tabs='[
+		{
+			"title": "Photos",
+			"content": {{ include("user/profile/_photos.html.twig")|json_encode|raw }}
+		},
+		{
+			"title": "Roadtrips",
+			"content": "<user-roadtrips></user-roadtrips>"
+		},
+		{
+			"title": "Avis",
+			"content": "<review-list user-id=\"{{ app.user ? app.user.id : '' }}\" editable=\"true\"></review-list>"
+		},
+		{
+			"title": "Badges",
+			"content": {{ include("user/profile/_badges.html.twig")|json_encode|raw }}
+		},
+		{
+			"title": "Carte",
+			"content": {{ include("user/profile/_map.html.twig")|json_encode|raw }}
+		}
+	]'></tab-view>
+
+{% endblock %}

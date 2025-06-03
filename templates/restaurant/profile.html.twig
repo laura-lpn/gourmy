@@ -24,7 +24,7 @@
 		<p>{{ restaurant.description }}</p>
 		<p>Adresse:
 			{{ restaurant.address ~ ' ' ~ restaurant.postalCode ~ ' ' ~ restaurant.city ~ ', ' ~ restaurant.country }}</p>
-		<script type="module" src="{{ asset('webcomponents/MapPreview.js') }}"></script>
+		{# <script type="module" src="{{ asset('webcomponents/maps/MapPreview.js') }}"></script> #}
 		<map-preview address="{{ restaurant.address|e('html_attr') }}" postal-code="{{ restaurant.postalCode|e('html_attr') }}" city="{{ restaurant.city|e('html_attr') }}" country="{{ restaurant.country|e('html_attr') }}"></map-preview>
 		<p>Price Range:
 			{{ restaurant.priceRange }}</p>
@@ -53,8 +53,6 @@
 
 	<div class="mt-8">
 		<h2 class="text-xl font-semibold mb-4">Avis clients</h2>
-
-		<script type="module" src="{{ asset('webcomponents/RestaurantReviewManager.js') }}"></script>
 
 		<restaurant-review-manager restaurant-id="{{ restaurant.id }}" csrf="{{ csrf_token('review_response') }}"></restaurant-review-manager>
 	</div>
