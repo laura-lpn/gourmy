@@ -28,7 +28,7 @@
 		}]) %}
 		{% endfor %}
 	{% endfor %}
-	<script type="module" src="{{ asset('webcomponents/MapRoadtrip.js') }}"></script>
+	<script type="module" src="{{ asset('webcomponents/maps/MapRoadtrip.js') }}"></script>
 	<map-roadtrip points='{{ points|json_encode|e("html_attr") }}'></map-roadtrip>
 
 	<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">

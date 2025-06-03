@@ -73,7 +73,7 @@ export class ReviewList extends HTMLElement {
         </form>
         <p class="add-status" style="color: green; margin-top: 10px;"></p>
       ` : this.added ? `
-        <p><a href="/connexion">Connectez-vous pour laisser un commentaire</a></p>
+        <p><a href="/connexion?target=${ location.pathname }">Connectez-vous pour laisser un commentaire</a></p>
       ` : ''
       }
 
