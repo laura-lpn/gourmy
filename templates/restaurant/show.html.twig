@@ -42,8 +42,9 @@
 		</p>
 	{% endif %}
 
-	<hr>
-	<script type="module" src="{{ asset('webcomponents/ReviewSection.js') }}"></script>
-	<review-section restaurant-id="{{ restaurant.id }}" is-owner="{{ isOwner }}" user-id="{{ app.user.id }}" user-username="{{ app.user.username }}"></review-section>
+	<script type="module" src="{{ asset('webcomponents/reviews/ReviewList.js') }}"></script>
+	<script type="module" src="{{ asset('webcomponents/ModalConfirm.js') }}"></script>
+
+	<review-list restaurant-id="{{ restaurant.id }}" user-id="{{ app.user ? app.user.id : '' }}" user-username="{{ app.user ? app.user.username : '' }}" is-owner="{{ isOwner ? '1' : '0' }}" editable="true" added="true"></review-list>
 
 {% endblock %}

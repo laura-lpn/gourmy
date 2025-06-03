@@ -92,13 +92,14 @@ class ApiReviewController extends AbstractController
         return new JsonResponse(['message' => 'Avis supprimé avec succès.'], Response::HTTP_OK);
     }
 
-    #[Route('/api/reviews/{id}', name: 'api_review_update', methods: ['PUT'])]
+    #[Route('/api/reviews/{id}', name: 'api_review_update', methods: ['POST'])]
     public function update(
         int $id,
         Request $request,
         EntityManagerInterface $em,
         ReviewRepository $reviewRepository,
-        ValidatorInterface $validator
+        ValidatorInterface $validator,
+        UploadHandler $uploadHandler
     ): JsonResponse {
         $user = $this->getUser();
         if (!$user) {
@@ -114,17 +115,25 @@ class ApiReviewController extends AbstractController
             return new JsonResponse(['message' => 'Non autorisé.'], Response::HTTP_FORBIDDEN);
         }
 
-        $data = json_decode($request->getContent(), true);
+        $title = $request->request->get('title');
+        $comment = $request->request->get('comment');
+        $rating = $request->request->get('rating');
+        $imageFile = $request->files->get('imageFile');
+        $deleteImage = $request->request->getBoolean('deleteImage');
 
-        if (!$data) {
-            return new JsonResponse(['message' => 'Données invalides.'], Response::HTTP_BAD_REQUEST);
+        if (!$review->isResponse()) {
+            $review->setTitle($title);
+            $review->setRating((float) $rating);
         }
-        if (!$review->isResponse() && array_key_exists('title', $data)) {
-            $review->setTitle($data['title']);
-        }
-        $review->setComment($data['comment'] ?? $review->getComment());
-        if (!$review->isResponse() && array_key_exists('rating', $data)) {
-            $review->setRating((float) $data['rating']);
+
+        $review->setComment($comment);
+
+        if ($deleteImage) {
+            $review->setImageFile(null);
+            $review->setImageName(null);
+        } elseif ($imageFile) {
+            $review->setImageFile($imageFile);
+            $uploadHandler->upload($review, 'imageFile');
         }
 
         $errors = $validator->validate($review);
@@ -189,7 +198,7 @@ class ApiReviewController extends AbstractController
                     'username' => $review->getAuthor()->getUsername()
                 ],
                 'image' => $review->getImageName()
-                    ? '/uploads/reviews/' . $review->getImageName()
+                    ? '/uploads/reviews/images/' . $review->getImageName()
                     : null,
                 'createdAt' => $review->getCreatedAt()?->format('Y-m-d H:i:s'),
                 'response' => $response ? [
@@ -261,6 +270,63 @@ class ApiReviewController extends AbstractController
         return $this->json([
             'comment' => $response->getComment(),
             'author' => $response->getAuthor()->getUsername()
+        ]);
+    }
+
+    #[Route('/api/users/{id}/reviews', name: 'api_user_reviews', methods: ['GET'])]
+    public function getUserReviews(
+        int $id,
+        Request $request,
+        ReviewRepository $reviewRepository
+    ): JsonResponse {
+        $page = max(1, (int) $request->query->get('page', 1));
+        $limit = max(1, (int) $request->query->get('limit', 10));
+        $offset = ($page - 1) * $limit;
+
+        // Récupérer tous les avis de l'utilisateur (hors réponses)
+        $allReviews = $reviewRepository->createQueryBuilder('r')
+            ->leftJoin('r.author', 'a')
+            ->addSelect('a')
+            ->where('r.author = :user')
+            ->leftJoin('r.originalReview', 'orig')
+            ->andWhere('orig.id IS NULL')
+            ->setParameter('user', $id)
+            ->orderBy('r.createdAt', 'DESC')
+            ->getQuery()
+            ->getResult();
+
+        $paginated = array_slice($allReviews, $offset, $limit);
+
+        $data = array_map(function (Review $review) {
+            $response = $review->getResponse();
+
+            return [
+                'id' => $review->getId(),
+                'title' => $review->getTitle(),
+                'comment' => $review->getComment(),
+                'rating' => $review->getRating(),
+                'author' => [
+                    'id' => $review->getAuthor()->getId(),
+                    'username' => $review->getAuthor()->getUsername()
+                ],
+                'image' => $review->getImageName()
+                    ? '/uploads/reviews/images/' . $review->getImageName()
+                    : null,
+                'createdAt' => $review->getCreatedAt()?->format('Y-m-d H:i:s'),
+                'response' => $response ? [
+                    'id' => $response->getId(),
+                    'comment' => $response->getComment(),
+                    'author' => $response->getAuthor()->getUsername(),
+                    'createdAt' => $response->getCreatedAt()?->format('Y-m-d H:i:s'),
+                ] : null,
+            ];
+        }, $paginated);
+
+        return $this->json([
+            'total' => count($allReviews),
+            'page' => $page,
+            'limit' => $limit,
+            'data' => $data,
         ]);
     }
 }
