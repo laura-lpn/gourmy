@@ -33,20 +33,20 @@
 
 	<tab-view tabs='[
 		{
-			"title": "Avis",
-			"content": {{ include("user/profile/_reviews.html.twig")|json_encode|raw }}
+			"title": "Photos",
+			"content": {{ include("user/profile/_photos.html.twig")|json_encode|raw }}
 		},
 		{
 			"title": "Roadtrips",
-			"content": {{ include("user/profile/_roadtrips.html.twig")|json_encode|raw }}
+			"content": "<user-roadtrips></user-roadtrips>"
+		},
+		{
+			"title": "Avis",
+			"content": "<review-list user-id=\"{{ app.user ? app.user.id : '' }}\" editable=\"true\"></review-list>"
 		},
 		{
 			"title": "Badges",
 			"content": {{ include("user/profile/_badges.html.twig")|json_encode|raw }}
-		},
-		{
-			"title": "Photos",
-			"content": {{ include("user/profile/_photos.html.twig")|json_encode|raw }}
 		},
 		{
 			"title": "Carte",

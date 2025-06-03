@@ -29,7 +29,7 @@ class Roadtrip
     /**
      * @var Collection<int, Step>
      */
-    #[ORM\OneToMany(targetEntity: Step::class, mappedBy: 'roadtrip', orphanRemoval: true)]
+    #[ORM\OneToMany(targetEntity: Step::class, mappedBy: 'roadtrip', orphanRemoval: true, cascade: ['persist'])]
     private Collection $steps;
 
     #[ORM\Column(type: Types::TEXT)]
