@@ -4,26 +4,31 @@
 {% endblock %}
 
 {% block body %}
-	<h1>Modifier le profil</h1>
+	<h1 class="my-h1">Modifier le profil</h1>
+	<div class="flex flex-col justify-center items-center gap-4 w-4/5 lg:w-1/3 mx-auto">
 
-	{% for label, messages in app.flashes %}
-		{% for message in messages %}
-			<div class="alert alert-{{ label }}">
-				{% autoescape false %}
-					{{ message }}
-				{% endautoescape %}
-			</div>
+		{% for label, messages in app.flashes %}
+			{% for message in messages %}
+				<div class="alert alert-{{ label }}">
+					{% autoescape false %}
+						{{ message }}
+					{% endautoescape %}
+				</div>
+			{% endfor %}
 		{% endfor %}
-	{% endfor %}
-	<div>
-		{{ form_start(userForm, { attr: { 'data-turbo': 'false' }, method: 'POST' }) }}
-		{{ form_row(userForm.avatarFile) }}
-		{{ form_row(userForm.firstName) }}
-		{{ form_row(userForm.lastName) }}
-		{{ form_row(userForm.email) }}
-		{{ form_row(userForm.username) }}
-		{{ form_row(userForm.plainPassword) }}
-		<button type="submit" class="btn">Modifier</button>
-		{{ form_end(userForm) }}
+		<div>
+			{{ form_start(userForm, { attr: { 'data-turbo': 'false', 'class': 'my-form' }, method: 'POST' }) }}
+			{{ form_row(userForm.avatarFile) }}
+			{{ form_row(userForm.firstName) }}
+			{{ form_row(userForm.lastName) }}
+			{{ form_row(userForm.email) }}
+			{{ form_row(userForm.username) }}
+			{{ form_row(userForm.plainPassword) }}
+			<div class="flex !flex-row justify-center gap-2">
+				<a class="text-blue border border-blue rounded-md px-6 py-2" href='{{ path('app_user_profile') }}'>Annuler</a>
+				<button type="submit" class="btn">Modifier</button>
+			</div>
+			{{ form_end(userForm) }}
+		</div>
 
 	{% endblock %}
