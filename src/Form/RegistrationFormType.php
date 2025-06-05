@@ -37,6 +37,10 @@ class RegistrationFormType extends AbstractType
                         'max' => 20,
                         'maxMessage' => 'Le nom d\'utilisateur ne doit pas dépasser {{ limit }} caractères',
                     ]),
+                    new Regex([
+                        'pattern' => '/^[a-zA-Z0-9_]+$/',
+                        'message' => 'Le nom d\'utilisateur ne doit contenir que des lettres, des chiffres et des tirets bas.',
+                    ]),
                 ]
             ])
             ->add('firstName', TextType::class, [
