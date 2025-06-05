@@ -4,79 +4,80 @@
 {% endblock %}
 
 {% block body %}
-
-	{% for label, messages in app.flashes %}
-		{% for message in messages %}
-			<div class="w-3/5 mx-auto alert alert-{{ label }}">
-				{% autoescape false %}
-					{{ message }}
-				{% endautoescape %}
-			</div>
+	<div class="mt-28">
+		{% for label, messages in app.flashes %}
+			{% for message in messages %}
+				<div class="w-3/5 mx-auto alert alert-{{ label }}">
+					{% autoescape false %}
+						{{ message }}
+					{% endautoescape %}
+				</div>
+			{% endfor %}
 		{% endfor %}
-	{% endfor %}
-	<section class="w-3/4 mx-auto flex items-center gap-16 py-4">
-		{% if user.avatarName %}
-			<img src="{{ vich_uploader_asset(user, 'avatarFile') }}" alt="Avatar" class="w-64 rounded-full">
-		{% else %}
-			<img src="{{ asset('images/avatar-placeholder.png') }}" alt="Avatar par défaut" class="w-64 rounded-full">
-		{% endif %}
+		<section class="w-3/4 mx-auto flex items-center gap-16 py-4">
+			{% if user.avatarName %}
+				<img src="{{ vich_uploader_asset(user, 'avatarFile') }}" alt="Avatar" class="w-64 rounded-full">
+			{% else %}
+				<img src="{{ asset('images/avatar-placeholder.png') }}" alt="Avatar par défaut" class="w-64 rounded-full">
+			{% endif %}
 
-		<div>
-			<h1 class="font-second text-blue text-4xl font-medium">{{ user.firstName ~ ' ' ~ user.lastName }}</h1>
-			<p class="text-orange font-medium text-lg">@{{ user.username }}</p>
-		</div>
-
-		<div x-data="{ open: false }" class="relative ml-auto">
-			<button title="Paramètres" @click="open = !open" class="text-blue text-2xl bg-blue/5 py-2 px-4 rounded-full">
-				<i class="fa-solid fa-gear"></i>
-			</button>
-
-			<div x-show="open" @click.outside="open = false" class="absolute right-0 mt-2 w-40 bg-white border border-gray-200 rounded shadow-lg z-10">
-				<a href="{{path('app_logout')}}" class="block px-4 py-2 hover:bg-gray-100 text-sm">Déconnexion</a>
-				<a href="{{ path('app_user_edit') }}" class="block px-4 py-2 hover:bg-gray-100 text-sm">Éditer</a>
-				<button type="button" class="block w-full text-left px-4 py-2 hover:bg-red-100 text-sm text-red-600" onclick="confirmDeletion()">
-					Supprimer
-				</button>
-				<script type="module" src="{{ asset('webcomponents/ModalConfirm.js') }}"></script>
-				<modal-confirm id="delete-confirm"></modal-confirm>
+			<div>
+				<h1 class="font-second text-blue text-4xl font-medium">{{ user.firstName ~ ' ' ~ user.lastName }}</h1>
+				<p class="text-orange font-medium text-lg">@{{ user.username }}</p>
 			</div>
-		</div>
 
-	</section>
+			<div x-data="{ open: false }" class="relative ml-auto">
+				<button title="Paramètres" @click="open = !open" class="text-blue text-2xl bg-blue/5 py-2 px-4 rounded-full">
+					<i class="fa-solid fa-gear"></i>
+				</button>
 
-	<script type="module" src="{{ asset('webcomponents/TabView.js') }}"></script>
+				<div x-show="open" @click.outside="open = false" class="absolute right-0 mt-2 w-40 bg-white border border-gray-200 rounded shadow-lg z-10">
+					<a href="{{path('app_logout')}}" class="block px-4 py-2 hover:bg-gray-100 text-sm">Déconnexion</a>
+					<a href="{{ path('app_user_edit') }}" class="block px-4 py-2 hover:bg-gray-100 text-sm">Éditer</a>
+					<button type="button" class="block w-full text-left px-4 py-2 hover:bg-red-100 text-sm text-red-600" onclick="confirmDeletion()">
+						Supprimer
+					</button>
+					<script type="module" src="{{ asset('webcomponents/ModalConfirm.js') }}"></script>
+					<modal-confirm id="delete-confirm"></modal-confirm>
+				</div>
+			</div>
 
-	<section class="w-3/4 mx-auto mt-8">
-		<tab-view tabs='[
-				{
-					"title": "Photos",
-					"content": {{ include("user/profile/_photos.html.twig", { photos: photos })|json_encode|raw }}
-				},
-				{
-					"title": "Roadtrips",
-					"content": "<user-roadtrips></user-roadtrips>"
-				},
-				{
-					"title": "Avis",
-					"content": "<review-list user-id=\"{{ app.user ? app.user.id : ' ' }}\" editable=\"true\"></review-list>"
-				},
-				{
-					"title": "Badges",
-					"content": {{ include("user/profile/_badges.html.twig")|json_encode|raw }}
-				},
-				{
-					"title": "Carte",
-					"content": {{ include("user/profile/_map.html.twig")|json_encode|raw }}
-				}
-			]'></tab-view>
-	</section>
+		</section>
+
+		<script type="module" src="{{ asset('webcomponents/TabView.js') }}"></script>
+
+		<section class="w-3/4 mx-auto mt-8">
+			<tab-view tabs='[
+								{
+									"title": "Photos",
+									"content": {{ include("user/profile/_photos.html.twig", { photos: photos })|json_encode|raw }}
+								},
+								{
+									"title": "Roadtrips",
+									"content": "<user-roadtrips></user-roadtrips>"
+								},
+								{
+									"title": "Avis",
+									"content": "<review-list user-id=\"{{ app.user ? app.user.id : ' ' }}\" editable=\"true\"></review-list>"
+								},
+								{
+									"title": "Badges",
+									"content": {{ include("user/profile/_badges.html.twig")|json_encode|raw }}
+								},
+								{
+									"title": "Carte",
+									"content": {{ include("user/profile/_map.html.twig")|json_encode|raw }}
+								}
+							]'></tab-view>
+		</section>
+	</div>
 
 	<script>
 		function confirmDeletion() {
-			const modal = document.getElementById('delete-confirm');
-			modal.show('Voulez-vous vraiment supprimer votre compte ?', () => {
-				window.location.href = "{{ path('app_user_delete') }}";
-			});
-		}
+const modal = document.getElementById('delete-confirm');
+modal.show('Voulez-vous vraiment supprimer votre compte ?', () => {
+window.location.href = "{{ path('app_user_delete') }}";
+});
+}
 	</script>
 {% endblock %}

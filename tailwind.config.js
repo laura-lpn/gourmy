@@ -28,6 +28,11 @@ module.exports = {
           'mobile': '20px',
           'input': '16px',
         },
+        backgroundImage: {
+          'hero-home': "url('/images/pages/home.jpg')",
+          'roadtrips': "url('/images/pages/roadtrips.jpg')",
+          'restaurants': "url('/images/pages/restaurants.jpg')",
+        },
         boxShadow: {
           'main': '0px 0px 15px #00000029',
         },
