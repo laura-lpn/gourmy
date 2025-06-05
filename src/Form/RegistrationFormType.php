@@ -39,29 +39,6 @@ class RegistrationFormType extends AbstractType
                     ]),
                 ]
             ])
-            ->add('plainPassword', PasswordType::class, [
-                'label' => 'Mot de passe',
-                'mapped' => false,
-                'attr' => ['autocomplete' => 'new-password'],
-                'constraints' => [
-                    new NotBlank([
-                        'message' => 'Veuillez entrer un mot de passe',
-                    ]),
-                    new Length([
-                        'min' => 8,
-                        'minMessage' => 'Votre mot de passe doit contenir au moins {{ limit }} caractères',
-                        'max' => 64,
-                        'maxMessage' => 'Votre mot de passe ne doit pas dépasser {{ limit }} caractères',
-                    ]),
-                    new Regex([
-                        'pattern' => '/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/',
-                        'message' => 'Le mot de passe doit contenir au moins une lettre majuscule, une lettre minuscule, un chiffre et un caractère spécial.',
-                    ]),
-                    new NotCompromisedPassword([
-                        'message' => 'Le mot de passe a été compromis dans une fuite de données, veuillez en choisir un autre.',
-                    ]),
-                ],
-            ])
             ->add('firstName', TextType::class, [
                 'label' => 'Prénom',
                 'attr' => ['autocomplete' => 'given-name'],
@@ -112,11 +89,11 @@ class RegistrationFormType extends AbstractType
                 ],
             ])
             ->add('agreeTerms', CheckboxType::class, [
-                'label' => 'J\'accepte les politiques de confidentialité et de sécurité',
+                'label' => 'J\'accepte les politiques de confidentialité',
                 'mapped' => false,
                 'constraints' => [
                     new IsTrue([
-                        'message' => 'Vous devez accepter nos politiques de confidentialité et de sécurité.',
+                        'message' => 'Vous devez accepter nos politiques de confidentialité.',
                     ]),
                 ],
             ])

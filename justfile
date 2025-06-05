@@ -38,6 +38,9 @@ component *name:
 build:
 	{{SYMFONY}} console tailwind:build
 
+watch:
+	{{SYMFONY}} console tailwind:build --watch
+
 # Clear caches
 cc env='dev':
 	{{SYMFONY}} console cache:clear --env={{env}}
