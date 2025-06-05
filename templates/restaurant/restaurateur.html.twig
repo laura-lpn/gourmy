@@ -1,0 +1,89 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Espace Restaurateur – Gourmy
+{% endblock %}
+
+{% block body %}
+	<section class="px-6 pt-8 pb-16 max-w-7xl mx-auto">
+		<h1 class="text-4xl font-second text-blue text-center mb-4">Faites rayonner votre cuisine sur Gourmy</h1>
+		<p class="text-lg text-center mb-12 max-w-3xl mx-auto">Rejoignez Gourmy et intégrez une plateforme pensée pour valoriser les restaurateurs locaux et passionnés. Profitez d’une visibilité ciblée, sans commission, dans un univers <em class="text-blue not-italic">100% terroir.</em></p>
+
+		<h2 class="text-2xl font-second font-medium text-orange mb-8">Pourquoi devenir partenaire Gourmy</h2>
+		<div class="grid md:grid-cols-2 gap-8 mb-16">
+			<div class="bg-blue/5 rounded-xl p-6">
+				<h3 class="text-blue font-second font-semibold text-lg mb-2">
+					<i class="fa-solid fa-bullseye mr-2"></i>Visibilité ciblée
+				</h3>
+				<p class="text-sm ">Votre restaurant est intégré dans des road-trips gourmands personnalisés selon les préférences des utilisateurs.</p>
+			</div>
+			<div class="bg-blue/5 rounded-xl p-6">
+				<h3 class="text-blue font-second font-semibold text-lg mb-2">
+					<i class="fa-solid fa-euro-sign mr-2"></i>Sans commission
+				</h3>
+				<p class="text-sm">Un abonnement fixe, pas de frais par réservation. Vos revenus vous reviennent en totalité.</p>
+			</div>
+			<div class="bg-blue/5 rounded-xl p-6">
+				<h3 class="text-blue font-second font-semibold text-lg mb-2">
+					<i class="fa-solid fa-chart-line mr-2"></i>Statistiques de performance
+				</h3>
+				<p class="text-sm ">Analysez les visites, les clics et l’engagement autour de votre établissement.</p>
+			</div>
+			<div class="bg-blue/5 rounded-xl p-6">
+				<h3 class="text-blue font-second font-semibold text-lg mb-2">
+					<i class="fa-solid fa-bullhorn mr-2"></i>Outils marketing intégrés
+				</h3>
+				<p class="text-sm">Ajoutez vos offres, menus du jour et gérez votre e-réputation directement sur la plateforme.</p>
+			</div>
+		</div>
+
+		<h2 class="text-2xl font-second font-medium text-orange mb-8">Nos formules d’abonnement</h2>
+		<div class="grid md:grid-cols-3 gap-12 mb-16">
+			<div class="bg-blue/5 rounded-xl p-6 text-sm">
+				<h3 class="text-xl font-bold font-second text-blue mb-1">Freemium</h3>
+				<p class="mb-3">Gratuit</p>
+				<ul class="list-disc list-inside space-y-1 pt-2">
+					<li>Fiche restaurant basique</li>
+					<li>Apparition dans les road-trips</li>
+					<li>Accès aux avis</li>
+				</ul>
+			</div>
+			<div
+				class="relative bg-orange/5 rounded-xl p-6 text-sm">
+				<!-- Badge -->
+				<div class="absolute -top-8 -left-8 w-16 h-16 bg-white rounded-full shadow-lg flex items-center justify-center">
+					<img src="{{ asset('images/chef-hat-blue.svg') }}" alt="Chef hat" class="w-10 h-10">
+				</div>
+
+				<h3 class="text-xl font-bold font-second text-orange mb-1">Gourmy Premium</h3>
+				<p class=" mb-3">25,99€/mois</p>
+				<ul class="list-disc list-inside space-y-1 pt-2">
+					<li>Fiche mise en avant</li>
+					<li>Badge “Partenaire Premium”</li>
+					<li>Statistiques détaillées</li>
+					<li>Offres spéciales & menus du jour</li>
+				</ul>
+			</div>
+			<div
+				class="relative bg-blue/5 rounded-xl p-6 text-sm">
+				<!-- Badge -->
+				<div class="absolute -top-8 -left-8 w-16 h-16 bg-white rounded-full shadow-lg flex items-center justify-center">
+					<img src="{{ asset('images/chef-hat-blue.svg') }}" alt="Chef hat" class="w-10 h-10">
+				</div>
+
+				<h3 class="text-xl font-bold font-second text-blue mb-1">Gourmy Premium +</h3>
+				<p class=" mb-3">39,99€/mois</p>
+				<ul class="list-disc list-inside space-y-1 pt-2">
+					<li>Toutes les options Premium</li>
+					<li>Réservations en ligne</li>
+					<li>Campagnes marketing ciblées</li>
+					<li>Données clients avancées</li>
+				</ul>
+			</div>
+		</div>
+
+		<div class="text-center">
+			<a href="{{ path('app_restaurant_create') }}" class="btn text-lg px-8 py-3">Créer mon restaurant</a>
+			<p class="mt-4 text-sm">Commencez gratuitement. Sans engagement.</p>
+		</div>
+	</section>
+{% endblock %}

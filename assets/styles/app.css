@@ -5,11 +5,14 @@
 @import url(https://fonts.bunny.net/css?family=kodchasan:200,200i,300,300i,400,400i,500,500i,600,600i,700,700i|poppins:100,100i,200,200i,300,300i,400,400i,500,500i,600,600i,700,700i,800,800i,900,900i);
 
 @layer components {
-
   /* BUTTONS */
 
   .btn {
-    @apply px-6 py-2 rounded-md bg-blue text-sm text-white font-medium transition-colors duration-300 hover:bg-blue/80;
+    @apply px-6 py-2 rounded-md bg-blue border-blue border text-sm text-white font-medium transition-colors duration-300 hover:bg-blue/80;
+  }
+
+  .btn-secondary {
+    @apply px-6 py-2 rounded-md bg-white border-blue border text-sm text-blue font-medium transition-colors duration-300 hover:bg-blue/30;
   }
 
   /* NAV */
@@ -54,7 +57,7 @@
   }
 
   .my-checkbox {
-    @apply ring-blue accent-blue cursor-pointer focus:ring-blue focus:ring-offset-blue;
+    @apply ring-blue accent-blue cursor-pointer focus:ring-blue focus:ring-offset-blue mr-1;
   }
 
   .my-label {
@@ -64,11 +67,13 @@
   .alert a {
     @apply text-blue hover:underline;
   }
-  .alert-danger a, .alert-error a {
+  .alert-danger a,
+  .alert-error a {
     @apply text-black;
   }
 
-  .alert-danger, .alert-error {
+  .alert-danger,
+  .alert-error {
     @apply text-red-600;
   }
 
@@ -84,6 +89,7 @@
   input[type="number"],
   input[type="date"],
   input[type="file"],
+  input[type="tel"],
   textarea,
   select {
     @apply my-input;
@@ -100,6 +106,10 @@
   input[type="checkbox"]:focus,
   input[type="radio"]:focus {
     @apply my-checkbox;
+  }
+
+  div:has(input[type="checkbox"]), div:has(input[type="radio"]) {
+    @apply flex justify-start gap-2;
   }
 
   input[type="file"] {

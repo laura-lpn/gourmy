@@ -3,11 +3,11 @@
 namespace App\Form;
 
 use App\Entity\Restaurant;
-use FOS\CKEditorBundle\Form\Type\CKEditorType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\CountryType;
+use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
@@ -29,12 +29,14 @@ class RestaurantType extends AbstractType
         $builder
             ->add('name', TextType::class, [
                 'label' => 'Nom du restaurant',
+                'attr' => ['placeholder' => 'Ex : Le Bistrot de Sophie'],
                 'constraints' => [
                     new NotBlank(),
                 ]
             ])
-            ->add('siret', TextType::class, [
+            ->add('siret', NumberType::class, [
                 'label' => 'Numéro SIRET',
+                'attr' => ['placeholder' => 'Ex : 12345678901234'],
                 'constraints' => [
                     new NotBlank(),
                     new Regex([
@@ -70,12 +72,14 @@ class RestaurantType extends AbstractType
             ])
             ->add('address', TextType::class, [
                 'label' => 'Adresse',
+                'attr' => ['placeholder' => 'Ex : 123 rue du Marché'],
                 'constraints' => [
                     new NotBlank(),
                 ]
             ])
             ->add('postalCode', TextType::class, [
                 'label' => 'Code Postal',
+                'attr' => ['placeholder' => 'Ex : 33000'],
                 'constraints' => [
                     new NotBlank(),
                     new Regex([
@@ -86,18 +90,23 @@ class RestaurantType extends AbstractType
             ])
             ->add('city', TextType::class, [
                 'label' => 'Ville',
+                'attr' => ['placeholder' => 'Ex : Bordeaux'],
                 'constraints' => [
                     new NotBlank(),
                 ]
             ])
             ->add('country', CountryType::class, [
                 'label' => 'Pays',
+                'placeholder' => 'Choisir un pays',
+                'preferred_choices' => ['FR'],
+                'data' => 'FR',
                 'constraints' => [
                     new NotBlank(),
                 ]
             ])
             ->add('phoneNumber', TelType::class, [
                 'label' => 'Numéro de téléphone',
+                'attr' => ['placeholder' => 'Ex : +33 6 12 34 56 78'],
                 'constraints' => [
                     new Regex([
                         'pattern' => '/^\+?[0-9\s\-().]{7,}$/',
@@ -107,6 +116,7 @@ class RestaurantType extends AbstractType
             ])
             ->add('openingHours', TextareaType::class, [
                 'label' => 'Horaires d’ouverture',
+                'attr' => ['placeholder' => "Ex : Du mardi au samedi - 12h à 14h / 19h à 22h", 'rows' => 3],
                 'constraints' => [
                     new NotBlank(),
                 ]
@@ -119,6 +129,7 @@ class RestaurantType extends AbstractType
                     '€€€' => '€€€',
                     '€€€€' => '€€€€',
                 ],
+                'expanded' => true,
                 'constraints' => [
                     new NotBlank(),
                 ]
@@ -133,6 +144,7 @@ class RestaurantType extends AbstractType
             ->add('website', UrlType::class, [
                 'label' => 'Site Web',
                 'required' => false,
+                'attr' => ['placeholder' => 'Ex : https://www.votre-restaurant.fr'],
                 'constraints' => [
                     new Url([
                         'message' => 'Veuillez entrer une URL valide.',
