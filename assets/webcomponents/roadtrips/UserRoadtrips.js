@@ -1,4 +1,4 @@
-import './ModalConfirm.js';
+import '../ModalConfirm.js';
 
 export class UserRoadtrips extends HTMLElement {
   constructor() {
