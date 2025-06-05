@@ -6,9 +6,19 @@
 
 {% block body %}
 
-	<h1>Nos restaurants partenaires</h1>
-	{% for restaurant in restaurants %}
-		<h2>{{restaurant.name}}</h2>
+	<section class="bg-restaurants relative object-cover bg-center h-[65vh] flex items-center justify-center">
+		<div class="bg-black/35 w-full h-full absolute top-0 left-0 z-0"></div>
 
-	{% endfor %}
+		<h1 class="text-white text-3xl font-medium font-second relative z-10">
+			Nos restaurants partenaires
+		</h1>
+	</section>
+
+	<section class="py-12 px-6 max-w-7xl mx-auto">
+		<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+			{% for restaurant in restaurants %}
+				{{ include('restaurant/_card.html.twig', { restaurant: restaurant }) }}
+			{% endfor %}
+		</div>
+	</section>
 {% endblock %}

@@ -221,9 +221,15 @@ class RestaurantController extends AbstractController
             $isOwner = false;
         }
 
+        $images = array_filter(
+            $restaurant->getReviews()->toArray(),
+            fn($r) => $r->getImageName() !== null
+        );
+
         return $this->render('restaurant/show.html.twig', [
             'restaurant' => $restaurant,
             'isOwner' => $isOwner,
+            'images' => $images,
         ]);
     }
 

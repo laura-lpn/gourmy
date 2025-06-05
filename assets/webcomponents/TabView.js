@@ -15,7 +15,7 @@ class TabView extends HTMLElement {
         </ul>
         <div id="tab-content">
           ${tabs.map((tab, i) =>
-            `<div id="tab-${i}" class="tab-panel hidden">${tab.content}</div>`
+            `<div id="tab-${i}" class="tab-panel hidden mt-12">${tab.content}</div>`
           ).join('')}
         </div>
       </div>

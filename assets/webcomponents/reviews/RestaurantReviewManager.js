@@ -4,7 +4,6 @@ import '../ModalConfirm.js';
 export class RestaurantReviewManager extends HTMLElement {
   constructor() {
     super();
-    this.attachShadow({ mode: 'open' });
     this.restaurantId = this.getAttribute('restaurant-id');
     this.csrf = this.getAttribute('csrf');
     this.editingResponseId = null;
@@ -27,13 +26,13 @@ export class RestaurantReviewManager extends HTMLElement {
   }
 
   render() {
-    this.shadowRoot.innerHTML = `
+    this.innerHTML = `
       <style>.review { margin-bottom: 1rem; }</style>
       <div id="reviews-container"></div>
       <modal-confirm id="confirm"></modal-confirm>
     `;
 
-    const container = this.shadowRoot.querySelector('#reviews-container');
+    const container = this.querySelector('#reviews-container');
     container.innerHTML = '';
 
     this.reviews.forEach(review => {
@@ -76,7 +75,7 @@ export class RestaurantReviewManager extends HTMLElement {
   }
 
   confirmDelete(responseId) {
-    this.shadowRoot.querySelector('#confirm').show("Supprimer cette réponse ?", () => {
+    this.querySelector('#confirm').show("Supprimer cette réponse ?", () => {
       fetch(`/api/reviews/${responseId}`, { method: 'DELETE' })
         .then(res => {
           if (res.ok) this.fetchAndRender();
