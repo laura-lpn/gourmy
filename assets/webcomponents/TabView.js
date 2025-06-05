@@ -6,10 +6,11 @@ class TabView extends HTMLElement {
 
   renderTabs(tabs) {
     this.innerHTML = `
-      <div>
-        <ul class="flex space-x-4 border-b mb-4" id="tab-buttons">
+      <div class="w-full">
+        <ul class="flex w-full mb-4 divide-x divide-gray-300" id="tab-buttons">
           ${tabs.map((tab, i) =>
-            `<li><button data-tab="${i}" class="tab-btn text-gray-600 hover:text-black py-2 px-4">${tab.title}</button></li>`
+            `<li class="flex-1 text-center">
+              <button data-tab="${i}" class="tab-btn w-full text-lg text-black font-second font-medium hover:text-blue py-2 px-4">${tab.title}</button></li>`
           ).join('')}
         </ul>
         <div id="tab-content">
@@ -34,9 +35,9 @@ class TabView extends HTMLElement {
     this.querySelector(`#tab-${id}`).classList.remove('hidden');
 
     this.querySelectorAll('.tab-btn').forEach(btn => {
-      btn.classList.remove('border-b-2', 'border-black', 'font-bold');
+      btn.classList.remove('border-b-2', 'border-blue', '!text-blue');
     });
-    this.querySelector(`[data-tab="${id}"]`).classList.add('border-b-2', 'border-black', 'font-bold');
+    this.querySelector(`[data-tab="${id}"]`).classList.add('border-b-2', 'border-blue', '!text-blue');
   }
 }
 customElements.define('tab-view', TabView);
