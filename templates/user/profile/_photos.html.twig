@@ -1,4 +1,4 @@
-<div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8 py-6 px-8 mt-6">
+<div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8 py-6 px-8">
 	{% for review in photos %}
 		<img src="{{ vich_uploader_asset(review, 'imageFile') }}" alt="{{ review.title ?: 'Photo d’un avis' }}" class="w-48 h-48 object-cover rounded-lg">
 	{% endfor %}

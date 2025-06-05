@@ -13,17 +13,17 @@
 			<p class="text-sm line-clamp-2">
 				{{ restaurant.description|striptags|length > 80 ? restaurant.description|striptags|slice(0, 77) ~ '...' : restaurant.description|striptags }}
 			</p>
+			<div class="flex gap-1 items-center text-blue mt-2">
+				{% set avg = restaurant.averageRating %}
+				{% for i in 1..5 %}
+					<i class="fa{{ avg >= i ? 's' : (avg >= i - 0.5 ? 's' : 'r') }} fa-star text-sm"></i>
+				{% endfor %}
+				<span class="text-sm text-black ml-2">
+					{{ restaurant.reviews|filter(r => not r.response)|length }}
+					avis
+				</span>
+			</div>
 		</div>
 
-		<div class="flex items-center justify-center gap-1 text-blue mt-1">
-			{% set avg = restaurant.averageRating %}
-			{% for i in 1..5 %}
-				<i class="fa{{ avg >= i ? 's' : (avg >= i - 0.5 ? 's' : 'r') }} fa-star text-sm"></i>
-			{% endfor %}
-			<span class="text-sm text-black ml-2">
-				{{ restaurant.reviews|filter(r => not r.response)|length }}
-				avis
-			</span>
-		</div>
 	</div>
 </a>

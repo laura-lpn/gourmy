@@ -5,46 +5,54 @@
 {% endblock %}
 
 {% block body %}
-	<h1>{{ restaurant.name }}</h1>
+	<section class="w-3/4 mx-auto px-6 py-8 mt-28">
+		<div class="flex flex-col md:flex-row gap-12 items-start relative">
+			<div class="relative md:w-1/2 w-full">
+				{% if restaurant.bannerName %}
+					<img src="{{ vich_uploader_asset(restaurant, 'bannerFile') }}" alt="Image de {{ restaurant.name }}" class="rounded-xl w-full h-80 object-cover shadow-md">
+				{% endif %}
+				<div class="absolute -bottom-5 -right-5 w-20 h-20 bg-white rounded-full shadow-lg flex items-center justify-center">
+					<img src="{{ asset('images/chef-hat-blue.svg') }}" alt="Badge" class="w-16 h-16">
+				</div>
+			</div>
 
-	{% if restaurant.bannerName %}
-		<img src="{{ vich_uploader_asset(restaurant, 'bannerFile') }}" alt="Bannière" class="w-1/2">
-	{% endif %}
+			<div class="flex-1">
+				<h1 class="text-3xl font-second font-medium text-blue mb-2">{{ restaurant.name }}</h1>
+				<p class="text-sm font-medium mb-3">
+					{{ restaurant.types|map(t => t.name)|join(', ') }}
+				</p>
+				<p class="mb-4">{{ restaurant.description }}</p>
 
-	<h2>{{ restaurant.name ~ ' (' ~ restaurant.slug ~ ')' }}</h2>
-	<p>{{ restaurant.description }}</p>
-	<p>Adresse:
-		{{ restaurant.address ~ ' ' ~ restaurant.postalCode ~ ' ' ~ restaurant.city ~ ', ' ~ restaurant.country }}</p>
+				<div class="flex items-center gap-1 text-blue mb-2">
+					{% set avg = restaurant.averageRating %}
+					{% for i in 1..5 %}
+						<i class="fa{{ avg >= i ? 's' : (avg >= i - 0.5 ? 's' : 'r') }} fa-star text-sm"></i>
+					{% endfor %}
+					<span class="text-sm text-black ml-2">
+						{{ restaurant.reviews|filter(r => not r.response)|length }}
+						avis
+					</span>
+				</div>
+			</div>
+		</div>
 
-	<script type="module" src="{{ asset('webcomponents/maps/MapPreview.js') }}"></script>
-	<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCDWeDyCsZGLwzEDg6JpQ7tuOAoJQcv2L4" async defer></script>
-	<map-preview address="{{ restaurant.address|e('html_attr') }}" postal-code="{{ restaurant.postalCode|e('html_attr') }}" city="{{ restaurant.city|e('html_attr') }}" country="{{ restaurant.country|e('html_attr') }}"></map-preview>
+		<div class="mt-12 bg-orange/5 rounded-xl p-6">
+			<h2 class="text-xl font-medium font-second text-orange mb-4">Images du restaurant</h2>
+			<div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+				{% for review in images %}
+					<img src="{{ vich_uploader_asset(review, 'imageFile') }}" alt="..." class="rounded-lg object-cover w-48 h-48"/>
+				{% endfor %}
+				{% if images|length == 0 %}
+					<p class="text-center col-span-full text-sm">Aucune image pour ce restaurant.</p>
+				{% endif %}
+			</div>
+		</div>
 
-	<p>Price Range:
-		{{ restaurant.priceRange }}</p>
-	<p>Opening Hours:
-		{{ restaurant.openingHours }}</p>
-
-	{% if restaurant.types is not empty %}
-		<h3>Types:</h3>
-		{% for type in restaurant.types %}
-			<p>{{ type.name }}</p>
-		{% endfor %}
-	{% endif %}
-	{% if restaurant.phoneNumber is not null %}
-		<p>Contact:
-			{{ restaurant.phoneNumber }}</p>
-	{% endif %}
-
-	{% if restaurant.website is not null %}
-		<p>Website:
-			<a target="_blank" href="{{ restaurant.website }}">{{ restaurant.website }}</a>
-		</p>
-	{% endif %}
+		<div class="mt-12">
+			<review-list restaurant-id="{{ restaurant.id }}" user-id="{{ app.user ? app.user.id : '' }}" user-username="{{ app.user ? app.user.username : '' }}" is-owner="{{ isOwner ? '1' : '0' }}" editable="true" added="true"></review-list>
+		</div>
+	</section>
 
 	<script type="module" src="{{ asset('webcomponents/reviews/ReviewList.js') }}"></script>
 	<script type="module" src="{{ asset('webcomponents/ModalConfirm.js') }}"></script>
-
-	<review-list restaurant-id="{{ restaurant.id }}" user-id="{{ app.user ? app.user.id : '' }}" user-username="{{ app.user ? app.user.username : '' }}" is-owner="{{ isOwner ? '1' : '0' }}" editable="true" added="true"></review-list>
-
 {% endblock %}
