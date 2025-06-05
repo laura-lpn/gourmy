@@ -21,8 +21,13 @@ final class UserController extends AbstractController
         if (!$user) {
             return $this->redirectToRoute('app_login');
         }
+        $photos = $user->getReviews()->filter(
+            fn($review) => $review->getImageName() !== null
+        )->toArray();
+
         return $this->render('user/profile.html.twig', [
             'user' => $user,
+            'photos' => $photos,
         ]);
     }
 

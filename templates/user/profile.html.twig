@@ -14,7 +14,7 @@
 			</div>
 		{% endfor %}
 	{% endfor %}
-	<section class="w-3/4 mx-auto flex items-center gap-16 relative py-4">
+	<section class="w-3/4 mx-auto flex items-center gap-16 py-4">
 		{% if user.avatarName %}
 			<img src="{{ vich_uploader_asset(user, 'avatarFile') }}" alt="Avatar" class="w-64 rounded-full">
 		{% else %}

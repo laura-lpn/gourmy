@@ -24,7 +24,7 @@ class RestaurantController extends AbstractController
         if ($user && $user->getRestaurant()) {
             return $this->redirectToRoute('app_restaurant_profile');
         }
-        return $this->render('restaurant/dashboard.html.twig');
+        return $this->render('restaurant/restaurateur.html.twig');
     }
 
     #[Route('/restaurateur/creer-un-restaurant', name: 'app_restaurant_create')]
