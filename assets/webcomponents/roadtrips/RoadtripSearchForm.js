@@ -1,9 +1,14 @@
 export class RoadtripSearchForm extends HTMLElement {
   connectedCallback() {
     this.innerHTML = `
-      <section class="relative w-full max-w-4xl mx-auto mt-4 z-10">
+      <section class="relative w-full min-w-[50rem] mx-auto mt-4 z-10">
         <div class="bg-white p-6 rounded-xl shadow-lg w-full">
           <form method="GET" action="/roadtrip/recherche" id="roadtrip-form" class="space-y-4 w-full">
+            <div class="flex items-center w-full h-fit gap-4 p-2">
+             <p class="font-second font-medium text-lg w-1/3"><i class="fa-solid fa-map-pin text-blue mr-2"></i>Ville</p>
+             <p class="font-second font-medium text-lg w-auto"><i class="fa-solid fa-utensils text-blue mr-2"></i>Nombre de repas</p>
+             <p class="font-second font-medium text-lg w-1/3 ml-2"><i class="fa-solid fa-pepper-hot text-blue mr-2"></i>Type de cuisine</p>
+            </div>
             <div id="steps-container" class="space-y-4 flex flex-col w-full h-fit">
               ${this.buildStepFields(0)}
             </div>

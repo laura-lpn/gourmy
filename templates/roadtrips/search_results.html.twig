@@ -30,7 +30,9 @@
 			{% endfor %}
 		{% endfor %}
 		<script type="module" src="{{ asset('webcomponents/maps/MapRoadtrip.js') }}"></script>
-		<map-roadtrip points='{{ points|json_encode|e("html_attr") }}'></map-roadtrip>
+		<div class="w-4/5 mx-auto h-96">
+			<map-roadtrip points='{{ points|json_encode|e("html_attr") }}'></map-roadtrip>
+		</div> 
 
 		<div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-12">
 			{% for result in results %}
