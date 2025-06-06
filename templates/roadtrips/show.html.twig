@@ -5,21 +5,72 @@
 {% endblock %}
 
 {% block body %}
-	<h1 class="text-2xl font-bold mb-4">{{ roadtrip.title }}</h1>
+	<div class="mt-28 max-w-5xl mx-auto px-4">
+		<h1 class="my-h1 text-center">{{ roadtrip.title }}</h1>
 
-	{% for label, messages in app.flashes %}
-		{% for message in messages %}
-			<div class="alert alert-{{ label }}">
-				{% autoescape false %}
-					{{ message }}
-				{% endautoescape %}
-			</div>
+		{% for label, messages in app.flashes %}
+			{% for message in messages %}
+				<div class="alert alert-{{ label }}">
+					{% autoescape false %}
+						{{ message }}
+					{% endautoescape %}
+				</div>
+			{% endfor %}
 		{% endfor %}
-	{% endfor %}
 
-	<div class="bg-white p-4 rounded shadow">
-		<p>{{ roadtrip.description }}</p>
+		{% set points = [] %}
+		{% for step in roadtrip.steps %}
+			{% if step.restaurant %}
+				{% set points = points|merge([{
+            lat: step.restaurant.latitude,
+            lng: step.restaurant.longitude,
+            name: step.restaurant.name
+        }]) %}
+			{% endif %}
+		{% endfor %}
+
+		<script type="module" src="{{ asset('webcomponents/maps/MapRoadtrip.js') }}"></script>
+		<map-roadtrip points='{{ points|json_encode|e("html_attr") }}'></map-roadtrip>
+
+		<div class="bg-white rounded-xl shadow-main p-6 space-y-4">
+			<p class="text-gray-800 leading-relaxed">{{ roadtrip.description }}</p>
+
+			<div>
+				<h2 class="my-h2 text-left mb-3">Étapes</h2>
+
+				<div class="space-y-4">
+					{% for step in roadtrip.steps %}
+						<div class="p-4 bg-gray-50 rounded-lg border border-gray-200 space-y-2">
+							<p class="font-second text-lg text-blue">{{ step.town }}</p>
+							<p class="text-sm text-gray-600">Nombre de repas :
+								<strong>{{ step.meals }}</strong>
+							</p>
+							{% if step.cuisine is not empty %}
+								<div class="flex flex-wrap gap-2 mt-1">
+									{% for type in step.cuisine %}
+										<span class="px-2 py-1 text-xs rounded-full bg-blue/10 text-blue border border-blue">
+											{{ type.name }}
+										</span>
+									{% endfor %}
+								</div>
+							{% endif %}
+							{% if step.restaurant %}
+								<p class="text-sm text-gray-600">Restaurant associé :
+									<a href="{{ path('app_restaurant_show', {slug: step.restaurant.slug}) }}" class="text-blue hover:underline">
+										{{ step.restaurant.name }}
+									</a>
+								</p>
+							{% endif %}
+						</div>
+					{% endfor %}
+				</div>
+			</div>
+		</div>
+
+		<div class="text-center mt-8">
+			<a href="{{ path('app_roadtrips') }}" class="btn-secondary inline-block">
+				← Retour aux roadtrips
+			</a>
+		</div>
 	</div>
-
-	<a href="{{ path('app_roadtrips') }}" class="mt-4 inline-block text-blue-500 hover:underline">Retour à la liste des roadtrips</a>
 {% endblock %}

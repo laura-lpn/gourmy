@@ -12,7 +12,7 @@ export class MapRoadtrip extends HTMLElement {
 
 		if (!points.length) return;
 
-		this.innerHTML = `<div id="map" class="w-full h-96 rounded shadow mb-10"></div>`;
+		this.innerHTML = `<div id="map" class="w-4/5 mx-auto h-96 rounded shadow mb-10"></div>`;
 
 		await this.loadGoogleMapsScript();
 		await this.waitForGoogleMapsReady();

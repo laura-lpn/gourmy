@@ -5,108 +5,106 @@
 {% endblock %}
 
 {% block body %}
-	<h1 class="text-2xl font-bold mb-4">Résultats de la recherche</h1>
+	<div class="mt-28">
+		<h1 class="my-h1 text-center">Résultats de la recherche</h1>
 
-	{% for label, messages in app.flashes %}
-		{% for message in messages %}
-			<div class="alert alert-{{ label }}">
-				{% autoescape false %}
-					{{ message }}
-				{% endautoescape %}
-			</div>
+		{% for label, messages in app.flashes %}
+			{% for message in messages %}
+				<div class="alert alert-{{ label }} max-w-3xl mx-auto">
+					{% autoescape false %}
+						{{ message }}
+					{% endautoescape %}
+				</div>
+			{% endfor %}
 		{% endfor %}
-	{% endfor %}
 
-	<!-- Carte des étapes -->
-	{% set points = [] %}
-	{% for result in results %}
-		{% for restaurant in result.restaurants %}
-			{% set points = points|merge([{
-			'lat': restaurant.latitude,
-			'lng': restaurant.longitude,
-			'name': restaurant.name
-		}]) %}
-		{% endfor %}
-	{% endfor %}
-	<script type="module" src="{{ asset('webcomponents/maps/MapRoadtrip.js') }}"></script>
-	<map-roadtrip points='{{ points|json_encode|e("html_attr") }}'></map-roadtrip>
-
-	<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+		{# Carte des étapes #}
+		{% set points = [] %}
 		{% for result in results %}
-			<div class="bg-white p-4 rounded shadow mb-4">
-				<h2 class="text-xl font-semibold">{{ result.town }}</h2>
+			{% for restaurant in result.restaurants %}
+				{% set points = points|merge([{
+					'lat': restaurant.latitude,
+					'lng': restaurant.longitude,
+					'name': restaurant.name
+				}]) %}
+			{% endfor %}
+		{% endfor %}
+		<script type="module" src="{{ asset('webcomponents/maps/MapRoadtrip.js') }}"></script>
+		<map-roadtrip points='{{ points|json_encode|e("html_attr") }}'></map-roadtrip>
 
-				{% if result.cuisine %}
-					<p>
-						<strong>Type(s) de cuisine :</strong>
-						{% if result.cuisine is iterable %}
-							{{ result.cuisine|join(', ') }}
-						{% else %}
-							{{ result.cuisine }}
-						{% endif %}
+		<div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-12">
+			{% for result in results %}
+				<div class="bg-white p-6 rounded-xl shadow-main">
+					<h2 class="text-xl font-second text-blue font-medium mb-1">{{ result.town }}</h2>
+
+					{% if result.cuisine %}
+						<p class="text-sm text-gray-600 mb-1">
+							<strong class="text-black">Type(s) de cuisine :</strong>
+							{{ result.cuisine is iterable ? result.cuisine|join(', ') : result.cuisine }}
+						</p>
+					{% endif %}
+
+					<p class="text-sm mb-2">
+						<strong class="text-black">Nombre de repas :</strong>
+						{{ result.meals }}
 					</p>
-				{% endif %}
 
-				<p>
-					<strong>Nombre de repas :</strong>
-					{{ result.meals }}</p>
+					{% if result.restaurants is empty %}
+						<p class="text-sm text-gray-400 italic">Aucun restaurant trouvé.</p>
+					{% else %}
+						<ul class="list-disc ml-5 text-sm text-gray-700 space-y-1">
+							{% for restaurant in result.restaurants %}
+								<li>
+									<a href="{{ path('app_restaurant_show', {slug: restaurant.slug}) }}" class="text-blue hover:underline font-medium">
+										{{ restaurant.name }}
+									</a>
+									{% if restaurant.types is not empty %}
+										<p class="text-xs text-gray-500">
+											{{ restaurant.types|map(t => t.name)|join(', ') }}
+										</p>
+									{% endif %}
+								</li>
+							{% endfor %}
+						</ul>
+					{% endif %}
+				</div>
+			{% endfor %}
+		</div>
 
-				{% if result.restaurants is empty %}
-					<p class="text-sm text-gray-500">Aucun restaurant trouvé.</p>
+		{% if results is not empty %}
+			<div class="text-center mt-12">
+				{% if app.user %}
+					<button type="button" onclick="document.getElementById('saveModal').showModal()" class="btn">Enregistrer ce roadtrip</button>
 				{% else %}
-					<ul class="list-disc ml-5 mt-2">
-						{% for restaurant in result.restaurants %}
-							<li>
-								<strong>{{ restaurant.name }}</strong>
-								{% if restaurant.types is not empty %}
-									{% for type in restaurant.types %}
-										<p>{{ type.name }}</p>
-									{% endfor %}
-								{% endif %}
-							</li>
-						{% endfor %}
-					</ul>
+					<a href="{{ path('app_login', { target: app.request.uri }) }}" class="btn bg-gray-600 hover:bg-gray-700">Connectez-vous pour enregistrer ce roadtrip</a>
 				{% endif %}
 			</div>
-		{% endfor %}
+		{% endif %}
 	</div>
 
-	{% if app.user and results is not empty %}
-		<div class="text-center mt-8">
-			<button type="button" onclick="document.getElementById('saveModal').showModal()" class="bg-green-600 text-white px-6 py-2 rounded shadow">
-				Enregistrer ce roadtrip
-			</button>
-		</div>
-
-		<dialog id="saveModal" class="rounded-lg p-6 max-w-md w-full border shadow-lg backdrop:bg-black/40">
-			<form method="POST" action="{{ path('roadtrip_save') }}" class="space-y-4">
-				<input type="hidden" name="stepsData" value='{{ stepsForSave|json_encode|e('html_attr') }}'>
-				<div class="flex justify-between items-center">
-					<h2 class="text-xl font-semibold">Enregistrer ce roadtrip</h2>
-					<button type="button" onclick="document.getElementById('saveModal').close()" class="text-red-500 text-2xl leading-none">&times;</button>
-				</div>
-				<div>
-					<label for="title" class="block font-semibold">Titre du roadtrip</label>
-					<input type="text" id="title" name="title" required class="w-full border px-3 py-2 rounded">
-				</div>
-				<div>
-					<label for="description" class="block font-semibold">Description</label>
-					<textarea id="description" name="description" rows="3" required class="w-full border px-3 py-2 rounded"></textarea>
-				</div>
-				<div class="flex items-center">
-					<input type="checkbox" id="isPublic" name="isPublic" class="mr-2">
-					<label for="isPublic">Rendre ce roadtrip public</label>
-				</div>
-				<div class="text-right">
-					<button type="submit" class="bg-blue text-white px-4 py-2 rounded">Enregistrer</button>
-				</div>
-			</form>
-		</dialog>
-	{% elseif results is not empty %}
-		<div class="text-center mt-8">
-			<a href="{{ path('app_login', { target: app.request.uri }) }}" class="bg-gray-500 text-white px-6 py-2 rounded shadow hover:bg-gray-600 transition">
-				Connectez-vous pour enregistrer ce roadtrip
-			</a>
-		</div>
-	{% endif %}
+	{# Modal classique avec <dialog> intégré directement #}
+	<dialog id="saveModal" class="rounded-lg py-6 px-8 w-full bg-white max-w-xl backdrop:bg-black/50 fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50">
+		<form method="POST" action="{{ path('roadtrip_save') }}" class="my-form">
+			<input type="hidden" name="stepsData" value='{{ stepsForSave|json_encode|e('html_attr') }}'>
+			<div class="flex justify-between items-center">
+				<h2 class="text-xl font-medium font-second">Enregistrer ce roadtrip</h2>
+			</div>
+			<div>
+				<label for="title" class="block font-semibold">Titre du roadtrip</label>
+				<input type="text" id="title" name="title" required class="w-full border px-3 py-2 rounded">
+			</div>
+			<div>
+				<label for="description" class="block font-semibold">Description</label>
+				<textarea id="description" name="description" rows="3" required class="w-full border px-3 py-2 rounded"></textarea>
+			</div>
+			<div class="flex items-center justify-start !flex-row mt-4 !w-auto">
+				<input type="checkbox" id="isPublic" name="isPublic" class="mr-2 accent-orange">
+				<label for="isPublic">Rendre ce roadtrip public</label>
+			</div>
+			<div class="flex !flex-row gap-6 ml-auto mt-4">
+				<button type="button" onclick="document.getElementById('saveModal').close()" class="btn-secondary">Annuler</button>
+				<button type="submit" class="btn">Enregistrer</button>
+			</div>
+		</form>
+	</dialog>
 {% endblock %}

@@ -1,0 +1,35 @@
+<a href="{{ path('app_roadtrip_show', { id: roadtrip.id }) }}" class="bg-orange/10 rounded-xl p-6 shadow-main hover:shadow-lg group">
+	{% set images = roadtrip.steps|slice(0, 3)|map(step => step.restaurant.bannerName ? vich_uploader_asset(step.restaurant, 'bannerFile') : null)|filter(v => v) %}
+	{% if images is not empty %}
+		<div class="flex gap-2 overflow-hidden mb-4">
+			{% for image in images %}
+				<img src="{{ image }}" alt="Preview" class="w-full object-cover h-24 rounded-md">
+			{% endfor %}
+		</div>
+	{% endif %}
+
+	<h3 class="text-lg font-second font-semibold text-orange mb-2">{{ roadtrip.title }}</h3>
+
+	<div class="text-sm text-gray-700 space-y-1">
+		<p>
+			<i class="fa-solid fa-route text-orange mr-1"></i>
+			{{ roadtrip.steps|length }}
+			étapes</p>
+		<p>
+			<i class="fa-solid fa-location-dot text-orange mr-1"></i>
+			Villes</p>
+
+		<div class="flex flex-wrap gap-2 pt-4">
+			{% set villes = [] %}
+			{% for step in roadtrip.steps %}
+				{% if step.town not in villes %}
+					{% set villes = villes|merge([step.town]) %}
+				{% endif %}
+			{% endfor %}
+
+			{% for ville in villes %}
+				<span class="bg-blue text-white rounded-full py-1 px-3 text-xs">{{ ville }}</span>
+			{% endfor %}
+		</div>
+	</div>
+</a>

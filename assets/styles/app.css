@@ -120,7 +120,7 @@
     @apply my-checkbox;
   }
 
-  div:has(input[type="checkbox"]),
+  div:has(input[type="checkbox"]):not(.cuisine-options),
   div:has(input[type="radio"]) {
     @apply flex justify-start gap-2;
   }

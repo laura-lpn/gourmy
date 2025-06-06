@@ -3,7 +3,6 @@ import '../ModalConfirm.js';
 export class UserRoadtrips extends HTMLElement {
   constructor() {
     super();
-    this.attachShadow({ mode: 'open' });
   }
 
   connectedCallback() {
@@ -12,16 +11,11 @@ export class UserRoadtrips extends HTMLElement {
   }
 
   render() {
-    this.shadowRoot.innerHTML = `
-      <style>
-        .card { border: 1px solid #ccc; padding: 1em; margin-bottom: 1em; border-radius: 8px; background: #f9f9f9; }
-        input, textarea { display: block; width: 100%; margin: 0.5em 0; padding: 0.5em; }
-        button { margin-right: 0.5em; }
-        .edit-form { margin-top: 1em; }
-      </style>
-      <h2>Mes roadtrips</h2>
-      <div id="roadtrips-container"></div>
-      <modal-confirm id="confirm"></modal-confirm>
+    this.innerHTML = `
+      <div class="space-y-6">
+        <div id="roadtrips-container" class="space-y-6"></div>
+        <modal-confirm id="confirm"></modal-confirm>
+      </div>
     `;
   }
 
@@ -29,12 +23,12 @@ export class UserRoadtrips extends HTMLElement {
     fetch('/api/user/roadtrips')
       .then(res => res.json())
       .then(data => {
-        const container = this.shadowRoot.querySelector('#roadtrips-container');
+        const container = this.querySelector('#roadtrips-container');
         container.innerHTML = '';
 
         data.forEach(rt => {
           const div = document.createElement('div');
-          div.className = 'card';
+          div.className = 'bg-white rounded-xl shadow-main p-6 border border-gray-100';
           div.dataset.id = rt.id;
           div.innerHTML = this.renderDisplay(rt);
           container.appendChild(div);
@@ -47,37 +41,45 @@ export class UserRoadtrips extends HTMLElement {
 
   renderDisplay(rt) {
     return `
-      <div class="display">
-        <strong>${rt.title}</strong><br/>
-        <p>${rt.description}</p>
-        <em>${rt.isPublic ? "Public" : "Privé"}</em><br/>
-        <button data-action="edit">Modifier</button>
-        <button data-action="delete">Supprimer</button>
+      <div class="display space-y-2">
+        <h3 class="text-xl font-second text-blue font-medium">${rt.title}</h3>
+        <p class="text-gray-700">${rt.description}</p>
+        <span class="text-sm text-gray-500 font-medium">${rt.isPublic ? "Public" : "Privé"}</span>
+        <div class="flex flex-wrap gap-4 pt-2">
+          <a href="/roadtrips/${rt.id}" class="btn-secondary border-blue text-blue hover:bg-blue/10">Voir</a>
+          <button data-action="edit" class="btn">Modifier</button>
+          <button data-action="delete" class="btn-secondary text-red-600 border-red-600 hover:bg-red-100">Supprimer</button>
+        </div>
       </div>
     `;
   }
 
+
   enableEdit(rt) {
-    const div = this.shadowRoot.querySelector(`[data-id="${rt.id}"]`);
+    const div = this.querySelector(`[data-id="${rt.id}"]`);
     div.innerHTML = `
-      <form class="edit-form">
-        <label>Titre :
+      <form class="my-form">
+        <div>
+          <label for="title">Titre :</label>
           <input type="text" name="title" value="${rt.title}" required>
-        </label>
-        <label>Description :
-          <textarea name="description" required>${rt.description}</textarea>
-        </label>
-        <label>
-          Public :
-          <input type="checkbox" name="isPublic" ${rt.isPublic ? 'checked' : ''}>
-        </label>
-        <button type="submit">Enregistrer</button>
-        <button type="button" class="cancel-edit">Annuler</button>
+        </div>
+        <div>
+          <label for="description">Description :</label>
+          <textarea name="description" rows="3" required>${rt.description}</textarea>
+        </div>
+        <div class="flex items-center gap-2">
+          <input type="checkbox" name="isPublic" id="isPublic" class="accent-orange" ${rt.isPublic ? 'checked' : ''}>
+          <label for="isPublic">Public</label>
+        </div>
+        <div class="flex gap-4 justify-end mt-4">
+          <button type="submit" class="btn">Enregistrer</button>
+          <button type="button" class="btn-secondary text-red-600 border-red-600 hover:bg-red-100 cancel-edit">Annuler</button>
+        </div>
+        <p class="update-status text-green-600 text-sm mt-2"></p>
       </form>
-      <p class="update-status" style="margin-top: 0.5em; color: green;"></p>
     `;
 
-    div.querySelector('.edit-form').addEventListener('submit', (e) => this.submitEdit(e, rt.id));
+    div.querySelector('.my-form').addEventListener('submit', (e) => this.submitEdit(e, rt.id));
     div.querySelector('.cancel-edit').addEventListener('click', () => this.fetchRoadtrips());
   }
 
@@ -97,13 +99,13 @@ export class UserRoadtrips extends HTMLElement {
     })
       .then(res => res.json())
       .then(response => {
-        form.parentElement.querySelector('.update-status').textContent = 'Modifications enregistrées.';
+        form.querySelector('.update-status').textContent = 'Modifications enregistrées.';
         setTimeout(() => this.fetchRoadtrips(), 1000);
       });
   }
 
   confirmDelete(id) {
-    this.shadowRoot.querySelector('#confirm').show('Supprimer ce roadtrip ?', () => {
+    this.querySelector('#confirm').show('Supprimer ce roadtrip ?', () => {
       fetch(`/api/user/roadtrips/${id}`, { method: 'DELETE' })
         .then(res => {
           if (res.ok) this.fetchRoadtrips();
