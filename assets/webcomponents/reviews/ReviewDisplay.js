@@ -70,9 +70,9 @@ export function renderReview({ review, currentUserId, editable, onEdit, onDelete
   if (allowResponse) {
     div.querySelector('.response-form')?.addEventListener('submit', e => {
     e.preventDefault();
-    const comment = e.target.querySelector('textarea[name="comment"]')?.value;
-    const reviewId = e.target.dataset.reviewId;
-    onResponseEdit(reviewId, comment, 'new');
+      const comment = e.target.comment.value;
+      const reviewId = e.target.dataset.reviewId;
+      onResponseEdit(reviewId, comment, 'new');
   });
 
     div.querySelector('.edit-response')?.addEventListener('click', e => {

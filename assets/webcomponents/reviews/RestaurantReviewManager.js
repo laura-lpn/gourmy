@@ -57,13 +57,10 @@ export class RestaurantReviewManager extends HTMLElement {
   }
 
   async submitResponse(id, comment, type) {
-    if (!comment?.trim()) {
-      alert("Le champ commentaire est requis.");
-      return;
-    }
+    if (type === 'refresh') return;
 
     const formData = new FormData();
-    formData.append('comment', comment.trim());
+    formData.append('comment', comment);
 
     const endpoint = type === 'new'
       ? `/api/reviews/${id}/response`
@@ -74,11 +71,7 @@ export class RestaurantReviewManager extends HTMLElement {
       body: formData
     });
 
-    if (res.ok) {
-      this.fetchAndRender();
-    } else {
-      alert("Erreur lors de l'envoi de la réponse.");
-    }
+    if (res.ok) this.fetchAndRender();
   }
 
   confirmDelete(responseId) {
