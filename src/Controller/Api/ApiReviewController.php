@@ -130,7 +130,6 @@ class ApiReviewController extends AbstractController
 
         if ($deleteImage) {
             $review->setImageFile(null);
-            $review->setImageName(null);
         } elseif ($imageFile) {
             $review->setImageFile($imageFile);
             $uploadHandler->upload($review, 'imageFile');

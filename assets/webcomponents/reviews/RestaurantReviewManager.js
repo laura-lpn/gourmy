@@ -59,16 +59,16 @@ export class RestaurantReviewManager extends HTMLElement {
   async submitResponse(id, comment, type) {
     if (type === 'refresh') return;
 
-    const formData = new FormData();
-    formData.append('comment', comment);
-
     const endpoint = type === 'new'
       ? `/api/reviews/${id}/response`
       : `/api/reviews/${id}`;
 
     const res = await fetch(endpoint, {
       method: 'POST',
-      body: formData
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ comment })
     });
 
     if (res.ok) this.fetchAndRender();
