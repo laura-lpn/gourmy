@@ -28,7 +28,7 @@ export class RestaurantReviewManager extends HTMLElement {
   render() {
     this.innerHTML = `
       <style>.review { margin-bottom: 1rem; }</style>
-      <div id="reviews-container"></div>
+      <div id="reviews-container" class="space-y-6"></div>
       <modal-confirm id="confirm"></modal-confirm>
     `;
 
@@ -57,10 +57,13 @@ export class RestaurantReviewManager extends HTMLElement {
   }
 
   async submitResponse(id, comment, type) {
-    if (type === 'refresh') return;
-    const formData = new FormData();
+    if (!comment?.trim()) {
+      alert("Le champ commentaire est requis.");
+      return;
+    }
 
-    formData.append('comment', comment);
+    const formData = new FormData();
+    formData.append('comment', comment.trim());
 
     const endpoint = type === 'new'
       ? `/api/reviews/${id}/response`
@@ -71,7 +74,11 @@ export class RestaurantReviewManager extends HTMLElement {
       body: formData
     });
 
-    if (res.ok) this.fetchAndRender();
+    if (res.ok) {
+      this.fetchAndRender();
+    } else {
+      alert("Erreur lors de l'envoi de la réponse.");
+    }
   }
 
   confirmDelete(responseId) {

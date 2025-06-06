@@ -2,8 +2,6 @@ export function renderReview({ review, currentUserId, editable, onEdit, onDelete
   const div = document.createElement('div');
   div.setAttribute('data-id', review.id);
 
-  console.log('Rendering review:', review);
-
   div.className = "bg-white rounded-2xl w-4/5 mx-auto shadow-main p-6 flex flex-col md:flex-row gap-6 items-start relative";
 
   div.innerHTML = `    
@@ -71,11 +69,11 @@ export function renderReview({ review, currentUserId, editable, onEdit, onDelete
 
   if (allowResponse) {
     div.querySelector('.response-form')?.addEventListener('submit', e => {
-      e.preventDefault();
-      const comment = e.target.comment.value;
-      const reviewId = e.target.dataset.reviewId;
-      onResponseEdit(reviewId, comment, 'new');
-    });
+    e.preventDefault();
+    const comment = e.target.querySelector('textarea[name="comment"]')?.value;
+    const reviewId = e.target.dataset.reviewId;
+    onResponseEdit(reviewId, comment, 'new');
+  });
 
     div.querySelector('.edit-response')?.addEventListener('click', e => {
       const target = e.target;
