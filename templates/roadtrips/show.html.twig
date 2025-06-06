@@ -5,12 +5,15 @@
 {% endblock %}
 
 {% block body %}
-	<div class="mt-28 max-w-5xl mx-auto px-4">
-		<h1 class="my-h1 text-center">{{ roadtrip.title }}</h1>
+	<section
+		class="w-3/4 mx-auto px-6 py-8 mt-28">
+
+		{# Titre et alertes #}
+		<h1 class="text-3xl font-second font-medium text-blue mb-6 text-center">{{ roadtrip.title }}</h1>
 
 		{% for label, messages in app.flashes %}
 			{% for message in messages %}
-				<div class="alert alert-{{ label }}">
+				<div class="alert alert-{{ label }} mb-4">
 					{% autoescape false %}
 						{{ message }}
 					{% endautoescape %}
@@ -18,81 +21,87 @@
 			{% endfor %}
 		{% endfor %}
 
-		{% set points = [] %}
-		{% for step in roadtrip.steps %}
-			{% if step.restaurant %}
-				{% set points = points|merge([{
-            lat: step.restaurant.latitude,
-            lng: step.restaurant.longitude,
-            name: step.restaurant.name
-        }]) %}
-			{% endif %}
-		{% endfor %}
-
-		<div
-			class="flex gap-6 mb-8">
-			{# Colonne gauche : images des restaurants #}
-			<div class="w-2/5 flex flex-col gap-4">
+		{# Images + Carte #}
+		<div class="flex flex-col md:flex-row gap-10 items-start mb-12 h-[70vh]">
+			<div class="md:w-1/2 w-full h-full flex flex-col gap-4">
 				{% set images = roadtrip.steps
-      |filter(step => step.restaurant and step.restaurant.bannerName)
-      |map(step => vich_uploader_asset(step.restaurant, 'bannerFile'))
-      |slice(0, 3) %}
-
+				|filter(step => step.restaurant and step.restaurant.bannerName)
+				|map(step => vich_uploader_asset(step.restaurant, 'bannerFile'))
+				|slice(0, 3) %}
 				{% if images is not empty %}
 					{% for image in images %}
-						<img src="{{ image }}" alt="Restaurant étape" class="w-full h-48 object-cover rounded-xl">
+						<img src="{{ image }}" alt="Image restaurant" class="w-full h-[34vh] object-cover rounded-xl">
 					{% endfor %}
 				{% else %}
-					<p class="text-sm text-gray-500 italic">Aucune image disponible.</p>
+					<p class="text-sm italic text-gray-500">Aucune image disponible pour ce roadtrip.</p>
 				{% endif %}
 			</div>
 
-			{# Colonne droite : la carte #}
-			<div class="w-3/5">
+			<div class="w-1/2 h-full">
+				{% set points = [] %}
+				{% for step in roadtrip.steps %}
+					{% if step.restaurant %}
+						{% set points = points|merge([{ lat: step.restaurant.latitude, lng: step.restaurant.longitude, name: step.restaurant.name }]) %}
+					{% endif %}
+				{% endfor %}
 				<script type="module" src="{{ asset('webcomponents/maps/MapRoadtrip.js') }}"></script>
 				<map-roadtrip points='{{ points|json_encode|e("html_attr") }}'></map-roadtrip>
 			</div>
 		</div>
 
-		<div class="bg-white rounded-xl shadow-main p-6 space-y-4">
+		{# Description #}
+		<div class="bg-orange/5 rounded-xl p-6 mb-10">
+			<h2 class="text-xl font-medium flex gap-6 items-center font-second text-orange mb-4">
+				<span class="h-0.5 rounded-md bg-orange w-8 block"></span>
+				Description
+			</h2>
 			<p class="text-gray-800 leading-relaxed">{{ roadtrip.description }}</p>
+		</div>
 
-			<div>
-				<h2 class="my-h2 text-left mb-3">Étapes</h2>
+		{# Étapes #}
+		<div class="mb-12">
+			<h2 class="text-xl font-medium flex gap-6 items-center font-second text-blue mb-4">
+				<span class="h-0.5 rounded-md bg-blue w-8 block"></span>
+				Étapes du roadtrip
+			</h2>
 
-				<div class="space-y-4">
-					{% for step in roadtrip.steps %}
-						<div class="p-4 bg-gray-50 rounded-lg border border-gray-200 space-y-2">
-							<p class="font-second text-lg text-blue">{{ step.town }}</p>
-							<p class="text-sm text-gray-600">Nombre de repas :
-								<strong>{{ step.meals }}</strong>
+			<div class="space-y-4">
+				{% for step in roadtrip.steps %}
+					<div class="p-4 bg-white rounded-lg shadow-main border border-gray-200">
+						<p class="text-lg font-second text-blue mb-1">{{ step.town }}</p>
+						<p class="text-sm text-gray-600">Repas prévus :
+							<strong>{{ step.meals }}</strong>
+						</p>
+
+						{% if step.cuisine is not empty %}
+							<div class="flex flex-wrap gap-2 mt-2">
+								{% for type in step.cuisine %}
+									<span class="px-2 py-1 text-xs rounded-full bg-blue/10 text-blue border border-blue">
+										{{ type.name }}
+									</span>
+								{% endfor %}
+							</div>
+						{% endif %}
+
+						{% if step.restaurant %}
+							<p class="text-sm text-gray-600 mt-2">
+								Restaurant :
+								<a href="{{ path('app_restaurant_show', {slug: step.restaurant.slug}) }}" class="text-blue hover:underline">
+									{{ step.restaurant.name }}
+								</a>
 							</p>
-							{% if step.cuisine is not empty %}
-								<div class="flex flex-wrap gap-2 mt-1">
-									{% for type in step.cuisine %}
-										<span class="px-2 py-1 text-xs rounded-full bg-blue/10 text-blue border border-blue">
-											{{ type.name }}
-										</span>
-									{% endfor %}
-								</div>
-							{% endif %}
-							{% if step.restaurant %}
-								<p class="text-sm text-gray-600">Restaurant associé :
-									<a href="{{ path('app_restaurant_show', {slug: step.restaurant.slug}) }}" class="text-blue hover:underline">
-										{{ step.restaurant.name }}
-									</a>
-								</p>
-							{% endif %}
-						</div>
-					{% endfor %}
-				</div>
+						{% endif %}
+					</div>
+				{% endfor %}
 			</div>
 		</div>
 
-		<div class="text-center mt-8">
+		{# Retour #}
+		<div class="text-center">
 			<a href="{{ path('app_roadtrips') }}" class="btn-secondary inline-block">
 				← Retour aux roadtrips
 			</a>
 		</div>
-	</div>
+
+	</section>
 {% endblock %}

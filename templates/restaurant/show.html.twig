@@ -9,7 +9,7 @@
 		<div class="flex flex-col md:flex-row gap-12 items-start relative">
 			<div class="relative md:w-1/2 w-full">
 				{% if restaurant.bannerName %}
-					<img src="{{ vich_uploader_asset(restaurant, 'bannerFile') }}" alt="Image de {{ restaurant.name }}" class="rounded-xl w-full h-80 object-cover shadow-md">
+					<img src="{{ vich_uploader_asset(restaurant, 'bannerFile') }}" alt="Image de {{ restaurant.name }}" class="rounded-xl w-full h-80 object-cover">
 				{% endif %}
 				<div class="absolute -bottom-5 -right-5 w-20 h-20 bg-white rounded-full shadow-lg flex items-center justify-center">
 					<img src="{{ asset('images/chef-hat-blue.svg') }}" alt="Badge" class="w-16 h-16">
@@ -37,8 +37,8 @@
 		</div>
 
 		<div class="mt-12 bg-orange/5 rounded-xl p-6">
-			<h2 class="text-xl font-medium font-second text-orange mb-4">Images du restaurant</h2>
-			<div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+			<h2 class="text-xl font-medium flex gap-6 items-center font-second text-orange mb-4"><span class="h-0.5 rounded-md bg-orange w-8 block"></span>Images du restaurant</h2>
+			<div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
 				{% for review in images %}
 					<img src="{{ vich_uploader_asset(review, 'imageFile') }}" alt="..." class="rounded-lg object-cover w-48 h-48"/>
 				{% endfor %}

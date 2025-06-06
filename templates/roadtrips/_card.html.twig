@@ -1,4 +1,4 @@
-<a href="{{ path('app_roadtrip_show', { id: roadtrip.id }) }}" class="bg-orange/10 rounded-xl p-6 shadow-main hover:shadow-lg group">
+<a href="{{ path('app_roadtrip_show', { id: roadtrip.id }) }}" class="bg-orange/10 rounded-xl p-6 hover:shadow-main group">
 	{% set images = roadtrip.steps|slice(0, 3)|map(step => step.restaurant.bannerName ? vich_uploader_asset(step.restaurant, 'bannerFile') : null)|filter(v => v) %}
 	{% if images is not empty %}
 		<div class="flex gap-2 overflow-hidden mb-4">
@@ -13,7 +13,7 @@
 
 	<div class="text-sm text-gray-700 space-y-1">
 		<p>
-			<i class="fa-solid fa-route text-orange mr-1"></i>
+			<i class="fa-solid fa-signs-post text-orange mr-1"></i>
 			{{ roadtrip.steps|length }}
 			étapes</p>
 		<p>
