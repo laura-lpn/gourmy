@@ -1,6 +1,6 @@
 {% set current_route = app.request.attributes.get('_route') %}
 
-<header class="absolute py-4 top-0 z-10 px-10 w-full">
+<header class="fixed py-4 top-0 z-10 px-10 w-full">
 	<div class="bg-white/90 mx-12 py-3 px-8 flex justify-between items-center rounded-2xl">
 		<a href="{{path('app_home')}}"><img src="{{ asset('images/favicon.svg') }}" alt="Logo Gourmy" class="h-16">
 		</a>
