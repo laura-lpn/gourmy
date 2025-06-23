@@ -32,7 +32,6 @@ class RestaurantRepository extends ServiceEntityRepository
         WHERE LOWER(r.city) = LOWER(:town)
           AND r.is_valided = TRUE';
 
-        // Dynamically build cuisine filter
         if (!empty($cuisineNames)) {
             $placeholders = [];
             foreach ($cuisineNames as $i => $cuisine) {
