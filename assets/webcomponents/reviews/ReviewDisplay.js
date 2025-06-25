@@ -25,9 +25,9 @@ export function renderReview({ review, currentUserId, editable, onEditReview, on
           `}
           <p class="text-sm mb-2">${review.author.username}</p>
         </div>
-        <p class="text-orange font-second text-sm text-right">${review.rating}/5</p>
+        <p class="text-orange font-second text-sm text-right rating">${review.rating}/5</p>
       </div>
-      <p class="text-sm mt-2">${review.comment}</p>
+      <p class="text-sm mt-2 comment">${review.comment}</p>
     </div>
     ${editable && currentUserId === review.author.id ? `
       <div class="mt-3 flex gap-2 absolute top-2 right-6">

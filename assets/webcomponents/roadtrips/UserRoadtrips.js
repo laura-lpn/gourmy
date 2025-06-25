@@ -3,6 +3,7 @@ import '../ModalConfirm.js';
 export class UserRoadtrips extends HTMLElement {
   constructor() {
     super();
+    this.editingRoadtripId = null;
   }
 
   connectedCallback() {
@@ -54,31 +55,32 @@ export class UserRoadtrips extends HTMLElement {
     `;
   }
 
-
   enableEditRoadtrip(rt) {
+    this.editingRoadtripId = rt.id;
     const modal = this.querySelector('#modal');
+
     const formHtml = `
-    <div class="flex flex-col w-full">
+      <div class="flex flex-col w-full">
         <h2 class="text-xl text-center font-medium font-second mb-4">Modifier le roadtrip</h2>
-      <form id="edit-form" class="my-form">
-        <div>
-          <label for="title">Titre :</label>
-          <input type="text" name="title" value="${rt.title}" required>
-        </div>
-        <div>
-          <label for="description">Description :</label>
-          <textarea name="description" rows="3" required>${rt.description}</textarea>
-        </div>
-        <div class="flex items-center gap-2 mt-2">
-          <input type="checkbox" name="isPublic" id="isPublic" class="accent-orange" ${rt.isPublic ? 'checked' : ''}>
-          <label for="isPublic">Public</label>
-        </div>
-        <div class="flex gap-4 justify-end mt-4">
-          <button type="button" id="cancel-btn" class="btn-secondary">Annuler</button>
-          <button type="submit" class="btn">Modifier</button>
-        </div>
-      </form>
-    </div>
+        <form id="edit-form" class="my-form">
+          <div>
+            <label for="title">Titre :</label>
+            <input type="text" name="title" value="${rt.title}" required>
+          </div>
+          <div>
+            <label for="description">Description :</label>
+            <textarea name="description" rows="3" required>${rt.description}</textarea>
+          </div>
+          <div class="flex items-center gap-2 mt-2">
+            <input type="checkbox" name="isPublic" id="isPublic" class="accent-orange" ${rt.isPublic ? 'checked' : ''}>
+            <label for="isPublic">Public</label>
+          </div>
+          <div class="flex gap-4 justify-end mt-4">
+            <button type="button" id="cancel-btn" class="btn-secondary">Annuler</button>
+            <button type="submit" class="btn">Modifier</button>
+          </div>
+        </form>
+      </div>
     `;
 
     modal.showWithContent(formHtml, () => {});
@@ -88,21 +90,23 @@ export class UserRoadtrips extends HTMLElement {
     });
   }
 
-  submitEditRoadtrip(id) {
-    const form = this.querySelector('#edit-form');
+  submitEditRoadtrip(e) {
+    e.preventDefault();
+    const form = e.target;
     const data = {
       title: form.title.value,
       description: form.description.value,
       isPublic: form.isPublic.checked
     };
 
-    fetch(`/api/user/roadtrips/${id}`, {
+    fetch(`/api/user/roadtrips/${this.editingRoadtripId}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data)
     })
       .then(res => res.json())
       .then(() => {
+        this.querySelector('#modal')?.close();
         this.fetchRoadtrips();
       });
   }
