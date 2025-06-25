@@ -9,7 +9,7 @@
 		{% endif %}
 
 		<div class="mt-2">
-			<h3 class="text-lg font-medium font-second text-blue hover:underline mb-2">{{ restaurant.name }}</h3>
+			<h3 class="text-lg font-medium font-second text-blue mb-2">{{ restaurant.name }}</h3>
 			<p class="text-sm line-clamp-2">
 				{{ restaurant.description|striptags|length > 80 ? restaurant.description|striptags|slice(0, 77) ~ '...' : restaurant.description|striptags }}
 			</p>

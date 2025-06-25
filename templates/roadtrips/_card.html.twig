@@ -1,13 +1,28 @@
+{% set images = roadtrip.steps|slice(0, 3)|map(step => step.restaurant.bannerName ? vich_uploader_asset(step.restaurant, 'bannerFile') : null)|filter(v => v) %}
+{% set count = images|length %}
 <a href="{{ path('app_roadtrip_show', { id: roadtrip.id }) }}" class="bg-orange/10 rounded-xl p-6 hover:shadow-main group">
-	{% set images = roadtrip.steps|slice(0, 3)|map(step => step.restaurant.bannerName ? vich_uploader_asset(step.restaurant, 'bannerFile') : null)|filter(v => v) %}
-	{% if images is not empty %}
-		<div class="flex gap-2 overflow-hidden mb-4">
-			{% set count = images|length %}
-			{% for image in images %}
-				<img src="{{ image }}" alt="Preview" class="object-cover h-24 rounded-md" style="width: {{ 90 // count }}%;">
-			{% endfor %}
+	{% if count > 0 %}
+		<div class="mb-4">
+			{% if count == 1 %}
+				<img src="{{ images[0] }}" alt="Preview" class="object-cover h-24 w-full rounded-md">
+			{% elseif count == 2 %}
+				<div class="flex gap-2">
+					{% for image in images %}
+						<img src="{{ image }}" alt="Preview" class="object-cover h-24 w-1/2 rounded-md">
+					{% endfor %}
+				</div>
+			{% elseif count == 3 %}
+				<div class="flex gap-2 h-24">
+					<img src="{{ images[0] }}" alt="Preview" class="object-cover w-1/2 h-full rounded-md">
+					<div class="flex flex-col gap-2 w-1/2">
+						<img src="{{ images[1] }}" alt="Preview" class="object-cover h-1/2 w-full rounded-md">
+						<img src="{{ images[2] }}" alt="Preview" class="object-cover h-1/2 w-full rounded-md">
+					</div>
+				</div>
+			{% endif %}
 		</div>
 	{% endif %}
+
 
 	<h3 class="text-lg font-second font-semibold text-orange mb-2">{{ roadtrip.title }}</h3>
 
@@ -20,7 +35,7 @@
 			<i class="fa-solid fa-map-pin text-orange mr-1"></i>
 			Villes</p>
 
-		<div class="flex flex-wrap gap-2 pt-4">
+		<div class="flex flex-wrap gap-2">
 			{% set villes = [] %}
 			{% for step in roadtrip.steps %}
 				{% if step.town not in villes %}

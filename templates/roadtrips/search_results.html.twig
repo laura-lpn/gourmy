@@ -84,7 +84,6 @@
 		{% endif %}
 	</div>
 
-	{# Modal classique avec <dialog> intégré directement #}
 	<dialog id="saveModal" class="rounded-lg py-6 px-8 w-full bg-white max-w-xl backdrop:bg-black/50 fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50">
 		<form method="POST" action="{{ path('roadtrip_save') }}" class="my-form">
 			<input type="hidden" name="stepsData" value='{{ stepsForSave|json_encode|e('html_attr') }}'>

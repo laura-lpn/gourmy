@@ -69,10 +69,10 @@
 	<modal-confirm id="delete-confirm"></modal-confirm>
 	<script>
 		function confirmRestaurantDeletion() {
-const modal = document.getElementById('delete-confirm');
-modal.show("Voulez-vous vraiment supprimer ce restaurant ?", () => {
-window.location.href = "{{ path('app_restaurant_delete') }}";
-});
-}
+			const modal = document.getElementById('delete-confirm');
+			modal.show("Voulez-vous vraiment supprimer ce restaurant ?", () => {
+			window.location.href = "{{ path('app_restaurant_delete') }}";
+			});
+		}
 	</script>
 {% endblock %}
