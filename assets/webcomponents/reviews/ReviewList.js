@@ -119,8 +119,8 @@ export class ReviewList extends HTMLElement {
             review,
             currentUserId: parseInt(this.userId),
             editable: this.editable,
-            onEdit: id => this.enableEdit(id),
-            onDelete: id => this.confirmDelete(id),
+            onEditReview: id => this.enableEditReview(id),
+            onDeleteReview: id => this.confirmDeleteReview(id),
             allowResponse: false,
             onResponseEdit: () => {},
             onResponseDelete: () => {}
@@ -152,7 +152,7 @@ export class ReviewList extends HTMLElement {
       });
   }
 
-  confirmDelete(id) {
+  confirmDeleteReview(id) {
     const modal = this.querySelector('#confirm');
     modal.show("Supprimer cet avis ?", async () => {
       try {
@@ -169,7 +169,7 @@ export class ReviewList extends HTMLElement {
     });
   }
 
-    enableEdit(id) {
+    enableEditReview(id) {
       const div = this.querySelector(`[data-id="${id}"]`);
       const title = div.querySelector('h4')?.textContent || '';
       const comment = div.querySelector('p')?.textContent || '';
@@ -207,7 +207,7 @@ export class ReviewList extends HTMLElement {
       `;
 
       const modal = this.querySelector('#confirm');
-      modal.showWithContent(formHtml);
+      modal.showWithContent(formHtml, () => {});
       setTimeout(() => {
         modal.querySelector('form')?.addEventListener('submit', (e) => this.submitEdit(e, id));
         modal.querySelector('#cancel-btn')?.addEventListener('click', () => modal.close());

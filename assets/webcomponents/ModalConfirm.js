@@ -17,7 +17,6 @@ export class ModalConfirm extends HTMLElement {
     this.content = this.querySelector('#modal-content');
     this.actions = this.querySelector('#modal-actions');
 
-    // 🔧 Ajout du comportement du bouton Annuler
     this.querySelector('button[value="cancel"]')?.addEventListener('click', () => {
       this.close();
     });

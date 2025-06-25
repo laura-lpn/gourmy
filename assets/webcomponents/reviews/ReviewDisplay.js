@@ -1,5 +1,5 @@
-export function renderReview({ review, currentUserId, editable, onEdit, onDelete, allowResponse, onResponseEdit, onResponseDelete }) {
-  const wrapper = document.createElement('div'); // <== conteneur global
+export function renderReview({ review, currentUserId, editable, onEditReview, onDeleteReview, allowResponse, onResponseEdit, onResponseDelete }) {
+  const wrapper = document.createElement('div');
 
   // Bloc de l'avis
   const reviewCard = document.createElement('div');
@@ -31,10 +31,10 @@ export function renderReview({ review, currentUserId, editable, onEdit, onDelete
     </div>
     ${editable && currentUserId === review.author.id ? `
       <div class="mt-3 flex gap-2 absolute top-2 right-6">
-        <button class="btn-icon edit-btn text-blue hover:text-blue" title="Modifier" data-id="${review.id}">
+        <button data-action="edit-review" class="btn-icon text-blue hover:text-blue" title="Modifier" data-id="${review.id}">
           <i class="fa-solid fa-pen"></i>
         </button>
-        <button class="btn-icon delete-btn text-red-500 hover:text-red-700" title="Supprimer" data-id="${review.id}">
+        <button data-action="delete-review" class="btn-icon text-red-500 hover:text-red-700" title="Supprimer" data-id="${review.id}">
           <i class="fa-solid fa-trash"></i>
         </button>
       </div>
@@ -55,9 +55,9 @@ export function renderReview({ review, currentUserId, editable, onEdit, onDelete
           <p class="response-text mb-1">${review.response.comment}</p>
           <small class="text-blue">par ${review.response.author}</small>
           ${allowResponse ? `
-            <div class="mt-2 flex gap-2">
-              <button class="text-blue text-sm edit-response" data-id="${review.response.id}" data-comment="${review.response.comment}"><i class="fa-solid fa-pen"></i></button>
-              <button class="text-red-600 text-sm delete-response" data-id="${review.response.id}"><i class="fa-solid fa-trash"></i></button>
+            <div class="mt-2 flex gap-4">
+              <button data-action="edit-response" title="Modifier" class="text-blue text-sm" data-id="${review.response.id}" data-comment="${review.response.comment}"><i class="fa-solid fa-pen"></i></button>
+              <button data-action="delete-response" title="Supprimer" class="text-red-600 text-sm" data-id="${review.response.id}"><i class="fa-solid fa-trash"></i></button>
             </div>
           ` : ''}
         </div>
@@ -76,8 +76,8 @@ export function renderReview({ review, currentUserId, editable, onEdit, onDelete
 
   // Event bindings
   if (editable && currentUserId === review.author.id) {
-    reviewCard.querySelector('.edit-btn')?.addEventListener('click', () => onEdit(review.id));
-    reviewCard.querySelector('.delete-btn')?.addEventListener('click', () => onDelete(review.id));
+    reviewCard.querySelector('[data-action="edit-review"]')?.addEventListener('click', () => onEditReview(review.id));
+    reviewCard.querySelector('[data-action="delete-review"]')?.addEventListener('click', () => onDeleteReview(review.id));
   }
 
   if (allowResponse) {
@@ -88,7 +88,7 @@ export function renderReview({ review, currentUserId, editable, onEdit, onDelete
       onResponseEdit(reviewId, comment, 'new');
     });
 
-    responseBlock.querySelector('.edit-response')?.addEventListener('click', e => {
+    responseBlock.querySelector('[data-action="edit-response"]')?.addEventListener('click', e => {
       const target = e.target;
       const id = target.dataset.id;
       const comment = target.dataset.comment || '';
@@ -99,8 +99,8 @@ export function renderReview({ review, currentUserId, editable, onEdit, onDelete
           <textarea name="comment" required class="rounded border p-2 w-full bg-transparent">${comment}</textarea>
           <div class="flex gap-2">
             <button type="submit" class="btn">Mettre à jour</button>
-            <button type="button" class="btn-secondary  bg-transparent cancel-edit">Annuler</button>
-            <button type="button" class="delete-response text-sm text-red-500" data-id="${id}"><i class="fa-solid fa-trash"></i></button>
+            <button type="button" data-action="cancel-edit-response" class="btn-secondary bg-transparent">Annuler</button>
+            <button type="button" data-action="delete-response" class="text-sm text-red-600" data-id="${id}"><i class="fa-solid fa-trash"></i></button>
           </div>
         </form>
       `;
@@ -111,16 +111,16 @@ export function renderReview({ review, currentUserId, editable, onEdit, onDelete
         onResponseEdit(id, comment, 'edit');
       });
 
-      container.querySelector('.cancel-edit')?.addEventListener('click', () => {
+      container.querySelector('[data-action="cancel-edit-response"]')?.addEventListener('click', () => {
         onResponseEdit(null, null, 'refresh');
       });
 
-      container.querySelector('.delete-response')?.addEventListener('click', ev => {
+      container.querySelector('[data-action="delete-response"]')?.addEventListener('click', ev => {
         onResponseDelete(ev.target.dataset.id);
       });
     });
 
-    responseBlock.querySelector('.delete-response')?.addEventListener('click', e => {
+    responseBlock.querySelector('[data-action="delete-response"]')?.addEventListener('click', e => {
       onResponseDelete(e.target.dataset.id);
     });
   }

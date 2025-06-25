@@ -29,7 +29,7 @@ export class RestaurantReviewManager extends HTMLElement {
     this.innerHTML = `
       <style>.review { margin-bottom: 1rem; }</style>
       <div id="reviews-container" class="space-y-6"></div>
-      <modal-confirm id="confirm"></modal-confirm>
+      <modal-confirm id="modal"></modal-confirm>
     `;
 
     const container = this.querySelector('#reviews-container');
@@ -40,8 +40,8 @@ export class RestaurantReviewManager extends HTMLElement {
         review,
         currentUserId: null,
         editable: false,
-        onEdit: () => {},
-        onDelete: () => {},
+        onEditReview: () => {},
+        onDeleteReview: () => {},
         allowResponse: true,
         onResponseEdit: (id, comment, type) => {
           if (type === 'refresh') {
@@ -75,7 +75,7 @@ export class RestaurantReviewManager extends HTMLElement {
   }
 
   confirmDelete(responseId) {
-    this.querySelector('#confirm').show("Supprimer cette réponse ?", () => {
+    this.querySelector('#modal').show("Supprimer cette réponse ?", () => {
       fetch(`/api/reviews/${responseId}`, { method: 'DELETE' })
         .then(res => {
           if (res.ok) this.fetchAndRender();
