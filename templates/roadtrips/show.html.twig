@@ -29,9 +29,26 @@
 				|map(step => vich_uploader_asset(step.restaurant, 'bannerFile'))
 				|slice(0, 3) %}
 				{% if images is not empty %}
-					{% for image in images %}
-						<img src="{{ image }}" alt="Image restaurant" class="w-full h-[34vh] object-cover rounded-xl">
-					{% endfor %}
+					{% set count = images|length %}
+
+					{% if count == 1 %}
+						<img src="{{ images[0] }}" alt="Image restaurant" class="w-full h-full object-cover rounded-xl">
+
+					{% elseif count == 2 %}
+						<div class="flex flex-col gap-4 h-full">
+							<img src="{{ images[0] }}" alt="Image restaurant" class="w-full h-1/2 object-cover rounded-xl">
+							<img src="{{ images[1] }}" alt="Image restaurant" class="w-full h-1/2 object-cover rounded-xl">
+						</div>
+
+					{% elseif count == 3 %}
+						<div class="flex flex-col gap-4 h-full">
+							<img src="{{ images[0] }}" alt="Image restaurant" class="w-full h-1/2 object-cover rounded-xl">
+							<div class="flex gap-4 h-1/2">
+								<img src="{{ images[1] }}" alt="Image restaurant" class="w-1/2 object-cover rounded-xl">
+								<img src="{{ images[2] }}" alt="Image restaurant" class="w-1/2 object-cover rounded-xl">
+							</div>
+						</div>
+					{% endif %}
 				{% else %}
 					<p class="text-sm italic text-gray-500">Aucune image disponible pour ce roadtrip.</p>
 				{% endif %}

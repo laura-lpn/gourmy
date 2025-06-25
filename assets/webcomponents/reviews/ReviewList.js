@@ -54,9 +54,9 @@ export class ReviewList extends HTMLElement {
 
       <div id="reviews-container" class="space-y-6"></div>
       <div class="pagination flex items-center justify-center gap-4 mt-6">
-        <button id="prev-page" class="btn">Précédent</button>
+        <button id="prev-page" class="btn-secondary">Précédent</button>
         <span id="pagination-info" class="text-sm"></span>
-        <button id="next-page" class="btn">Suivant</button>
+        <button id="next-page" class="btn-secondary">Suivant</button>
       </div>
 
       <modal-confirm id="confirm"></modal-confirm>
@@ -111,8 +111,8 @@ export class ReviewList extends HTMLElement {
         const container = this.querySelector('#reviews-container');
         container.innerHTML = '';
 
-        this.total = data.total;
-        this.querySelector('#pagination-info').innerText = `Page ${this.page} / ${Math.ceil(this.total / this.limit)}`;
+        const totalPages = Math.max(1, Math.ceil(this.total / this.limit));
+        this.querySelector('#pagination-info').innerText = `Page ${this.page} / ${totalPages}`;
 
         data.data.forEach(review => {
           const div = renderReview({
@@ -172,8 +172,8 @@ export class ReviewList extends HTMLElement {
     enableEditReview(id) {
       const div = this.querySelector(`[data-id="${id}"]`);
       const title = div.querySelector('h4')?.textContent || '';
-      const comment = div.querySelector('p')?.textContent || '';
-      const rating = div.querySelector('p:nth-of-type(2)')?.textContent.match(/\d+/)?.[0] || 5;
+      const comment = div.querySelector('p.comment')?.textContent || '';
+      const rating = div.querySelector('p.rating')?.textContent.match(/\d+/)?.[0] || 5;
       const image = div.querySelector('img')?.src || null;
 
       const formHtml = `
