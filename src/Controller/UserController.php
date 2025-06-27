@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Form\EditUserType;
+use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -78,5 +79,28 @@ final class UserController extends AbstractController
 
         $this->addFlash('success', 'Votre compte a bien été supprimé');
         return $this->redirect($logoutUrlGenerator->getLogoutPath());
+    }
+
+    #[Route('/utilisateur/@{username}', name: 'app_user_show')]
+    public function show(string $username, UserRepository $userRepository): Response
+    {
+        $user = $userRepository->createQueryBuilder('u')
+            ->where('LOWER(u.username) = :username')
+            ->setParameter('username', strtolower($username))
+            ->getQuery()
+            ->getOneOrNullResult();
+
+        if (!$user) {
+            return $this->redirectToRoute('app_home');
+        }
+
+        $photos = $user->getReviews()->filter(
+            fn($review) => $review->getImageName() !== null
+        )->toArray();
+
+        return $this->render('user/show.html.twig', [
+            'user' => $user,
+            'photos' => $photos
+        ]);
     }
 }

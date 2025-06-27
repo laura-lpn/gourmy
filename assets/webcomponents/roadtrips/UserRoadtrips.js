@@ -4,6 +4,8 @@ export class UserRoadtrips extends HTMLElement {
   constructor() {
     super();
     this.editingRoadtripId = null;
+    this.isPublicTab = this.getAttribute('is-public') === "true" || false;
+    this.username = this.getAttribute('username') || '';
   }
 
   connectedCallback() {
@@ -14,14 +16,15 @@ export class UserRoadtrips extends HTMLElement {
   render() {
     this.innerHTML = `
       <div class="space-y-6">
-        <div id="roadtrips-container" class="space-y-6"></div>
+        <div id="roadtrips-container" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"></div>
         <modal-confirm id="modal"></modal-confirm>
       </div>
     `;
   }
 
   fetchRoadtrips() {
-    fetch('/api/user/roadtrips')
+    const api = this.isPublicTab && this.username ? `/api/user/${this.username}/roadtrips` : '/api/user/roadtrips';
+    fetch(api)
       .then(res => res.json())
       .then(data => {
         const container = this.querySelector('#roadtrips-container');
@@ -29,27 +32,75 @@ export class UserRoadtrips extends HTMLElement {
 
         data.forEach(rt => {
           const div = document.createElement('div');
-          div.className = 'bg-white rounded-xl shadow-main p-6 border border-gray-100';
           div.dataset.id = rt.id;
           div.innerHTML = this.renderDisplay(rt);
           container.appendChild(div);
 
-          div.querySelector('[data-action="edit-roadtrip"]').addEventListener('click', () => this.enableEditRoadtrip(rt));
-          div.querySelector('[data-action="delete-roadtrip"]').addEventListener('click', () => this.confirmDeleteRoadtrip(rt.id));
+          const editBtn = div.querySelector('[data-action="edit-roadtrip"]');
+          if (editBtn) {
+            editBtn.addEventListener('click', () => this.enableEditRoadtrip(rt));
+          }
+
+          const deleteBtn = div.querySelector('[data-action="delete-roadtrip"]');
+          if (deleteBtn) {
+            deleteBtn.addEventListener('click', () => this.confirmDeleteRoadtrip(rt.id));
+          }
         });
       });
   }
 
   renderDisplay(rt) {
+    const steps = Array.isArray(rt.steps) ? rt.steps : [];
+    const stepCount = steps.length;
+    const cities = [...new Set(steps.map(s => s.town).filter(Boolean))];
+    const images = steps
+      .filter(s => s.restaurant?.banner)
+      .slice(0, 3)
+      .map(s => s.restaurant.banner);
+
+    const imageHtml = (() => {
+      if (images.length === 1) {
+        return `<img src="${images[0]}" alt="Preview" class="object-cover h-24 w-full rounded-md">`;
+      } else if (images.length === 2) {
+        return `
+          <div class="flex gap-2">
+            ${images.map(img => `<img src="${img}" alt="Preview" class="object-cover h-24 w-1/2 rounded-md">`).join('')}
+          </div>`;
+      } else if (images.length === 3) {
+        return `
+          <div class="flex gap-2 h-24">
+            <img src="${images[0]}" alt="Preview" class="object-cover w-1/2 h-full rounded-md">
+            <div class="flex flex-col gap-2 w-1/2">
+              <img src="${images[1]}" alt="Preview" class="object-cover h-1/2 w-full rounded-md">
+              <img src="${images[2]}" alt="Preview" class="object-cover h-1/2 w-full rounded-md">
+            </div>
+          </div>`;
+      }
+      return '';
+    })();
+
     return `
-      <div class="display space-y-2">
-        <h3 class="text-xl font-second text-blue font-medium">${rt.title}</h3>
-        <p class="text-gray-700">${rt.description}</p>
-        <span class="text-sm text-gray-500 font-medium">${rt.isPublic ? "Public" : "Privé"}</span>
+      <div class="bg-orange/10 rounded-xl p-6 hover:shadow-main group space-y-2">
+        ${imageHtml ? `<div class="mb-4">${imageHtml}</div>` : ''}
+        
+        <h3 class="text-lg font-second font-semibold text-orange mb-2">${rt.title}</h3>
+
+        <div class="text-sm text-gray-700 space-y-1">
+          <p><i class="fa-solid fa-signs-post text-orange mr-1"></i>${stepCount} étapes</p>
+          <p><i class="fa-solid fa-map-pin text-orange mr-1"></i>Villes</p>
+          <div class="flex flex-wrap gap-2">
+            ${cities.map(ville => `<span class="bg-blue text-white rounded-full py-1 px-3 text-xs">${ville}</span>`).join('')}
+          </div>
+        </div>
+
+        <p class="text-sm mt-2 text-blue/50 font-medium">${rt.isPublic ? 'Public' : 'Privé'}</p>
+
         <div class="flex flex-wrap gap-4 pt-2">
           <a href="/roadtrips/${rt.id}" title="Voir" class="text-blue text-sm"><i class="fa-solid fa-eye"></i></a>
-          <button data-action="edit-roadtrip" title="Modifier" class="text-blue text-sm"><i class="fa-solid fa-pen"></i></button>
-          <button data-action="delete-roadtrip" title="Supprimer" class="text-red-600 text-sm"><i class="fa-solid fa-trash"></i></button>
+          ${this.isPublicTab ? '' : `
+            <button data-action="edit-roadtrip" title="Modifier" class="text-blue text-sm"><i class="fa-solid fa-pen"></i></button>
+            <button data-action="delete-roadtrip" title="Supprimer" class="text-red-600 text-sm"><i class="fa-solid fa-trash"></i></button>
+          `}
         </div>
       </div>
     `;
