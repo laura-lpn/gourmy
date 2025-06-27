@@ -5,12 +5,7 @@
 {% endblock %}
 
 {% block body %}
-	<section
-		class="w-3/4 mx-auto px-6 py-8 mt-28">
-
-		{# Titre et alertes #}
-		<h1 class="text-3xl font-second font-medium text-blue mb-6 text-center">{{ roadtrip.title }}</h1>
-
+	<div class="w-3/4 mx-auto px-6 py-8 mt-28">
 		{% for label, messages in app.flashes %}
 			{% for message in messages %}
 				<div class="alert alert-{{ label }} mb-4">
@@ -21,27 +16,24 @@
 			{% endfor %}
 		{% endfor %}
 
-		{# Images + Carte #}
-		<div class="flex flex-col md:flex-row gap-10 items-start mb-12 h-[70vh]">
-			<div class="md:w-1/2 w-full h-full flex flex-col gap-4">
+		{# Images + Description #}
+		<section class="flex flex-col md:flex-row gap-10 mb-12 items-center">
+			<div class="md:w-1/3 w-full flex flex-col gap-4">
 				{% set images = roadtrip.steps
-				|filter(step => step.restaurant and step.restaurant.bannerName)
-				|map(step => vich_uploader_asset(step.restaurant, 'bannerFile'))
-				|slice(0, 3) %}
+			|filter(step => step.restaurant and step.restaurant.bannerName)
+			|map(step => vich_uploader_asset(step.restaurant, 'bannerFile'))
+			|slice(0, 3) %}
 				{% if images is not empty %}
 					{% set count = images|length %}
-
 					{% if count == 1 %}
-						<img src="{{ images[0] }}" alt="Image restaurant" class="w-full h-full object-cover rounded-xl">
-
+						<img src="{{ images[0] }}" alt="Image restaurant" class="w-full h-80 object-cover rounded-xl">
 					{% elseif count == 2 %}
-						<div class="flex flex-col gap-4 h-full">
+						<div class="flex flex-col gap-4 h-80">
 							<img src="{{ images[0] }}" alt="Image restaurant" class="w-full h-1/2 object-cover rounded-xl">
 							<img src="{{ images[1] }}" alt="Image restaurant" class="w-full h-1/2 object-cover rounded-xl">
 						</div>
-
 					{% elseif count == 3 %}
-						<div class="flex flex-col gap-4 h-full">
+						<div class="flex flex-col gap-4 h-80">
 							<img src="{{ images[0] }}" alt="Image restaurant" class="w-full h-1/2 object-cover rounded-xl">
 							<div class="flex gap-4 h-1/2">
 								<img src="{{ images[1] }}" alt="Image restaurant" class="w-1/2 object-cover rounded-xl">
@@ -54,64 +46,70 @@
 				{% endif %}
 			</div>
 
-			<div class="w-1/2 h-full">
-				{% set points = [] %}
-				{% for step in roadtrip.steps %}
-					{% if step.restaurant %}
-						{% set points = points|merge([{ lat: step.restaurant.latitude, lng: step.restaurant.longitude, name: step.restaurant.name }]) %}
-					{% endif %}
-				{% endfor %}
-				<script type="module" src="{{ asset('webcomponents/maps/MapRoadtrip.js') }}"></script>
-				<map-roadtrip points='{{ points|json_encode|e("html_attr") }}'></map-roadtrip>
+			{# Titre + Description #}
+			<div class="md:w-2/3 w-full flex justify-center flex-col gap-4">
+				<h1 class="font-second text-blue text-2xl font-medium">{{ roadtrip.title }}</h1>
+				<p class="text-gray-800 leading-relaxed">{{ roadtrip.description }}</p>
 			</div>
-		</div>
+		</section>
 
-		{# Description #}
-		<div class="bg-orange/5 rounded-xl p-6 mb-10">
+		{# Carte pleine largeur #}
+		<section class="mb-12 w-full h-80 pb-10">
 			<h2 class="text-xl font-medium flex gap-6 items-center font-second text-orange mb-4">
 				<span class="h-0.5 rounded-md bg-orange w-8 block"></span>
-				Description
+				Carte du roadtrip
 			</h2>
-			<p class="text-gray-800 leading-relaxed">{{ roadtrip.description }}</p>
-		</div>
+
+			{% set points = [] %}
+			{% for step in roadtrip.steps %}
+				{% if step.restaurant %}
+					{% set points = points|merge([{ lat: step.restaurant.latitude, lng: step.restaurant.longitude, name: step.restaurant.name }]) %}
+				{% endif %}
+			{% endfor %}
+			<script type="module" src="{{ asset('webcomponents/maps/MapRoadtrip.js') }}"></script>
+			<map-roadtrip points='{{ points|json_encode|e("html_attr") }}'></map-roadtrip>
+		</section>
 
 		{# Étapes #}
-		<div class="mb-12">
+		<section class="mb-12 space-y-6">
 			<h2 class="text-xl font-medium flex gap-6 items-center font-second text-blue mb-4">
 				<span class="h-0.5 rounded-md bg-blue w-8 block"></span>
 				Étapes du roadtrip
 			</h2>
 
-			<div class="space-y-4">
-				{% for step in roadtrip.steps %}
-					<div class="p-4 bg-white rounded-lg shadow-main border border-gray-200">
-						<p class="text-lg font-second text-blue mb-1">{{ step.town }}</p>
-						<p class="text-sm text-gray-600">Repas prévus :
-							<strong>{{ step.meals }}</strong>
-						</p>
+			{% for step in roadtrip.steps %}
+				<div class="bg-orange/5 rounded-xl p-6">
+					<h3 class="text-lg font-second text-orange font-medium flex items-center gap-4 mb-2">
+						<span class="h-0.5 w-6 bg-orange rounded-md block"></span>
+						{{ step.town }}
+					</h3>
 
-						{% if step.cuisine is not empty %}
-							<div class="flex flex-wrap gap-2 mt-2">
-								{% for type in step.cuisine %}
-									<span class="px-2 py-1 text-xs rounded-full bg-blue/10 text-blue border border-blue">
-										{{ type.name }}
-									</span>
-								{% endfor %}
-							</div>
-						{% endif %}
+					<p class="text-sm mb-4">Repas prévus :
+						<strong class="font-medium">{{ step.meals }}</strong>
+					</p>
 
-						{% if step.restaurant %}
-							<p class="text-sm text-gray-600 mt-2">
-								Restaurant :
-								<a href="{{ path('app_restaurant_show', {slug: step.restaurant.slug}) }}" class="text-blue hover:underline">
-									{{ step.restaurant.name }}
-								</a>
-							</p>
-						{% endif %}
-					</div>
-				{% endfor %}
-			</div>
-		</div>
+					{% if step.cuisine is not empty %}
+						<div class="flex flex-wrap gap-2 mb-4">
+							{% for type in step.cuisine %}
+								<span class="px-2 py-1 text-xs rounded-full bg-blue text-white">
+									{{ type.name }}
+								</span>
+							{% endfor %}
+						</div>
+					{% endif %}
+
+					{% if step.restaurant %}
+						<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
+							{{ include('restaurant/_card.html.twig', {
+								restaurant: step.restaurant,
+								clickable: true,
+								compact: true
+							}) }}
+						</div>
+					{% endif %}
+				</div>
+			{% endfor %}
+		</section>
 
 		{# Retour #}
 		<div class="text-center">
@@ -120,5 +118,5 @@
 			</a>
 		</div>
 
-	</section>
+	</div>
 {% endblock %}

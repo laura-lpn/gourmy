@@ -28,7 +28,7 @@
   /* TITLES */
 
   .my-h1 {
-    @apply text-center text-3xl font-bold font-second text-blue mb-6;
+    @apply text-center text-3xl font-medium font-second text-blue mb-6;
   }
   .my-h2 {
     @apply text-2xl font-medium font-second text-blue mb-6 text-center;

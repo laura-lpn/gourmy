@@ -83,11 +83,11 @@ export class UserRoadtrips extends HTMLElement {
       <div class="bg-orange/10 rounded-xl p-6 hover:shadow-main group space-y-2">
         ${imageHtml ? `<div class="mb-4">${imageHtml}</div>` : ''}
         
-        <h3 class="text-lg font-second font-semibold text-orange mb-2">${rt.title}</h3>
+        <h3 class="text-lg font-second font-medium text-orange mb-2">${rt.title}</h3>
 
         <div class="text-sm text-gray-700 space-y-1">
           <p><i class="fa-solid fa-signs-post text-orange mr-1"></i>${stepCount} étapes</p>
-          <p><i class="fa-solid fa-map-pin text-orange mr-1"></i>Villes</p>
+          <p><i class="fa-solid fa-earth-americas text-orange mr-1"></i>Villes</p>
           <div class="flex flex-wrap gap-2">
             ${cities.map(ville => `<span class="bg-blue text-white rounded-full py-1 px-3 text-xs">${ville}</span>`).join('')}
           </div>

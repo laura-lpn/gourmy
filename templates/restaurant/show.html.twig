@@ -5,8 +5,8 @@
 {% endblock %}
 
 {% block body %}
-	<section class="w-3/4 mx-auto px-6 py-8 mt-28">
-		<div class="flex flex-col md:flex-row gap-12 items-start relative">
+	<div class="w-3/4 mx-auto px-6 py-8 mt-28">
+		<section class="flex flex-col md:flex-row gap-12 items-start relative">
 			<div class="relative md:w-1/2 w-full">
 				{% if restaurant.bannerName %}
 					<img src="{{ vich_uploader_asset(restaurant, 'bannerFile') }}" alt="Image de {{ restaurant.name }}" class="rounded-xl w-full h-80 object-cover">
@@ -34,9 +34,40 @@
 					</span>
 				</div>
 			</div>
-		</div>
+		</section>
 
-		<div class="mt-12 bg-orange/5 rounded-xl p-6">
+		<section class="mt-12 flex flex-col md:flex-row gap-12 items-start">
+			<div class="md:w-1/2 w-full space-y-2 bg-blue/5 rounded-xl p-6">
+				<h2 class="text-xl font-medium flex gap-6 items-center font-second text-blue mb-4">
+					<span class="h-0.5 rounded-md bg-blue w-8 block"></span>Infos pratiques
+				</h2>
+				<p><strong class="font-medium">Adresse :</strong> {{ restaurant.address ~ ', ' ~ restaurant.postalCode ~ ' ' ~ restaurant.city ~ ', ' ~ restaurant.country }}</p>
+				<p><strong class="font-medium">Horaires :</strong> {{ restaurant.openingHours }}</p>
+				<p><strong class="font-medium">Tarifs :</strong> {{ restaurant.priceRange }}</p>
+				{% if restaurant.phoneNumber %}
+					<p><strong class="font-medium">Téléphone :</strong> {{ restaurant.phoneNumber }}</p>
+				{% endif %}
+				{% if restaurant.website %}
+					<p><strong class="font-medium">Site Web :</strong> <a href="{{ restaurant.website }}" target="_blank" class="text-blue underline">{{ restaurant.website }}</a></p>
+				{% endif %}
+				{% if restaurant.types is not empty %}
+					<p><strong class="font-medium">Types de cuisine :</strong> {{ restaurant.types|map(t => t.name)|join(', ') }}</p>
+				{% endif %}
+			</div>
+
+			<div class="md:w-1/2 w-full">
+				<map-preview
+					address="{{ restaurant.address|e('html_attr') }}"
+					postal-code="{{ restaurant.postalCode|e('html_attr') }}"
+					city="{{ restaurant.city|e('html_attr') }}"
+					country="{{ restaurant.country|e('html_attr') }}">
+					<div id="map" class="rounded-xl" style="height: 400px; width: 100%;"></div>
+				</map-preview>
+			</div>
+		</section>
+
+
+		<section class="mt-12 bg-orange/5 rounded-xl p-6">
 			<h2 class="text-xl font-medium flex gap-6 items-center font-second text-orange mb-4">
 				<span class="h-0.5 rounded-md bg-orange w-8 block"></span>Images du restaurant</h2>
 			<div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
@@ -47,13 +78,14 @@
 					<p class="text-center col-span-full text-sm">Aucune image pour ce restaurant.</p>
 				{% endif %}
 			</div>
-		</div>
+		</section>
 
-		<div class="mt-12">
+		<section class="mt-12">
 			<review-list restaurant-id="{{ restaurant.id }}" user-id="{{ app.user ? app.user.id : '' }}" user-username="{{ app.user ? app.user.username : '' }}" is-owner="{{ isOwner ? '1' : '0' }}" editable="true" added="true"></review-list>
-		</div>
-	</section>
+		</section>
+	</div>
 
 	<script type="module" src="{{ asset('webcomponents/reviews/ReviewList.js') }}"></script>
+	<script type="module" src="{{ asset('webcomponents/maps/MapPreview.js') }}"></script>
 	<script type="module" src="{{ asset('webcomponents/ModalConfirm.js') }}"></script>
 {% endblock %}

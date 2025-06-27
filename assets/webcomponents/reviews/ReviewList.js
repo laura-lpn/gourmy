@@ -48,11 +48,11 @@ export class ReviewList extends HTMLElement {
         <button id="open-form" class="btn mx-auto block mb-6">Ajouter un avis</button>
       ` : this.added ? `
         <p class="text-center text-sm">
-          <a href="/connexion?target=${location.pathname}" class="blue">Connectez-vous pour laisser un commentaire</a>
+          <a href="/connexion?target=${location.pathname}" class="btn-secondary">Connectez-vous pour laisser un commentaire</a>
         </p>
       ` : ''}
 
-      <div id="reviews-container" class="space-y-6"></div>
+      <div id="reviews-container" class="space-y-6 mt-8"></div>
       <div class="pagination flex items-center justify-center gap-4 mt-6">
         <button id="prev-page" class="btn-secondary">Précédent</button>
         <span id="pagination-info" class="text-sm"></span>

@@ -1,7 +1,14 @@
-<a href="{{ path('app_restaurant_show', { slug: restaurant.slug }) }}">
-	<div class="bg-white rounded-2xl shadow-main p-4 flex flex-col gap-2 items-center w-full max-w-xs">
-		{% if restaurant.bannerName %}
-			<img src="{{ vich_uploader_asset(restaurant, 'bannerFile') }}" alt="Photo de {{ restaurant.name }}" class="rounded-xl h-40 w-full object-cover">
+{% set r = restaurant is defined ? restaurant : step.restaurant %}
+{% set link = link is defined ? link : path('app_restaurant_show', { slug: r.slug }) %}
+{% set clickable = clickable is defined ? clickable : true %}
+{% set compact = compact is defined ? compact : false %}
+
+{% if clickable %}
+<a href="{{ link }}">
+{% endif %}
+	<div class="bg-white rounded-2xl shadow-main p-4 flex flex-col gap-2 items-center w-full {{ compact ? 'max-w-sm' : 'max-w-xs' }}">
+		{% if r.bannerName %}
+			<img src="{{ vich_uploader_asset(r, 'bannerFile') }}" alt="Photo de {{ r.name }}" class="rounded-xl h-40 w-full object-cover">
 		{% else %}
 			<div class="h-40 w-full bg-gray-100 rounded-xl flex items-center justify-center text-gray-400">
 				Pas d'image
@@ -9,21 +16,22 @@
 		{% endif %}
 
 		<div class="mt-2">
-			<h3 class="text-lg font-medium font-second text-blue mb-2">{{ restaurant.name }}</h3>
+			<h3 class="text-lg font-medium font-second text-blue mb-2">{{ r.name }}</h3>
 			<p class="text-sm line-clamp-2">
-				{{ restaurant.description|striptags|length > 80 ? restaurant.description|striptags|slice(0, 77) ~ '...' : restaurant.description|striptags }}
+				{{ r.description|striptags|length > 80 ? r.description|striptags|slice(0, 77) ~ '...' : r.description|striptags }}
 			</p>
 			<div class="flex gap-1 items-center text-blue mt-2">
-				{% set avg = restaurant.averageRating %}
+				{% set avg = r.averageRating %}
 				{% for i in 1..5 %}
 					<i class="fa{{ avg >= i ? 's' : (avg >= i - 0.5 ? 's' : 'r') }} fa-star text-sm"></i>
 				{% endfor %}
 				<span class="text-sm text-black ml-2">
-					{{ restaurant.reviews|filter(r => not r.response)|length }}
+					{{ r.reviews|filter(r => not r.response)|length }}
 					avis
 				</span>
 			</div>
 		</div>
-
 	</div>
+{% if clickable %}
 </a>
+{% endif %}
