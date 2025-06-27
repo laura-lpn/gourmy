@@ -37,8 +37,11 @@ class RegistrationController extends AbstractController
             $existingByEmail = $entityManager->getRepository(User::class)->findOneBy(['email' => $user->getEmail()]);
             $existingByUsername = $entityManager->getRepository(User::class)->findOneBy(['username' => $user->getUsername()]);
 
-            if ($existingByEmail || $existingByUsername) {
+            if ($existingByEmail) {
                 $form->addError(new FormError("Un compte avec ces identifiants existe déjà"));
+            }
+            if ($existingByUsername) {
+                $form->addError(new FormError("Ce nom d'utilisateur est déjà utilisé"));
             }
 
             if ($form->isValid()) {
