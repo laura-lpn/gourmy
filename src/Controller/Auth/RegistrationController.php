@@ -9,6 +9,7 @@ use App\Security\EmailVerifier;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Mime\Address;
@@ -27,44 +28,42 @@ class RegistrationController extends AbstractController
         if ($this->getUser()) {
             return $this->redirectToRoute('app_home');
         }
+
         $user = new User();
         $form = $this->createForm(RegistrationFormType::class, $user);
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            /** @var string $plainPassword */
-            $plainPassword = $form->get('plainPassword')->getData();
+        if ($form->isSubmitted()) {
+            $existingByEmail = $entityManager->getRepository(User::class)->findOneBy(['email' => $user->getEmail()]);
+            $existingByUsername = $entityManager->getRepository(User::class)->findOneBy(['username' => $user->getUsername()]);
 
-            $existingUser = $entityManager->getRepository(User::class)->findOneBy([
-                'email' => $user->getEmail()
-            ]) || $entityManager->getRepository(User::class)->findOneBy([
-                'username' => $user->getUsername()
-            ]);
-
-            if ($existingUser) {
-                $this->addFlash('error', 'Un utilisateur avec cet email ou ce nom d\'utilisateur existe déjà.');
-                return $this->render('auth/register.html.twig', [
-                    'registrationForm' => $form,
-                ]);
+            if ($existingByEmail) {
+                $form->addError(new FormError("Un compte avec ces identifiants existe déjà"));
+            }
+            if ($existingByUsername) {
+                $form->addError(new FormError("Ce nom d'utilisateur est déjà utilisé"));
             }
 
-            $user->setPassword($userPasswordHasher->hashPassword($user, $plainPassword));
+            if ($form->isValid()) {
+                $plainPassword = $form->get('plainPassword')->getData();
+                $user->setPassword($userPasswordHasher->hashPassword($user, $plainPassword));
 
-            $entityManager->persist($user);
-            $entityManager->flush();
+                $entityManager->persist($user);
+                $entityManager->flush();
 
-            $this->emailVerifier->sendEmailConfirmation(
-                'app_verify_email',
-                $user,
-                (new TemplatedEmail())
-                    ->from(new Address('contact@gourmy.travel', 'Gourmy'))
-                    ->to((string) $user->getEmail())
-                    ->subject('Please Confirm your Email')
-                    ->htmlTemplate('email/confirmation_email.html.twig')
-            );
+                $this->emailVerifier->sendEmailConfirmation(
+                    'app_verify_email',
+                    $user,
+                    (new TemplatedEmail())
+                        ->from(new Address('contact@gourmy.travel', 'Gourmy'))
+                        ->to((string) $user->getEmail())
+                        ->subject('Please Confirm your Email')
+                        ->htmlTemplate('email/confirmation_email.html.twig')
+                );
 
-            $this->addFlash('success', 'Votre compte a bien été créé. Veuillez confirmer votre adresse email pour pouvoir vous connecter.');
-            return $this->redirectToRoute('app_login');
+                $this->addFlash('success', 'Votre compte a bien été créé. Veuillez confirmer votre adresse email pour pouvoir vous connecter.');
+                return $this->redirectToRoute('app_login');
+            }
         }
 
         return $this->render('auth/register.html.twig', [
@@ -72,7 +71,7 @@ class RegistrationController extends AbstractController
         ]);
     }
 
-    #[Route('/verifiation/email', name: 'app_verify_email')]
+    #[Route('/verification/email', name: 'app_verify_email')]
     public function verifyUserEmail(Request $request, UserRepository $userRepository, TranslatorInterface $translator): Response
     {
         if ($this->getUser()) {

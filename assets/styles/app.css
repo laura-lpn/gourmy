@@ -5,9 +5,17 @@
 @import url(https://fonts.bunny.net/css?family=kodchasan:200,200i,300,300i,400,400i,500,500i,600,600i,700,700i|poppins:100,100i,200,200i,300,300i,400,400i,500,500i,600,600i,700,700i,800,800i,900,900i);
 
 @layer components {
-  .my-input-file {
-    @apply file:mr-4 file:py-2 file:px-4 file:rounded-lg file:cursor-pointer file:border-0 file:text-sm file:font-medium file:bg-white/20 file:text-black;
+  /* BUTTONS */
+
+  .btn {
+    @apply px-6 py-2 rounded-md bg-blue border-blue border text-sm text-white font-medium transition-colors duration-300 hover:bg-blue/80;
   }
+
+  .btn-secondary {
+    @apply px-6 py-2 rounded-md bg-white border-blue border text-sm text-blue font-medium transition-colors duration-300 hover:bg-blue/30;
+  }
+
+  /* NAV */
 
   .my-nav {
     @apply relative duration-500 block hover:text-blue after:absolute after:content-[''] after:top-full after:h-0.5 after:w-full after:left-0 after:bg-blue after:rounded-full after:origin-right after:scale-x-0 after:transition-transform after:duration-500 hover:after:origin-left hover:after:scale-x-100;
@@ -16,10 +24,110 @@
   .my-nav-actif {
     @apply text-blue after:scale-x-100;
   }
+
+  /* TITLES */
+
+  .my-h1 {
+    @apply text-center text-3xl font-medium font-second text-blue mb-6;
+  }
+  .my-h2 {
+    @apply text-2xl font-medium font-second text-blue mb-6 text-center;
+  }
+
+  .my-h3 {
+    @apply text-center text-lg font-medium mt-12;
+  }
+
+  /* FORMS */
+
+  .my-form {
+    @apply flex flex-col justify-center items-center w-full gap-4;
+  }
+
+  .my-form > div {
+    @apply w-full flex flex-col gap-2;
+  }
+
+  .my-input {
+    @apply w-full p-2 border border-blue rounded-lg bg-white;
+  }
+
+  .my-input-file {
+    @apply file:mr-4 file:py-2 file:px-4 file:rounded-lg file:cursor-pointer file:border-0 file:text-sm file:font-medium file:bg-blue/20 file:text-blue;
+  }
+
+  .my-checkbox {
+    @apply ring-blue accent-blue cursor-pointer focus:ring-blue focus:ring-offset-blue mr-1;
+  }
+
+  .my-label {
+    @apply font-second font-medium w-full;
+  }
+
+  .alert a {
+    @apply text-blue hover:underline;
+  }
+  .alert-danger a,
+  .alert-error a {
+    @apply text-black;
+  }
+
+  .alert-danger,
+  .alert-error {
+    @apply text-red-600;
+  }
+
+  .alert-success {
+    @apply text-green-400;
+  }
 }
 
 @layer base {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+    margin: 0;
+    position: relative;
+  }
+  html {
+    scroll-behavior: smooth;
+  }
+
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="number"],
+  input[type="date"],
+  input[type="file"],
+  input[type="tel"],
+  textarea,
+  select {
+    @apply my-input;
+  }
+
+  label {
+    @apply my-label;
+  }
+
+  input[type="checkbox"],
+  input[type="radio"],
+  input[type="checkbox"]:checked:focus,
+  input[type="radio"]:checked:focus,
+  input[type="checkbox"]:focus,
+  input[type="radio"]:focus {
+    @apply my-checkbox;
+  }
+
+  div:has(> input[type="radio"]):not(.cuisine-options), div:has(> input[type="checkbox"]) {
+    @apply flex justify-start gap-2;
+  }
+
   input[type="file"] {
     @apply my-input-file;
+  }
+
+  input:not([type="radio"]):focus {
+    @apply !border-blue !outline-none !ring-0;
   }
 }

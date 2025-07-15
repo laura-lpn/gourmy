@@ -19,9 +19,11 @@ final class RoadtripController extends AbstractController
     public function index(RoadtripRepository $roadtripRepository): Response
     {
         $roadtrips = $roadtripRepository->findBy(['isPublic' => true]);
+        $user = $this->getUser();
 
         return $this->render('roadtrips/index.html.twig', [
             'roadtrips' => $roadtrips,
+            'userFavorites' => $user ? $user->getFavoriteRoadtrips()->toArray() : [],
         ]);
     }
 
@@ -134,8 +136,12 @@ final class RoadtripController extends AbstractController
             }
         }
 
+        $user = $this->getUser();
+
         return $this->render('roadtrips/show.html.twig', [
             'roadtrip' => $roadtrip,
+            'userFavorites' => $user ? $user->getFavoriteRestaurants()->toArray() : [],
+            'isFavorite' => $user ? $user->hasFavoriteRoadtrip($roadtrip) : false,
         ]);
     }
 }

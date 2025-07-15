@@ -1,0 +1,84 @@
+{% set images = roadtrip.steps|slice(0, 3)|map(step => step.restaurant.bannerName ? vich_uploader_asset(step.restaurant, 'bannerFile') : null)|filter(v => v) %}
+{% set count = images|length %}
+{% set isFavorite = userFavorites is defined and roadtrip in userFavorites %}
+
+<div class="relative bg-orange/10 rounded-xl p-6 hover:shadow-main group">
+
+  {# Bouton favoris hors du lien #}
+  <button
+      class="absolute top-2 right-2 text-white text-lg z-20 bg-orange rounded-full pt-1 pb-0.5 px-2 favorite-btn"
+      data-id="{{ roadtrip.id }}">
+      <i class="{{ isFavorite ? 'fa-solid' : 'fa-regular' }} fa-heart"></i>
+  </button>
+
+  <a href="{{ path('app_roadtrip_show', { id: roadtrip.id }) }}">
+    {% if count > 0 %}
+      <div class="mb-4">
+        {% if count == 1 %}
+          <img src="{{ images[0] }}" alt="Preview" class="object-cover h-24 w-full rounded-md">
+        {% elseif count == 2 %}
+          <div class="flex gap-2">
+            {% for image in images %}
+              <img src="{{ image }}" alt="Preview" class="object-cover h-24 w-1/2 rounded-md">
+            {% endfor %}
+          </div>
+        {% elseif count == 3 %}
+          <div class="flex gap-2 h-24">
+            <img src="{{ images[0] }}" alt="Preview" class="object-cover w-1/2 h-full rounded-md">
+            <div class="flex flex-col gap-2 w-1/2">
+              <img src="{{ images[1] }}" alt="Preview" class="object-cover h-1/2 w-full rounded-md">
+              <img src="{{ images[2] }}" alt="Preview" class="object-cover h-1/2 w-full rounded-md">
+            </div>
+          </div>
+        {% endif %}
+      </div>
+    {% endif %}
+
+    <h3 class="text-lg font-second font-medium text-blue mb-2">{{ roadtrip.title }}</h3>
+
+    <div class="text-sm text-gray-700 space-y-1">
+      <p><i class="fa-solid fa-signs-post text-orange mr-1"></i>{{ roadtrip.steps|length }} étapes</p>
+      <p><i class="fa-solid fa-earth-americas text-orange mr-1"></i>Villes</p>
+      <div class="flex flex-wrap gap-2">
+        {% set villes = [] %}
+        {% for step in roadtrip.steps %}
+          {% if step.town not in villes %}
+            {% set villes = villes|merge([step.town]) %}
+          {% endif %}
+        {% endfor %}
+        {% for ville in villes %}
+          <span class="bg-blue text-white rounded-full py-1 px-3 text-xs">{{ ville }}</span>
+        {% endfor %}
+      </div>
+    </div>
+  </a>
+</div>
+
+<script type="module">
+	function initFavoriteBtns() {
+			document.querySelectorAll('.favorite-btn').forEach(btn => {
+					if (btn.dataset.init) return;
+					btn.dataset.init = "1";
+
+					btn.addEventListener('click', (e) => {
+							e.preventDefault();
+							e.stopPropagation();
+
+							const id = btn.dataset.id;
+							const icon = btn.querySelector('i');
+							const isFav = icon.classList.contains('fa-solid');
+
+							fetch(`/api/user/roadtrips/${id}/favorite`, {
+									method: isFav ? 'DELETE' : 'POST'
+							})
+							.then(res => res.json())
+							.then(() => {
+									icon.classList.toggle('fa-solid', !isFav);
+									icon.classList.toggle('fa-regular', isFav);
+							});
+					});
+			});
+		}
+		initFavoriteBtns();
+		document.addEventListener('alpine:init', initFavoriteBtns);
+</script>

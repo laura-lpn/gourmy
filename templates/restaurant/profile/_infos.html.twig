@@ -1,0 +1,27 @@
+<div class="space-y-2">
+	<p>
+		<strong>Adresse :</strong>
+		{{ restaurant.address ~ ', ' ~ restaurant.postalCode ~ ' ' ~ restaurant.city ~ ', ' ~ restaurant.country }}</p>
+	<p>
+		<strong>Horaires :</strong>
+		{{ restaurant.openingHours }}</p>
+	<p>
+		<strong>Tarifs :</strong>
+		{{ restaurant.priceRange }}</p>
+	{% if restaurant.phoneNumber %}
+		<p>
+			<strong>Téléphone :</strong>
+			{{ restaurant.phoneNumber }}</p>
+	{% endif %}
+	{% if restaurant.website %}
+		<p>
+			<strong>Site Web :</strong>
+			<a href="{{ restaurant.website }}" target="_blank" class="text-blue underline">{{ restaurant.website }}</a>
+		</p>
+	{% endif %}
+	{% if restaurant.types is not empty %}
+		<p>
+			<strong>Types de cuisine :</strong>
+			{{ restaurant.types|map(t => t.name)|join(', ') }}</p>
+	{% endif %}
+</div>

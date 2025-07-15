@@ -3,3 +3,4 @@ import './bootstrap.js';
 import './webcomponents/reviews/RestaurantReviewManager.js';
 import './webcomponents/reviews/ReviewList.js';
 import './webcomponents/roadtrips/UserRoadtrips.js';
+import './webcomponents/UserFavorites.js';

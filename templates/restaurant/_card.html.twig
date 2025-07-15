@@ -1,0 +1,76 @@
+{% set r = restaurant is defined ? restaurant : step.restaurant %}
+{% set link = link is defined ? link : path('app_restaurant_show', { slug: r.slug }) %}
+{% set clickable = clickable is defined ? clickable : true %}
+{% set compact = compact is defined ? compact : false %}
+{% set isFavorite = userFavorites is defined and r in userFavorites %}
+
+<div class="relative bg-white rounded-2xl shadow-main p-4 flex flex-col gap-2 items-center w-full {{ compact ? 'max-w-sm' : 'max-w-xs' }}">
+
+  {# Bouton favoris hors du lien #}
+  <button
+      class="absolute top-2 right-2 text-white text-lg z-20 bg-orange rounded-full pt-1 pb-0.5 px-2 favorite-btn"
+      data-id="{{ r.id }}">
+      <i class="{{ isFavorite ? 'fa-solid' : 'fa-regular' }} fa-heart"></i>
+  </button>
+
+  {% if clickable %}
+    <a href="{{ link }}" class="block w-full">
+  {% endif %}
+
+  {% if r.bannerName %}
+    <img src="{{ vich_uploader_asset(r, 'bannerFile') }}" alt="Photo de {{ r.name }}" class="rounded-xl h-40 w-full object-cover">
+  {% else %}
+    <div class="h-40 w-full bg-gray-100 rounded-xl flex items-center justify-center text-gray-400">
+      Pas d'image
+    </div>
+  {% endif %}
+
+  <div class="mt-2">
+    <h3 class="text-lg font-medium font-second text-blue mb-2">{{ r.name }}</h3>
+    <p class="text-sm line-clamp-2">
+      {{ r.description|striptags|length > 80 ? r.description|striptags|slice(0, 77) ~ '...' : r.description|striptags }}
+    </p>
+    <div class="flex gap-1 items-center text-orange mt-2">
+      {% set avg = r.averageRating %}
+      {% for i in 1..5 %}
+        <i class="fa{{ avg >= i ? 's' : (avg >= i - 0.5 ? 's' : 'r') }} fa-star text-sm"></i>
+      {% endfor %}
+      <span class="text-sm text-black ml-2">
+        {{ r.reviews|filter(rr => not rr.response)|length }} avis
+      </span>
+    </div>
+  </div>
+
+  {% if clickable %}
+    </a>
+  {% endif %}
+</div>
+
+<script type="module">
+	function initFavoriteBtns() {
+			document.querySelectorAll('.favorite-btn').forEach(btn => {
+					if (btn.dataset.init) return;
+					btn.dataset.init = "1";
+
+					btn.addEventListener('click', (e) => {
+						e.preventDefault();
+						e.stopPropagation();
+
+						const id = btn.dataset.id;
+						const icon = btn.querySelector('i');
+						const isFav = icon.classList.contains('fa-solid');
+
+						fetch(`/api/user/restaurants/${id}/favorite`, {
+								method: isFav ? 'DELETE' : 'POST'
+						})
+						.then(res => res.json())
+						.then(() => {
+								icon.classList.toggle('fa-solid', !isFav);
+								icon.classList.toggle('fa-regular', isFav);
+						});
+				});
+		});
+	}
+	initFavoriteBtns();
+	document.addEventListener('alpine:init', initFavoriteBtns);
+</script>

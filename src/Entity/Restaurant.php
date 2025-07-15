@@ -451,4 +451,20 @@ class Restaurant extends BaseEntity
 
         return $this;
     }
+
+    public function getAverageRating(): ?float
+    {
+        $ratings = array_filter(
+            $this->reviews->toArray(),
+            fn($review) => $review->getRating() !== null && !$review->isResponse()
+        );
+
+        if (count($ratings) === 0) {
+            return null;
+        }
+
+        $sum = array_reduce($ratings, fn($carry, $review) => $carry + $review->getRating(), 0);
+
+        return round($sum / count($ratings), 1);
+    }
 }

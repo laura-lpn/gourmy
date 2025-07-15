@@ -130,7 +130,6 @@ class ApiReviewController extends AbstractController
 
         if ($deleteImage) {
             $review->setImageFile(null);
-            $review->setImageName(null);
         } elseif ($imageFile) {
             $review->setImageFile($imageFile);
             $uploadHandler->upload($review, 'imageFile');
@@ -195,7 +194,8 @@ class ApiReviewController extends AbstractController
                 'rating' => $review->getRating(),
                 'author' => [
                     'id' => $review->getAuthor()->getId(),
-                    'username' => $review->getAuthor()->getUsername()
+                    'username' => $review->getAuthor()->getUsername(),
+                    'avatarName' => $review->getAuthor()->getAvatarName()
                 ],
                 'image' => $review->getImageName()
                     ? '/uploads/reviews/images/' . $review->getImageName()
@@ -307,7 +307,8 @@ class ApiReviewController extends AbstractController
                 'rating' => $review->getRating(),
                 'author' => [
                     'id' => $review->getAuthor()->getId(),
-                    'username' => $review->getAuthor()->getUsername()
+                    'username' => $review->getAuthor()->getUsername(),
+                    'avatarName' => $review->getAuthor()->getAvatarName()
                 ],
                 'image' => $review->getImageName()
                     ? '/uploads/reviews/images/' . $review->getImageName()

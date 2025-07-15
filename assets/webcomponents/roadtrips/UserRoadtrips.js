@@ -3,7 +3,9 @@ import '../ModalConfirm.js';
 export class UserRoadtrips extends HTMLElement {
   constructor() {
     super();
-    this.attachShadow({ mode: 'open' });
+    this.editingRoadtripId = null;
+    this.isPublicTab = this.getAttribute('is-public') === "true" || false;
+    this.username = this.getAttribute('username') || '';
   }
 
   connectedCallback() {
@@ -12,76 +14,147 @@ export class UserRoadtrips extends HTMLElement {
   }
 
   render() {
-    this.shadowRoot.innerHTML = `
-      <style>
-        .card { border: 1px solid #ccc; padding: 1em; margin-bottom: 1em; border-radius: 8px; background: #f9f9f9; }
-        input, textarea { display: block; width: 100%; margin: 0.5em 0; padding: 0.5em; }
-        button { margin-right: 0.5em; }
-        .edit-form { margin-top: 1em; }
-      </style>
-      <h2>Mes roadtrips</h2>
-      <div id="roadtrips-container"></div>
-      <modal-confirm id="confirm"></modal-confirm>
-    `;
-  }
-
-  fetchRoadtrips() {
-    fetch('/api/user/roadtrips')
-      .then(res => res.json())
-      .then(data => {
-        const container = this.shadowRoot.querySelector('#roadtrips-container');
-        container.innerHTML = '';
-
-        data.forEach(rt => {
-          const div = document.createElement('div');
-          div.className = 'card';
-          div.dataset.id = rt.id;
-          div.innerHTML = this.renderDisplay(rt);
-          container.appendChild(div);
-
-          div.querySelector('[data-action="edit"]').addEventListener('click', () => this.enableEdit(rt));
-          div.querySelector('[data-action="delete"]').addEventListener('click', () => this.confirmDelete(rt.id));
-        });
-      });
-  }
-
-  renderDisplay(rt) {
-    return `
-      <div class="display">
-        <strong>${rt.title}</strong><br/>
-        <p>${rt.description}</p>
-        <em>${rt.isPublic ? "Public" : "Privé"}</em><br/>
-        <button data-action="edit">Modifier</button>
-        <button data-action="delete">Supprimer</button>
+    this.innerHTML = `
+      <div class="space-y-6">
+        <div id="roadtrips-container" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"></div>
+        <modal-confirm id="modal"></modal-confirm>
       </div>
     `;
   }
 
-  enableEdit(rt) {
-    const div = this.shadowRoot.querySelector(`[data-id="${rt.id}"]`);
-    div.innerHTML = `
-      <form class="edit-form">
-        <label>Titre :
-          <input type="text" name="title" value="${rt.title}" required>
-        </label>
-        <label>Description :
-          <textarea name="description" required>${rt.description}</textarea>
-        </label>
-        <label>
-          Public :
-          <input type="checkbox" name="isPublic" ${rt.isPublic ? 'checked' : ''}>
-        </label>
-        <button type="submit">Enregistrer</button>
-        <button type="button" class="cancel-edit">Annuler</button>
-      </form>
-      <p class="update-status" style="margin-top: 0.5em; color: green;"></p>
-    `;
+  fetchRoadtrips() {
+  const api = this.isPublicTab && this.username ? `/api/user/${this.username}/roadtrips` : '/api/user/roadtrips';
+  fetch(api)
+    .then(res => res.json())
+    .then(data => {
+      const container = this.querySelector('#roadtrips-container');
+      container.innerHTML = '';
 
-    div.querySelector('.edit-form').addEventListener('submit', (e) => this.submitEdit(e, rt.id));
-    div.querySelector('.cancel-edit').addEventListener('click', () => this.fetchRoadtrips());
+      if (!data.length) {
+        container.innerHTML = `
+          <div class="col-span-full">
+            <p class="text-center">
+              ${this.isPublicTab 
+                ? "Cet utilisateur n'a pas encore créé de roadtrip"
+                : "Vous n'avez pas encore créé de roadtrip"}
+            </p>
+          </div>
+        `;
+        return;
+      }
+
+      data.forEach(rt => {
+        const div = document.createElement('div');
+        div.dataset.id = rt.id;
+        div.innerHTML = this.renderDisplay(rt);
+        container.appendChild(div);
+
+        const editBtn = div.querySelector('[data-action="edit-roadtrip"]');
+        if (editBtn) {
+          editBtn.addEventListener('click', () => this.enableEditRoadtrip(rt));
+        }
+
+        const deleteBtn = div.querySelector('[data-action="delete-roadtrip"]');
+        if (deleteBtn) {
+          deleteBtn.addEventListener('click', () => this.confirmDeleteRoadtrip(rt.id));
+        }
+      });
+    });
   }
 
-  submitEdit(e, id) {
+  renderDisplay(rt) {
+    const steps = Array.isArray(rt.steps) ? rt.steps : [];
+    const stepCount = steps.length;
+    const cities = [...new Set(steps.map(s => s.town).filter(Boolean))];
+    const images = steps
+      .filter(s => s.restaurant?.banner)
+      .slice(0, 3)
+      .map(s => s.restaurant.banner);
+
+    const imageHtml = (() => {
+      if (images.length === 1) {
+        return `<img src="${images[0]}" alt="Preview" class="object-cover h-24 w-full rounded-md">`;
+      } else if (images.length === 2) {
+        return `
+          <div class="flex gap-2">
+            ${images.map(img => `<img src="${img}" alt="Preview" class="object-cover h-24 w-1/2 rounded-md">`).join('')}
+          </div>`;
+      } else if (images.length === 3) {
+        return `
+          <div class="flex gap-2 h-24">
+            <img src="${images[0]}" alt="Preview" class="object-cover w-1/2 h-full rounded-md">
+            <div class="flex flex-col gap-2 w-1/2">
+              <img src="${images[1]}" alt="Preview" class="object-cover h-1/2 w-full rounded-md">
+              <img src="${images[2]}" alt="Preview" class="object-cover h-1/2 w-full rounded-md">
+            </div>
+          </div>`;
+      }
+      return '';
+    })();
+
+    return `
+      <div class="bg-orange/10 rounded-xl p-6 hover:shadow-main group space-y-2">
+        ${imageHtml ? `<div class="mb-4">${imageHtml}</div>` : ''}
+        
+        <h3 class="text-lg font-second font-medium text-orange mb-2">${rt.title}</h3>
+
+        <div class="text-sm text-gray-700 space-y-1">
+          <p><i class="fa-solid fa-signs-post text-orange mr-1"></i>${stepCount} étapes</p>
+          <p><i class="fa-solid fa-earth-americas text-orange mr-1"></i>Villes</p>
+          <div class="flex flex-wrap gap-2">
+            ${cities.map(ville => `<span class="bg-blue text-white rounded-full py-1 px-3 text-xs">${ville}</span>`).join('')}
+          </div>
+        </div>
+
+        <p class="text-sm mt-2 text-blue/50 font-medium">${rt.isPublic ? 'Public' : 'Privé'}</p>
+
+        <div class="flex flex-wrap gap-4 pt-2">
+          <a href="/roadtrips/${rt.id}" title="Voir" class="text-blue text-sm"><i class="fa-solid fa-eye"></i></a>
+          ${this.isPublicTab ? '' : `
+            <button data-action="edit-roadtrip" title="Modifier" class="text-blue text-sm"><i class="fa-solid fa-pen"></i></button>
+            <button data-action="delete-roadtrip" title="Supprimer" class="text-red-600 text-sm"><i class="fa-solid fa-trash"></i></button>
+          `}
+        </div>
+      </div>
+    `;
+  }
+
+  enableEditRoadtrip(rt) {
+    this.editingRoadtripId = rt.id;
+    const modal = this.querySelector('#modal');
+
+    const formHtml = `
+      <div class="flex flex-col w-full">
+        <h2 class="text-xl text-center font-medium font-second mb-4">Modifier le roadtrip</h2>
+        <form id="edit-form" class="my-form">
+          <div>
+            <label for="title">Titre :</label>
+            <input type="text" name="title" value="${rt.title}" required>
+          </div>
+          <div>
+            <label for="description">Description :</label>
+            <textarea name="description" rows="3" required>${rt.description}</textarea>
+          </div>
+          <div class="flex items-center gap-2 mt-2">
+            <input type="checkbox" name="isPublic" id="isPublic" class="accent-orange" ${rt.isPublic ? 'checked' : ''}>
+            <label for="isPublic">Public</label>
+          </div>
+          <div class="flex gap-4 justify-end mt-4">
+            <button type="button" id="cancel-btn" class="btn-secondary">Annuler</button>
+            <button type="submit" class="btn">Modifier</button>
+          </div>
+        </form>
+      </div>
+    `;
+
+    modal.showWithContent(formHtml, () => {});
+    setTimeout(() => {
+      modal.querySelector('form')?.addEventListener('submit', (e) => this.submitEditRoadtrip(e));
+      modal.querySelector('#cancel-btn')?.addEventListener('click', () => modal.close());
+    });
+  }
+
+  submitEditRoadtrip(e) {
     e.preventDefault();
     const form = e.target;
     const data = {
@@ -90,20 +163,20 @@ export class UserRoadtrips extends HTMLElement {
       isPublic: form.isPublic.checked
     };
 
-    fetch(`/api/user/roadtrips/${id}`, {
+    fetch(`/api/user/roadtrips/${this.editingRoadtripId}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data)
     })
       .then(res => res.json())
-      .then(response => {
-        form.parentElement.querySelector('.update-status').textContent = 'Modifications enregistrées.';
-        setTimeout(() => this.fetchRoadtrips(), 1000);
+      .then(() => {
+        this.querySelector('#modal')?.close();
+        this.fetchRoadtrips();
       });
   }
 
-  confirmDelete(id) {
-    this.shadowRoot.querySelector('#confirm').show('Supprimer ce roadtrip ?', () => {
+  confirmDeleteRoadtrip(id) {
+    this.querySelector('#modal').show('Supprimer ce roadtrip ?', () => {
       fetch(`/api/user/roadtrips/${id}`, { method: 'DELETE' })
         .then(res => {
           if (res.ok) this.fetchRoadtrips();

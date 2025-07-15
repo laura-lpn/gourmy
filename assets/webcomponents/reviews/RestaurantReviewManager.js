@@ -4,7 +4,6 @@ import '../ModalConfirm.js';
 export class RestaurantReviewManager extends HTMLElement {
   constructor() {
     super();
-    this.attachShadow({ mode: 'open' });
     this.restaurantId = this.getAttribute('restaurant-id');
     this.csrf = this.getAttribute('csrf');
     this.editingResponseId = null;
@@ -27,13 +26,13 @@ export class RestaurantReviewManager extends HTMLElement {
   }
 
   render() {
-    this.shadowRoot.innerHTML = `
+    this.innerHTML = `
       <style>.review { margin-bottom: 1rem; }</style>
-      <div id="reviews-container"></div>
-      <modal-confirm id="confirm"></modal-confirm>
+      <div id="reviews-container" class="space-y-6"></div>
+      <modal-confirm id="modal"></modal-confirm>
     `;
 
-    const container = this.shadowRoot.querySelector('#reviews-container');
+    const container = this.querySelector('#reviews-container');
     container.innerHTML = '';
 
     this.reviews.forEach(review => {
@@ -41,8 +40,8 @@ export class RestaurantReviewManager extends HTMLElement {
         review,
         currentUserId: null,
         editable: false,
-        onEdit: () => {},
-        onDelete: () => {},
+        onEditReview: () => {},
+        onDeleteReview: () => {},
         allowResponse: true,
         onResponseEdit: (id, comment, type) => {
           if (type === 'refresh') {
@@ -59,9 +58,6 @@ export class RestaurantReviewManager extends HTMLElement {
 
   async submitResponse(id, comment, type) {
     if (type === 'refresh') return;
-    const formData = new FormData();
-
-    formData.append('comment', comment);
 
     const endpoint = type === 'new'
       ? `/api/reviews/${id}/response`
@@ -69,14 +65,17 @@ export class RestaurantReviewManager extends HTMLElement {
 
     const res = await fetch(endpoint, {
       method: 'POST',
-      body: formData
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ comment })
     });
 
     if (res.ok) this.fetchAndRender();
   }
 
   confirmDelete(responseId) {
-    this.shadowRoot.querySelector('#confirm').show("Supprimer cette réponse ?", () => {
+    this.querySelector('#modal').show("Supprimer cette réponse ?", () => {
       fetch(`/api/reviews/${responseId}`, { method: 'DELETE' })
         .then(res => {
           if (res.ok) this.fetchAndRender();

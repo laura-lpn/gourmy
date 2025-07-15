@@ -24,7 +24,7 @@ class RestaurantController extends AbstractController
         if ($user && $user->getRestaurant()) {
             return $this->redirectToRoute('app_restaurant_profile');
         }
-        return $this->render('restaurant/dashboard.html.twig');
+        return $this->render('restaurant/restaurateur.html.twig');
     }
 
     #[Route('/restaurateur/creer-un-restaurant', name: 'app_restaurant_create')]
@@ -221,19 +221,28 @@ class RestaurantController extends AbstractController
             $isOwner = false;
         }
 
+        $images = array_filter(
+            $restaurant->getReviews()->toArray(),
+            fn($r) => $r->getImageName() !== null
+        );
+
         return $this->render('restaurant/show.html.twig', [
             'restaurant' => $restaurant,
             'isOwner' => $isOwner,
+            'images' => $images,
+            'isFavorite' => $user ? $user->hasFavoriteRestaurant($restaurant) : false,
         ]);
     }
 
     #[Route('/restaurants', name: 'app_restaurant_list')]
-    public function listRestaurant(RestaurantRepository $restaurantRepository): Response
+    public function index(RestaurantRepository $restaurantRepository): Response
     {
-        $restaurants = $restaurantRepository->findBy(['isValided' => true], ['name' => 'ASC']);
+        $restaurants = $restaurantRepository->findBy(['isValided' => true]);
+        $user = $this->getUser();
 
         return $this->render('restaurant/list.html.twig', [
             'restaurants' => $restaurants,
+            'userFavorites' => $user ? $user->getFavoriteRestaurants()->toArray() : [],
         ]);
     }
 

@@ -1,20 +1,34 @@
 class TabView extends HTMLElement {
   connectedCallback() {
-    const config = JSON.parse(this.getAttribute('tabs') || '[]');
+    let config;
+
+    try {
+      config = JSON.parse(this.getAttribute('tabs') || '[]');
+    } catch (e) {
+      console.error('TabView: impossible de parser les onglets', e);
+      return;
+    }
+
     this.renderTabs(config);
   }
 
   renderTabs(tabs) {
     this.innerHTML = `
-      <div>
-        <ul class="flex space-x-4 border-b mb-4" id="tab-buttons">
+      <div class="w-full">
+        <ul class="flex w-full mb-4 divide-x divide-gray-300" id="tab-buttons">
           ${tabs.map((tab, i) =>
-            `<li><button data-tab="${i}" class="tab-btn text-gray-600 hover:text-black py-2 px-4">${tab.title}</button></li>`
+            `<li class="flex-1 text-center">
+              <button data-tab="${i}" class="tab-btn w-full text-lg text-black font-second font-medium hover:text-blue py-2 px-4">
+                ${tab.title}
+              </button>
+            </li>`
           ).join('')}
         </ul>
         <div id="tab-content">
           ${tabs.map((tab, i) =>
-            `<div id="tab-${i}" class="tab-panel hidden">${tab.content}</div>`
+            `<div id="tab-${i}" class="tab-panel hidden mt-12">
+              ${tab.content || '<div class="text-gray-400 italic">Contenu indisponible</div>'}
+            </div>`
           ).join('')}
         </div>
       </div>
@@ -24,19 +38,38 @@ class TabView extends HTMLElement {
       btn.addEventListener('click', () => this.setActiveTab(btn.dataset.tab));
     });
 
-    this.setActiveTab(0);
+    // 🔁 Attente active : quand #tab-0 existe, on l’active
+    const waitForFirstTab = () => {
+      const panel = this.querySelector('#tab-0');
+      const btn = this.querySelector('[data-tab="0"]');
+
+      if (panel && btn) {
+        this.setActiveTab(0);
+      } else {
+        setTimeout(waitForFirstTab, 20);
+      }
+    };
+
+    waitForFirstTab();
   }
 
   setActiveTab(id) {
-    this.querySelectorAll('.tab-panel').forEach(panel => {
-      panel.classList.add('hidden')
-    });
-    this.querySelector(`#tab-${id}`).classList.remove('hidden');
+    const panel = this.querySelector(`#tab-${id}`);
+    const btn = this.querySelector(`[data-tab="${id}"]`);
 
-    this.querySelectorAll('.tab-btn').forEach(btn => {
-      btn.classList.remove('border-b-2', 'border-black', 'font-bold');
-    });
-    this.querySelector(`[data-tab="${id}"]`).classList.add('border-b-2', 'border-black', 'font-bold');
+    if (!panel || !btn) {
+      console.warn(`TabView: onglet #${id} introuvable.`);
+      return;
+    }
+
+    this.querySelectorAll('.tab-panel').forEach(p => p.classList.add('hidden'));
+    panel.classList.remove('hidden');
+
+    this.querySelectorAll('.tab-btn').forEach(b =>
+      b.classList.remove('border-b-2', 'border-blue', '!text-blue')
+    );
+    btn.classList.add('border-b-2', 'border-blue', '!text-blue');
   }
 }
+
 customElements.define('tab-view', TabView);

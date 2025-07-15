@@ -1,28 +1,22 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Nos Roadtrips{% endblock %}
+{% block title %}Nos Roadtrips
+{% endblock %}
 
 {% block body %}
-    <h1 class="text-2xl font-bold mb-4">Nos Roadtrips</h1>
+	<section class="bg-roadtrips relative object-cover bg-center h-[65vh] flex items-center justify-center">
+		<div class="bg-black/35 w-full h-full absolute top-0 left-0 z-0"></div>
 
-    {% for label, messages in app.flashes %}
-        {% for message in messages %}
-            <div class="alert alert-{{ label }}">
-                {% autoescape false %}
-                    {{ message }}
-                {% endautoescape %}
-            </div>
-        {% endfor %}
-    {% endfor %}
+		<h1 class="text-white text-4xl font-medium font-second relative z-10">
+			Nos roadtrips
+		</h1>
+	</section>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {% for roadtrip in roadtrips %}
-            <div class="bg-white p-4 rounded shadow">
-                <h2 class="text-xl font-semibold">{{ roadtrip.title }}</h2>
-                <p>{{ roadtrip.description }}</p>
-                <a href="{{ path('app_roadtrip_show', { id: roadtrip.id }) }}" class="text-blue-500 hover:underline">Voir plus</a>
-            </div>
-        {% endfor %}
-    </div>
-
+	<section class="py-12 px-6 max-w-7xl mx-auto">
+		<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+			{% for roadtrip in roadtrips %}
+				{% include 'roadtrips/_card.html.twig' with { roadtrip: roadtrip } %}
+			{% endfor %}
+		</div>
+	</section>
 {% endblock %}

@@ -1,0 +1,86 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Espace Restaurateur – Gourmy{% endblock %}
+
+{% block body %}
+	<section class="px-6 mt-28 pb-16 max-w-7xl mx-auto">
+		<h1 class="text-4xl font-second text-blue text-center mb-6">Faites rayonner votre cuisine sur Gourmy</h1>
+		<p class="text-lg text-center mb-8 max-w-3xl mx-auto">Rejoignez Gourmy et intégrez une plateforme pensée pour valoriser les restaurateurs locaux et passionnés. Profitez d’une visibilité ciblée, sans commission, dans un univers <em class="text-blue not-italic">100% terroir.</em></p>
+		<div class="text-center">
+			<a href="{{ path('app_restaurant_create') }}" class="btn">Créer mon restaurant</a>
+		</div>
+		<h2 class="text-xl font-medium flex gap-6 items-center font-second text-orange mb-6 mt-12">
+			<span class="h-0.5 rounded-md bg-orange w-8 block"></span>
+			Pourquoi devenir partenaire Gourmy
+		</h2>
+
+		<div class="grid md:grid-cols-2 gap-6 mb-16">
+			{% set avantages = [
+				{ icon: 'fa-bullseye', color: 'blue', title: 'Visibilité ciblée', text: 'Votre restaurant est intégré dans des road-trips gourmands personnalisés selon les préférences des utilisateurs.' },
+				{ icon: 'fa-euro-sign', color: 'blue', title: 'Sans commission', text: 'Un abonnement fixe, pas de frais par réservation. Vos revenus vous reviennent en totalité.' },
+				{ icon: 'fa-chart-line', color: 'blue', title: 'Statistiques de performance', text: 'Analysez les visites, les clics et l’engagement autour de votre établissement.' },
+				{ icon: 'fa-bullhorn', color: 'blue', title: 'Outils marketing intégrés', text: 'Ajoutez vos offres, menus du jour et gérez votre e-réputation directement sur la plateforme.' }
+			] %}
+			{% for avantage in avantages %}
+				<div class="bg-{{ avantage.color }}/5 rounded-xl p-6">
+					<h3 class="text-{{ avantage.color }} font-second font-medium text-lg mb-2">
+						<i class="fa-solid {{ avantage.icon }} mr-2"></i>{{ avantage.title }}
+					</h3>
+					<p class="text-sm">{{ avantage.text }}</p>
+				</div>
+			{% endfor %}
+		</div>
+
+		<h2 class="text-xl font-medium flex gap-6 items-center font-second text-orange mb-6">
+			<span class="h-0.5 rounded-md bg-orange w-8 block"></span>
+			Nos formules d’abonnement
+		</h2>
+
+		<div class="grid md:grid-cols-3 gap-6 mb-16">
+			{% set plans = [
+				{
+					name: 'Freemium',
+					color: 'blue',
+					price: 'Gratuit',
+					features: ['Fiche restaurant basique', 'Apparition dans les road-trips', 'Accès aux avis'],
+					badge: false
+				},
+				{
+					name: 'Gourmy Premium',
+					color: 'orange',
+					price: '26,99€/mois',
+					features: ['Fiche mise en avant', 'Badge “Partenaire Premium”', 'Statistiques détaillées', 'Offres spéciales & menus du jour'],
+					badge: true
+				},
+				{
+					name: 'Gourmy Premium +',
+					color: 'blue',
+					price: '39,99€/mois',
+					features: ['Toutes les options Premium', 'Réservations en ligne', 'Campagnes marketing ciblées', 'Données clients avancées'],
+					badge: true
+				}
+			] %}
+			{% for plan in plans %}
+				<div class="relative bg-{{ plan.color }}/5 rounded-xl p-6 text-sm">
+					{% if plan.badge %}
+						<div class="absolute -top-8 -left-8 w-16 h-16 bg-white rounded-full shadow-lg flex items-center justify-center">
+							<img src="{{ asset('images/chef-hat-orange.svg') }}" alt="Chef hat" class="w-10 h-10">
+						</div>
+					{% endif %}
+					<h3 class="text-xl font-bold font-second text-{{ plan.color }} mb-1">{{ plan.name }}</h3>
+					<p class="mb-3">{{ plan.price }}</p>
+					<ul class="list-disc list-inside space-y-1 pt-2">
+						{% for f in plan.features %}
+							<li>{{ f }}</li>
+						{% endfor %}
+					</ul>
+				</div>
+			{% endfor %}
+		</div>
+
+		<div class="text-center">
+			<a href="{{ path('app_restaurant_create') }}" class="btn text-lg px-8 py-3">Créer mon restaurant</a>
+			<p class="mt-4 text-sm">Commencez gratuitement. Sans engagement.</p>
+		</div>
+	</section>
+{% endblock %}

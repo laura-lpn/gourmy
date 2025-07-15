@@ -5,21 +5,153 @@
 {% endblock %}
 
 {% block body %}
-	<h1 class="text-2xl font-bold mb-4">{{ roadtrip.title }}</h1>
-
-	{% for label, messages in app.flashes %}
-		{% for message in messages %}
-			<div class="alert alert-{{ label }}">
-				{% autoescape false %}
-					{{ message }}
-				{% endautoescape %}
-			</div>
+	<div class="w-3/4 mx-auto px-6 py-8 mt-28">
+		{% for label, messages in app.flashes %}
+			{% for message in messages %}
+				<div class="alert alert-{{ label }} mb-4">
+					{% autoescape false %}
+						{{ message }}
+					{% endautoescape %}
+				</div>
+			{% endfor %}
 		{% endfor %}
-	{% endfor %}
 
-	<div class="bg-white p-4 rounded shadow">
-		<p>{{ roadtrip.description }}</p>
+		{# Images + Description #}
+		<section class="relative flex flex-col md:flex-row gap-10 mb-12 items-center">
+			<button
+					class="absolute top-0 right-0 text-white text-lg z-20 bg-orange rounded-full pt-1 pb-0.5 px-2 favorite-btn"
+					data-id="{{ roadtrip.id }}">
+				<i class="{{ isFavorite ? 'fa-solid' : 'fa-regular' }} fa-heart"></i>
+			</button>
+
+			<div class="md:w-1/3 w-full flex flex-col gap-4">
+				{% set images = roadtrip.steps
+			|filter(step => step.restaurant and step.restaurant.bannerName)
+			|map(step => vich_uploader_asset(step.restaurant, 'bannerFile'))
+			|slice(0, 3) %}
+				{% if images is not empty %}
+					{% set count = images|length %}
+					{% if count == 1 %}
+						<img src="{{ images[0] }}" alt="Image restaurant" class="w-full h-80 object-cover rounded-xl">
+					{% elseif count == 2 %}
+						<div class="flex flex-col gap-4 h-80">
+							<img src="{{ images[0] }}" alt="Image restaurant" class="w-full h-1/2 object-cover rounded-xl">
+							<img src="{{ images[1] }}" alt="Image restaurant" class="w-full h-1/2 object-cover rounded-xl">
+						</div>
+					{% elseif count == 3 %}
+						<div class="flex flex-col gap-4 h-80">
+							<img src="{{ images[0] }}" alt="Image restaurant" class="w-full h-1/2 object-cover rounded-xl">
+							<div class="flex gap-4 h-1/2">
+								<img src="{{ images[1] }}" alt="Image restaurant" class="w-1/2 object-cover rounded-xl">
+								<img src="{{ images[2] }}" alt="Image restaurant" class="w-1/2 object-cover rounded-xl">
+							</div>
+						</div>
+					{% endif %}
+				{% else %}
+					<p class="text-sm italic text-gray-500">Aucune image disponible pour ce roadtrip.</p>
+				{% endif %}
+			</div>
+
+			{# Titre + Description #}
+			<div class="md:w-2/3 w-full flex justify-center flex-col gap-4">
+				<h1 class="font-second text-blue text-2xl font-medium">{{ roadtrip.title }}</h1>
+				<p class="text-gray-800 leading-relaxed">{{ roadtrip.description }}</p>
+			</div>
+		</section>
+
+		{# Carte pleine largeur #}
+		<section class="mb-12 w-full h-80 pb-10">
+			<h2 class="text-xl font-medium flex gap-6 items-center font-second text-orange mb-4">
+				<span class="h-0.5 rounded-md bg-orange w-8 block"></span>
+				Carte du roadtrip
+			</h2>
+
+			{% set points = [] %}
+			{% for step in roadtrip.steps %}
+				{% if step.restaurant %}
+					{% set points = points|merge([{ lat: step.restaurant.latitude, lng: step.restaurant.longitude, name: step.restaurant.name }]) %}
+				{% endif %}
+			{% endfor %}
+			<script type="module" src="{{ asset('webcomponents/maps/MapRoadtrip.js') }}"></script>
+			<map-roadtrip points='{{ points|json_encode|e("html_attr") }}'></map-roadtrip>
+		</section>
+
+		{# Étapes #}
+		<section class="mb-12 space-y-6">
+			<h2 class="text-xl font-medium flex gap-6 items-center font-second text-blue mb-4">
+				<span class="h-0.5 rounded-md bg-blue w-8 block"></span>
+				Étapes du roadtrip
+			</h2>
+
+			{% for step in roadtrip.steps %}
+				<div class="bg-orange/5 rounded-xl p-6">
+					<h3 class="text-lg font-second text-orange font-medium flex items-center gap-4 mb-2">
+						<span class="h-0.5 w-6 bg-orange rounded-md block"></span>
+						{{ step.town }}
+					</h3>
+
+					<p class="text-sm mb-4">Repas prévus :
+						<strong class="font-medium">{{ step.meals }}</strong>
+					</p>
+
+					{% if step.cuisine is not empty %}
+						<div class="flex flex-wrap gap-2 mb-4">
+							{% for type in step.cuisine %}
+								<span class="px-2 py-1 text-xs rounded-full bg-blue text-white">
+									{{ type.name }}
+								</span>
+							{% endfor %}
+						</div>
+					{% endif %}
+
+					{% if step.restaurant %}
+						<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
+							{{ include('restaurant/_card.html.twig', {
+								restaurant: step.restaurant,
+								clickable: true,
+								compact: true
+							}) }}
+						</div>
+					{% endif %}
+				</div>
+			{% endfor %}
+		</section>
+
+		{# Retour #}
+		<div class="text-center">
+			<a href="{{ path('app_roadtrips') }}" class="btn-secondary inline-block">
+				← Retour aux roadtrips
+			</a>
+		</div>
+
 	</div>
 
-	<a href="{{ path('app_roadtrips') }}" class="mt-4 inline-block text-blue-500 hover:underline">Retour à la liste des roadtrips</a>
+	<script type="module">
+    function initFavoriteBtns() {
+        document.querySelectorAll('.favorite-btn').forEach(btn => {
+            if (btn.dataset.init) return;
+            btn.dataset.init = "1";
+
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+
+                const id = btn.dataset.id;
+                const icon = btn.querySelector('i');
+                const isFav = icon.classList.contains('fa-solid');
+
+                fetch(`/api/user/roadtrips/${id}/favorite`, {
+                    method: isFav ? 'DELETE' : 'POST'
+                })
+                .then(res => res.json())
+                .then(() => {
+                    icon.classList.toggle('fa-solid', !isFav);
+                    icon.classList.toggle('fa-regular', isFav);
+                });
+            });
+        });
+			}
+			initFavoriteBtns();
+			document.addEventListener('alpine:init', initFavoriteBtns);
+	</script>
 {% endblock %}
