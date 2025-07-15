@@ -33,7 +33,17 @@
 			<h2 class="text-3xl font-second text-blue font-medium">{{ restaurant.name }}</h2>
 			<p class="text-orange text-sm">{{ restaurant.slug }}</p>
 			<p>{{ restaurant.description }}</p>
-			<a href="{{ path('app_restaurant_show', { slug: restaurant.slug }) }}" class="btn-secondary self-start">Voir le restaurant</a>
+			{# note #}
+			<div class="flex items-center gap-2 text-blue">
+				{% set avg = restaurant.averageRating %}
+				{% for i in 1..5 %}
+					<i class="fa{{ avg >= i ? 's' : (avg >= i - 0.5 ? 's' : 'r') }} fa-star text-sm"></i>
+				{% endfor %}
+				<span class="text-sm text-black ml-2">
+					{{ restaurant.reviews|filter(r => not r.response)|length }}
+					avis
+				</span>
+			</div>
 		</div>
 
 		<div x-data="{ open: false }" class="relative ml-auto">
@@ -41,6 +51,7 @@
 				<i class="fa-solid fa-gear"></i>
 			</button>
 			<div x-show="open" @click.outside="open = false" class="absolute right-0 mt-2 w-40 bg-white border border-gray-200 rounded shadow-lg z-10">
+				<a href="{{ path('app_restaurant_show', { slug: restaurant.slug }) }}" class="block px-4 py-2 hover:bg-gray-100 text-sm">Voir</a>
 				<a href="{{ path('app_restaurant_edit') }}" class="block px-4 py-2 hover:bg-gray-100 text-sm">Éditer</a>
 				<button type="button" class="block w-full text-left px-4 py-2 hover:bg-red-100 text-sm text-red-600" onclick="confirmRestaurantDeletion()">
 					Supprimer
@@ -52,28 +63,28 @@
 	<section class="w-3/4 mx-auto mt-8">
 		<script type="module" src="{{ asset('webcomponents/TabView.js') }}"></script>
 		<tab-view tabs='[
-			{
-				"title": "Infos",
-				"content": {{ include("restaurant/profile/_infos.html.twig", { restaurant: restaurant })|json_encode|raw }}
-			},
-			{
-				"title": "Avis",
-				"content": "<restaurant-review-manager restaurant-id=\"{{ restaurant.id }}\" csrf=\"{{ csrf_token(' review_response') }}\"></restaurant-review-manager>"
-			},
-			{
-				"title": "images",
-				"content": {{ include("restaurant/profile/_photos.html.twig", { reviews: restaurant.reviews })|json_encode|raw }}
-			}
-		]'></tab-view>
+						{
+							"title": "Infos",
+							"content": {{ include("restaurant/profile/_infos.html.twig", { restaurant: restaurant })|json_encode|raw }}
+						},
+						{
+							"title": "Avis",
+							"content": "<restaurant-review-manager restaurant-id=\"{{ restaurant.id }}\" csrf=\"{{ csrf_token(' review_response') }}\"></restaurant-review-manager>"
+						},
+						{
+							"title": "images",
+							"content": {{ include("restaurant/profile/_photos.html.twig", { reviews: restaurant.reviews, images: restaurant.images })|json_encode|raw }}
+						}
+					]'></tab-view>
 	</section>
 	<script type="module" src="{{ asset('webcomponents/ModalConfirm.js') }}"></script>
 	<modal-confirm id="delete-confirm"></modal-confirm>
 	<script>
 		function confirmRestaurantDeletion() {
-			const modal = document.getElementById('delete-confirm');
-			modal.show("Voulez-vous vraiment supprimer ce restaurant ?", () => {
-			window.location.href = "{{ path('app_restaurant_delete') }}";
-			});
-		}
+const modal = document.getElementById('delete-confirm');
+modal.show("Voulez-vous vraiment supprimer ce restaurant ?", () => {
+window.location.href = "{{ path('app_restaurant_delete') }}";
+});
+}
 	</script>
 {% endblock %}

@@ -14,6 +14,14 @@ vich_uploader:
       delete_on_update: true
       delete_on_remove: true
 
+    restaurants_images:
+      uri_prefix: /uploads/restaurants/images
+      upload_destination: "%kernel.project_dir%/public/uploads/restaurants/images"
+      namer: Vich\UploaderBundle\Naming\SmartUniqueNamer
+      inject_on_load: false
+      delete_on_update: true
+      delete_on_remove: true
+
     users_avatar:
       uri_prefix: /uploads/users/avatars
       upload_destination: "%kernel.project_dir%/public/uploads/users/avatars"

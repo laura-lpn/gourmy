@@ -6,6 +6,7 @@ use App\Entity\Restaurant;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\CountryType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -151,7 +152,18 @@ class RestaurantType extends AbstractType
                     ])
                 ]
             ])
-        ;
+            ->add('images', CollectionType::class, [
+                'entry_type' => RestaurantImageType::class,
+                'allow_add' => true,
+                'allow_delete' => true,
+                'by_reference' => false,
+                'prototype' => true,
+                'label' => false,
+                'required' => false,
+                'entry_options' => [
+                    'label' => false
+                ],
+            ]);
     }
 
     public function configureOptions(OptionsResolver $resolver): void

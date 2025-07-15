@@ -6,12 +6,11 @@
 
 {% block body %}
 	<div class="w-3/4 mx-auto px-6 py-8 mt-28">
-		<section class="flex flex-col md:flex-row gap-12 items-start relative">
+		<section
+			class="flex flex-col md:flex-row gap-12 items-start relative">
 			{# Bouton favoris #}
-			<button
-					class="absolute top-0 right-0 text-white text-lg z-20 bg-orange rounded-full pt-1 pb-0.5 px-2 favorite-btn"
-					data-id="{{ restaurant.id }}">
-					<i class="{{ isFavorite ? 'fa-solid' : 'fa-regular' }} fa-heart"></i>
+			<button class="absolute top-0 right-0 text-white text-lg z-20 bg-orange rounded-full pt-1 pb-0.5 px-2 favorite-btn" data-id="{{ restaurant.id }}">
+				<i class="{{ isFavorite ? 'fa-solid' : 'fa-regular' }} fa-heart"></i>
 			</button>
 			<div class="relative md:w-1/2 w-full">
 				{% if restaurant.bannerName %}
@@ -47,26 +46,35 @@
 				<h2 class="text-xl font-medium flex gap-6 items-center font-second text-blue mb-4">
 					<span class="h-0.5 rounded-md bg-blue w-8 block"></span>Infos pratiques
 				</h2>
-				<p><strong class="font-medium">Adresse :</strong> {{ restaurant.address ~ ', ' ~ restaurant.postalCode ~ ' ' ~ restaurant.city ~ ', ' ~ restaurant.country }}</p>
-				<p><strong class="font-medium">Horaires :</strong> {{ restaurant.openingHours }}</p>
-				<p><strong class="font-medium">Tarifs :</strong> {{ restaurant.priceRange }}</p>
+				<p>
+					<strong class="font-medium">Adresse :</strong>
+					{{ restaurant.address ~ ', ' ~ restaurant.postalCode ~ ' ' ~ restaurant.city ~ ', ' ~ restaurant.country }}</p>
+				<p>
+					<strong class="font-medium">Horaires :</strong>
+					{{ restaurant.openingHours }}</p>
+				<p>
+					<strong class="font-medium">Tarifs :</strong>
+					{{ restaurant.priceRange }}</p>
 				{% if restaurant.phoneNumber %}
-					<p><strong class="font-medium">Téléphone :</strong> {{ restaurant.phoneNumber }}</p>
+					<p>
+						<strong class="font-medium">Téléphone :</strong>
+						{{ restaurant.phoneNumber }}</p>
 				{% endif %}
 				{% if restaurant.website %}
-					<p><strong class="font-medium">Site Web :</strong> <a href="{{ restaurant.website }}" target="_blank" class="text-blue underline">{{ restaurant.website }}</a></p>
+					<p>
+						<strong class="font-medium">Site Web :</strong>
+						<a href="{{ restaurant.website }}" target="_blank" class="text-blue underline">{{ restaurant.website }}</a>
+					</p>
 				{% endif %}
 				{% if restaurant.types is not empty %}
-					<p><strong class="font-medium">Types de cuisine :</strong> {{ restaurant.types|map(t => t.name)|join(', ') }}</p>
+					<p>
+						<strong class="font-medium">Types de cuisine :</strong>
+						{{ restaurant.types|map(t => t.name)|join(', ') }}</p>
 				{% endif %}
 			</div>
 
 			<div class="md:w-1/2 w-full">
-				<map-preview
-					address="{{ restaurant.address|e('html_attr') }}"
-					postal-code="{{ restaurant.postalCode|e('html_attr') }}"
-					city="{{ restaurant.city|e('html_attr') }}"
-					country="{{ restaurant.country|e('html_attr') }}">
+				<map-preview address="{{ restaurant.address|e('html_attr') }}" postal-code="{{ restaurant.postalCode|e('html_attr') }}" city="{{ restaurant.city|e('html_attr') }}" country="{{ restaurant.country|e('html_attr') }}">
 					<div id="map" class="rounded-xl" style="height: 400px; width: 100%;"></div>
 				</map-preview>
 			</div>
@@ -77,10 +85,13 @@
 			<h2 class="text-xl font-medium flex gap-6 items-center font-second text-orange mb-4">
 				<span class="h-0.5 rounded-md bg-orange w-8 block"></span>Images du restaurant</h2>
 			<div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
-				{% for review in images %}
-					<img src="{{ vich_uploader_asset(review, 'imageFile') }}" alt="..." class="rounded-lg object-cover w-48 h-48"/>
+				{% for image in restaurant.images %}
+					<img src="{{ vich_uploader_asset(image, 'imageFile') }}" alt="Image de {{ restaurant.name }}" class="rounded-lg object-cover w-48 h-48"/>
 				{% endfor %}
-				{% if images|length == 0 %}
+				{% for review in imagesReviews %}
+					<img src="{{ vich_uploader_asset(review, 'imageFile') }}" alt="Image de {{ restaurant.name }}" class="rounded-lg object-cover w-48 h-48"/>
+				{% endfor %}
+				{% if imagesReviews|length == 0 and restaurant.images|length == 0 %}
 					<p class="text-center col-span-full text-sm">Aucune image pour ce restaurant.</p>
 				{% endif %}
 			</div>
@@ -96,29 +107,29 @@
 	<script type="module" src="{{ asset('webcomponents/ModalConfirm.js') }}"></script>
 
 	<script type="module">
-    function initFavoriteBtns() {
-        document.querySelectorAll('.favorite-btn').forEach(btn => {
-            if (btn.dataset.init) return;
-            btn.dataset.init = "1";
+		function initFavoriteBtns() {
+		document.querySelectorAll('.favorite-btn').forEach(btn => {
+		if (btn.dataset.init) 
+		return;
 
-            btn.addEventListener('click', (e) => {
-							e.preventDefault();
-							e.stopPropagation();
+		btn.dataset.init = "1";
 
-							const id = btn.dataset.id;
-							const icon = btn.querySelector('i');
-							const isFav = icon.classList.contains('fa-solid');
+		btn.addEventListener('click', (e) => {
+		e.preventDefault();
+		e.stopPropagation();
 
-							fetch(`/api/user/restaurants/${id}/favorite`, {
-									method: isFav ? 'DELETE' : 'POST'
-							})
-							.then(res => res.json())
-							.then(() => {
-									icon.classList.toggle('fa-solid', !isFav);
-									icon.classList.toggle('fa-regular', isFav);
-							});
-					});
-			});
+		const id = btn.dataset.id;
+		const icon = btn.querySelector('i');
+		const isFav = icon.classList.contains('fa-solid');
+
+		fetch (`/api/user/restaurants/${id}/favorite`, {
+		method: isFav ? 'DELETE' : 'POST'
+		}).then(res => res.json()).then(() => {
+		icon.classList.toggle('fa-solid', ! isFav);
+		icon.classList.toggle('fa-regular', isFav);
+		});
+		});
+		});
 		}
 		initFavoriteBtns();
 		document.addEventListener('alpine:init', initFavoriteBtns);

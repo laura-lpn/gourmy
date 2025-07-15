@@ -119,7 +119,8 @@
     @apply my-checkbox;
   }
 
-  div:has(> input[type="radio"]):not(.cuisine-options), div:has(> input[type="checkbox"]) {
+  div:has(> input[type="radio"]):not(.cuisine-options),
+  div:has(> input[type="checkbox"]) {
     @apply flex justify-start gap-2;
   }
 
@@ -129,5 +130,13 @@
 
   input:not([type="radio"]):focus {
     @apply !border-blue !outline-none !ring-0;
+  }
+
+  .my-form div div.vich-image a img {
+    @apply rounded-lg object-cover bg-center aspect-square w-48 h-48 mt-1;
+  }
+
+  .my-form image-uploader a img {
+    @apply !m-0;
   }
 }
