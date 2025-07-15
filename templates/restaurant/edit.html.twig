@@ -4,7 +4,6 @@
 {% endblock %}
 
 {% block body %}
-
 	<h1 class="my-h1 mt-28">Éditer mon restaurant</h1>
 	<div class="flex flex-col justify-center items-center gap-4 w-4/5 lg:w-1/3 mx-auto">
 
@@ -19,30 +18,52 @@
 		{% endfor %}
 
 		{{ form_start(restaurantForm, {'attr': {'class': 'my-form'}}) }}
+
 		<h2 class="text-orange font-second font-medium text-lg">Informations générales</h2>
 		{{ form_row(restaurantForm.name) }}
 		{{ form_row(restaurantForm.siret) }}
 		{{ form_row(restaurantForm.bannerFile) }}
 		{{ form_row(restaurantForm.description) }}
 
-		<h2 class="text-orange font-second font-medium text-lg">Coordonnées</h2>
+		<h2 class="text-orange font-second font-medium text-lg mt-2">Images du restaurant</h2>
+
+		<image-uploader data-prototype="{{ form_widget(restaurantForm.images.vars.prototype) |raw |replace({"\n":'', "\r":''}) }}">
+			<div class="existing-images">
+				{% for imageField in restaurantForm.images %}
+					<div class="relative image-item w-32 h-32 bg-gray-100 rounded-lg overflow-hidden cursor-pointer" style="background-image: url('{{ vich_uploader_asset(imageField.vars.value, 'imageFile') }}');
+							background-size: cover;
+							background-position: center;">
+						{{ form_widget(imageField.imageFile, {'attr': {'class': 'hidden image-input'}}) }}
+						{{ form_widget(imageField._delete, {'attr': {'class': 'delete-flag hidden'}}) }}
+						<button type="button" class="absolute top-1 right-1 bg-blue text-white text-xs rounded-full px-2 py-1 remove-image-btn">
+							<i class="fa-solid fa-xmark"></i>
+						</button>
+					</div>
+				{% endfor %}
+			</div>
+		</image-uploader>
+
+		<script type="module" src="{{ asset('webcomponents/ImageUploader.js') }}"></script>
+
+
+		<h2 class="text-orange font-second font-medium text-lg mt-2">Coordonnées</h2>
 		{{ form_row(restaurantForm.address) }}
 		{{ form_row(restaurantForm.postalCode) }}
 		{{ form_row(restaurantForm.city) }}
 		{{ form_row(restaurantForm.country) }}
 		{{ form_row(restaurantForm.phoneNumber) }}
 
-		<h2 class="text-orange font-second font-medium text-lg">Infos pratiques</h2>
+		<h2 class="text-orange font-second font-medium text-lg mt-2">Infos pratiques</h2>
 		{{ form_row(restaurantForm.openingHours) }}
 		{{ form_row(restaurantForm.types) }}
 		{{ form_row(restaurantForm.priceRange) }}
 		{{ form_row(restaurantForm.website) }}
 
-
 		<div class="flex !flex-row justify-center gap-2 mt-4">
 			<a href="{{ path('app_restaurateur') }}" class="btn-secondary">Annuler</a>
 			<button type="submit" class="btn">Modifier</button>
 		</div>
-		{{ form_end(restaurantForm) }}
 
-	{% endblock %}
+		{{ form_end(restaurantForm) }}
+	</div>
+{% endblock %}

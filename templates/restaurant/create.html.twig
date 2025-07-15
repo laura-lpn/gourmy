@@ -25,6 +25,13 @@
 		{{ form_row(restaurantForm.bannerFile) }}
 		{{ form_row(restaurantForm.description) }}
 
+		<h2 class="text-orange font-second font-medium text-lg mt-2">Images du restaurant</h2>
+    <image-uploader data-prototype="{{ form_widget(restaurantForm.images.vars.prototype) | e('html_attr') }}">
+        <div class="existing-images">
+        </div>
+    </image-uploader>
+    <script type="module" src="{{ asset('webcomponents/ImageUploader.js') }}"></script>
+
 		<h2 class="text-orange font-second font-medium text-lg">Coordonnées</h2>
 		{{ form_row(restaurantForm.address) }}
 		{{ form_row(restaurantForm.postalCode) }}

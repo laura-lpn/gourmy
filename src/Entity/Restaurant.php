@@ -132,11 +132,18 @@ class Restaurant extends BaseEntity
     #[ORM\ManyToMany(targetEntity: TypeRestaurant::class, inversedBy: 'restaurants')]
     private Collection $types;
 
+    /**
+     * @var Collection<int, RestaurantImage>
+     */
+    #[ORM\OneToMany(targetEntity: RestaurantImage::class, mappedBy: 'restaurant', cascade: ['persist', 'remove'], orphanRemoval: true)]
+    private Collection $images;
+
     public function __construct()
     {
         parent::__construct();
         $this->reviews = new ArrayCollection();
         $this->types = new ArrayCollection();
+        $this->images = new ArrayCollection();
     }
 
     #[PrePersist]
@@ -387,7 +394,10 @@ class Restaurant extends BaseEntity
     public function __serialize(): array
     {
         $data = get_object_vars($this);
+
         unset($data['bannerFile']);
+        unset($data['images']);
+
         return $data;
     }
 
@@ -395,6 +405,10 @@ class Restaurant extends BaseEntity
     {
         foreach ($data as $key => $value) {
             $this->$key = $value;
+        }
+
+        if (!isset($this->images)) {
+            $this->images = new ArrayCollection();
         }
     }
 
@@ -466,5 +480,29 @@ class Restaurant extends BaseEntity
         $sum = array_reduce($ratings, fn($carry, $review) => $carry + $review->getRating(), 0);
 
         return round($sum / count($ratings), 1);
+    }
+
+    public function getImages(): Collection
+    {
+        return $this->images;
+    }
+
+    public function addImage(RestaurantImage $image): static
+    {
+        if (!$this->images->contains($image)) {
+            $this->images->add($image);
+            $image->setRestaurant($this);
+        }
+        return $this;
+    }
+
+    public function removeImage(RestaurantImage $image): static
+    {
+        if ($this->images->removeElement($image)) {
+            if ($image->getRestaurant() === $this) {
+                $image->setRestaurant(null);
+            }
+        }
+        return $this;
     }
 }
