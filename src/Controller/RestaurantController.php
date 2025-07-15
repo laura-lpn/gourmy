@@ -221,7 +221,7 @@ class RestaurantController extends AbstractController
             $isOwner = false;
         }
 
-        $images = array_filter(
+        $imagesReviews = array_filter(
             $restaurant->getReviews()->toArray(),
             fn($r) => $r->getImageName() !== null
         );
@@ -229,7 +229,7 @@ class RestaurantController extends AbstractController
         return $this->render('restaurant/show.html.twig', [
             'restaurant' => $restaurant,
             'isOwner' => $isOwner,
-            'images' => $images,
+            'imagesReviews' => $imagesReviews,
             'isFavorite' => $user ? $user->hasFavoriteRestaurant($restaurant) : false,
         ]);
     }
