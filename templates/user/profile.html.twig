@@ -68,6 +68,10 @@
 					"content": "<review-list user-id=\"{{ app.user ? app.user.id : ' ' }}\" editable=\"true\"></review-list>"
 				},
 				{
+					"title": "Favoris",
+					"content": "<user-favorites></user-favorites>"
+				},
+				{
 					"title": "Badges",
 					"content": {{ include("user/profile/_badges.html.twig")|json_encode|raw }}
 				},

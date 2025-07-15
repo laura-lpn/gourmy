@@ -104,11 +104,27 @@ class User extends BaseEntity implements UserInterface, PasswordAuthenticatedUse
     #[ORM\OneToMany(targetEntity: Roadtrip::class, mappedBy: 'author', orphanRemoval: true)]
     private Collection $roadtrips;
 
+    /**
+     * @var Collection<int, Roadtrip>
+     */
+    #[ORM\ManyToMany(targetEntity: Roadtrip::class)]
+    #[ORM\JoinTable(name: 'user_favorite_roadtrips')]
+    private Collection $favoriteRoadtrips;
+
+    /**
+     * @var Collection<int, Restaurant>
+     */
+    #[ORM\ManyToMany(targetEntity: Restaurant::class)]
+    #[ORM\JoinTable(name: 'user_favorite_restaurants')]
+    private Collection $favoriteRestaurants;
+
     public function __construct()
     {
         parent::__construct();
         $this->reviews = new ArrayCollection();
         $this->roadtrips = new ArrayCollection();
+        $this->favoriteRoadtrips = new ArrayCollection();
+        $this->favoriteRestaurants = new ArrayCollection();
     }
 
     public function getEmail(): string
@@ -345,5 +361,59 @@ class User extends BaseEntity implements UserInterface, PasswordAuthenticatedUse
         }
 
         return $this;
+    }
+
+    /**
+     * @return Collection<int, Roadtrip>
+     */
+    public function getFavoriteRoadtrips(): Collection
+    {
+        return $this->favoriteRoadtrips;
+    }
+
+    public function addFavoriteRoadtrip(Roadtrip $roadtrip): static
+    {
+        if (!$this->favoriteRoadtrips->contains($roadtrip)) {
+            $this->favoriteRoadtrips->add($roadtrip);
+        }
+        return $this;
+    }
+
+    public function removeFavoriteRoadtrip(Roadtrip $roadtrip): static
+    {
+        $this->favoriteRoadtrips->removeElement($roadtrip);
+        return $this;
+    }
+
+    public function hasFavoriteRoadtrip(Roadtrip $roadtrip): bool
+    {
+        return $this->favoriteRoadtrips->contains($roadtrip);
+    }
+
+    /**
+     * @return Collection<int, Restaurant>
+     */
+    public function getFavoriteRestaurants(): Collection
+    {
+        return $this->favoriteRestaurants;
+    }
+
+    public function addFavoriteRestaurant(Restaurant $restaurant): static
+    {
+        if (!$this->favoriteRestaurants->contains($restaurant)) {
+            $this->favoriteRestaurants->add($restaurant);
+        }
+        return $this;
+    }
+
+    public function removeFavoriteRestaurant(Restaurant $restaurant): static
+    {
+        $this->favoriteRestaurants->removeElement($restaurant);
+        return $this;
+    }
+
+    public function hasFavoriteRestaurant(Restaurant $restaurant): bool
+    {
+        return $this->favoriteRestaurants->contains($restaurant);
     }
 }

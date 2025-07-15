@@ -29,6 +29,8 @@ final class UserController extends AbstractController
         return $this->render('user/profile.html.twig', [
             'user' => $user,
             'photos' => $photos,
+            'favoriteRestaurants' => $user->getFavoriteRestaurants(),
+            'favoriteRoadtrips' => $user->getFavoriteRoadtrips(),
         ]);
     }
 
