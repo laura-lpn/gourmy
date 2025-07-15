@@ -234,12 +234,14 @@ class RestaurantController extends AbstractController
     }
 
     #[Route('/restaurants', name: 'app_restaurant_list')]
-    public function listRestaurant(RestaurantRepository $restaurantRepository): Response
+    public function index(RestaurantRepository $restaurantRepository): Response
     {
-        $restaurants = $restaurantRepository->findBy(['isValided' => true], ['name' => 'ASC']);
+        $restaurants = $restaurantRepository->findBy(['isValided' => true]);
+        $user = $this->getUser();
 
         return $this->render('restaurant/list.html.twig', [
             'restaurants' => $restaurants,
+            'userFavorites' => $user ? $user->getFavoriteRestaurants()->toArray() : [],
         ]);
     }
 
