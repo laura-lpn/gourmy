@@ -60,9 +60,12 @@ final class RoadtripController extends AbstractController
             ], $restaurants);
         }
 
+        $user = $this->getUser();
+
         return $this->render('roadtrips/search_results.html.twig', [
             'results' => $results,
             'stepsForSave' => $stepsForSave,
+            'userFavorites' => $user ? $user->getFavoriteRestaurants()->toArray() : [],
         ]);
     }
 
