@@ -23,30 +23,43 @@ export class UserRoadtrips extends HTMLElement {
   }
 
   fetchRoadtrips() {
-    const api = this.isPublicTab && this.username ? `/api/user/${this.username}/roadtrips` : '/api/user/roadtrips';
-    fetch(api)
-      .then(res => res.json())
-      .then(data => {
-        const container = this.querySelector('#roadtrips-container');
-        container.innerHTML = '';
+  const api = this.isPublicTab && this.username ? `/api/user/${this.username}/roadtrips` : '/api/user/roadtrips';
+  fetch(api)
+    .then(res => res.json())
+    .then(data => {
+      const container = this.querySelector('#roadtrips-container');
+      container.innerHTML = '';
 
-        data.forEach(rt => {
-          const div = document.createElement('div');
-          div.dataset.id = rt.id;
-          div.innerHTML = this.renderDisplay(rt);
-          container.appendChild(div);
+      if (!data.length) {
+        container.innerHTML = `
+          <div class="col-span-full">
+            <p class="text-center">
+              ${this.isPublicTab 
+                ? "Cet utilisateur n'a pas encore créé de roadtrip"
+                : "Vous n'avez pas encore créé de roadtrip"}
+            </p>
+          </div>
+        `;
+        return;
+      }
 
-          const editBtn = div.querySelector('[data-action="edit-roadtrip"]');
-          if (editBtn) {
-            editBtn.addEventListener('click', () => this.enableEditRoadtrip(rt));
-          }
+      data.forEach(rt => {
+        const div = document.createElement('div');
+        div.dataset.id = rt.id;
+        div.innerHTML = this.renderDisplay(rt);
+        container.appendChild(div);
 
-          const deleteBtn = div.querySelector('[data-action="delete-roadtrip"]');
-          if (deleteBtn) {
-            deleteBtn.addEventListener('click', () => this.confirmDeleteRoadtrip(rt.id));
-          }
-        });
+        const editBtn = div.querySelector('[data-action="edit-roadtrip"]');
+        if (editBtn) {
+          editBtn.addEventListener('click', () => this.enableEditRoadtrip(rt));
+        }
+
+        const deleteBtn = div.querySelector('[data-action="delete-roadtrip"]');
+        if (deleteBtn) {
+          deleteBtn.addEventListener('click', () => this.confirmDeleteRoadtrip(rt.id));
+        }
       });
+    });
   }
 
   renderDisplay(rt) {
