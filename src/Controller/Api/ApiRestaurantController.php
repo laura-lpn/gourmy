@@ -24,7 +24,10 @@ final class ApiRestaurantController extends AbstractController
             'id' => $r->getId(),
             'slug' => $r->getSlug(),
             'description' => $r->getDescription(),
-            'reviewsCount' => $r->getReviews()->count(),
+            'reviewsCount' => count(array_filter(
+                $r->getReviews()->toArray(),
+                fn($rr) => !$rr->getResponse()
+            )),
             'name' => $r->getName(),
             'city' => $r->getCity(),
             'banner' => $r->getBannerName()

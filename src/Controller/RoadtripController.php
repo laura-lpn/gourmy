@@ -136,8 +136,12 @@ final class RoadtripController extends AbstractController
             }
         }
 
+        $user = $this->getUser();
+
         return $this->render('roadtrips/show.html.twig', [
             'roadtrip' => $roadtrip,
+            'userFavorites' => $user ? $user->getFavoriteRestaurants()->toArray() : [],
+            'isFavorite' => $user ? $user->hasFavoriteRoadtrip($roadtrip) : false,
         ]);
     }
 }

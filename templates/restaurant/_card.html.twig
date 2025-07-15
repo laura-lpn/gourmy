@@ -46,26 +46,31 @@
   {% endif %}
 </div>
 
-<script>
-  document.addEventListener('DOMContentLoaded', () => {
-    document.querySelectorAll('.favorite-btn').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        e.preventDefault();
-        e.stopPropagation();
+<script type="module">
+	function initFavoriteBtns() {
+			document.querySelectorAll('.favorite-btn').forEach(btn => {
+					if (btn.dataset.init) return;
+					btn.dataset.init = "1";
 
-        const id = btn.dataset.id;
-        const icon = btn.querySelector('i');
-        const isFav = icon.classList.contains('fa-solid');
+					btn.addEventListener('click', (e) => {
+						e.preventDefault();
+						e.stopPropagation();
 
-        fetch(`/api/user/restaurants/${id}/favorite`, {
-          method: isFav ? 'DELETE' : 'POST'
-        })
-        .then(res => res.json())
-        .then(() => {
-          icon.classList.toggle('fa-solid', !isFav);
-          icon.classList.toggle('fa-regular', isFav);
-        });
-      });
-    });
-  });
+						const id = btn.dataset.id;
+						const icon = btn.querySelector('i');
+						const isFav = icon.classList.contains('fa-solid');
+
+						fetch(`/api/user/restaurants/${id}/favorite`, {
+								method: isFav ? 'DELETE' : 'POST'
+						})
+						.then(res => res.json())
+						.then(() => {
+								icon.classList.toggle('fa-solid', !isFav);
+								icon.classList.toggle('fa-regular', isFav);
+						});
+				});
+		});
+	}
+	initFavoriteBtns();
+	document.addEventListener('alpine:init', initFavoriteBtns);
 </script>

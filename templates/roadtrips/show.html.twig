@@ -17,7 +17,13 @@
 		{% endfor %}
 
 		{# Images + Description #}
-		<section class="flex flex-col md:flex-row gap-10 mb-12 items-center">
+		<section class="relative flex flex-col md:flex-row gap-10 mb-12 items-center">
+			<button
+					class="absolute top-0 right-0 text-white text-lg z-20 bg-orange rounded-full pt-1 pb-0.5 px-2 favorite-btn"
+					data-id="{{ roadtrip.id }}">
+				<i class="{{ isFavorite ? 'fa-solid' : 'fa-regular' }} fa-heart"></i>
+			</button>
+
 			<div class="md:w-1/3 w-full flex flex-col gap-4">
 				{% set images = roadtrip.steps
 			|filter(step => step.restaurant and step.restaurant.bannerName)
@@ -119,4 +125,33 @@
 		</div>
 
 	</div>
+
+	<script type="module">
+    function initFavoriteBtns() {
+        document.querySelectorAll('.favorite-btn').forEach(btn => {
+            if (btn.dataset.init) return;
+            btn.dataset.init = "1";
+
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+
+                const id = btn.dataset.id;
+                const icon = btn.querySelector('i');
+                const isFav = icon.classList.contains('fa-solid');
+
+                fetch(`/api/user/roadtrips/${id}/favorite`, {
+                    method: isFav ? 'DELETE' : 'POST'
+                })
+                .then(res => res.json())
+                .then(() => {
+                    icon.classList.toggle('fa-solid', !isFav);
+                    icon.classList.toggle('fa-regular', isFav);
+                });
+            });
+        });
+			}
+			initFavoriteBtns();
+			document.addEventListener('alpine:init', initFavoriteBtns);
+	</script>
 {% endblock %}

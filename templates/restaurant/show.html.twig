@@ -7,6 +7,12 @@
 {% block body %}
 	<div class="w-3/4 mx-auto px-6 py-8 mt-28">
 		<section class="flex flex-col md:flex-row gap-12 items-start relative">
+			{# Bouton favoris #}
+			<button
+					class="absolute top-0 right-0 text-white text-lg z-20 bg-orange rounded-full pt-1 pb-0.5 px-2 favorite-btn"
+					data-id="{{ restaurant.id }}">
+					<i class="{{ isFavorite ? 'fa-solid' : 'fa-regular' }} fa-heart"></i>
+			</button>
 			<div class="relative md:w-1/2 w-full">
 				{% if restaurant.bannerName %}
 					<img src="{{ vich_uploader_asset(restaurant, 'bannerFile') }}" alt="Image de {{ restaurant.name }}" class="rounded-xl w-full h-80 object-cover">
@@ -88,4 +94,33 @@
 	<script type="module" src="{{ asset('webcomponents/reviews/ReviewList.js') }}"></script>
 	<script type="module" src="{{ asset('webcomponents/maps/MapPreview.js') }}"></script>
 	<script type="module" src="{{ asset('webcomponents/ModalConfirm.js') }}"></script>
+
+	<script type="module">
+    function initFavoriteBtns() {
+        document.querySelectorAll('.favorite-btn').forEach(btn => {
+            if (btn.dataset.init) return;
+            btn.dataset.init = "1";
+
+            btn.addEventListener('click', (e) => {
+							e.preventDefault();
+							e.stopPropagation();
+
+							const id = btn.dataset.id;
+							const icon = btn.querySelector('i');
+							const isFav = icon.classList.contains('fa-solid');
+
+							fetch(`/api/user/restaurants/${id}/favorite`, {
+									method: isFav ? 'DELETE' : 'POST'
+							})
+							.then(res => res.json())
+							.then(() => {
+									icon.classList.toggle('fa-solid', !isFav);
+									icon.classList.toggle('fa-regular', isFav);
+							});
+					});
+			});
+		}
+		initFavoriteBtns();
+		document.addEventListener('alpine:init', initFavoriteBtns);
+	</script>
 {% endblock %}

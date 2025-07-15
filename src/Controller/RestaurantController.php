@@ -230,6 +230,7 @@ class RestaurantController extends AbstractController
             'restaurant' => $restaurant,
             'isOwner' => $isOwner,
             'images' => $images,
+            'isFavorite' => $user ? $user->hasFavoriteRestaurant($restaurant) : false,
         ]);
     }
 
