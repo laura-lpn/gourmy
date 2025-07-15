@@ -132,11 +132,11 @@
     @apply !border-blue !outline-none !ring-0;
   }
 
-  .my-form div div.vich-image a img {
+  form.space-y-8 .vich-image a img {
     @apply rounded-lg object-cover bg-center aspect-square w-48 h-48 mt-1;
   }
 
-  .my-form image-uploader a img {
+  form image-uploader a img {
     @apply !m-0;
   }
 }

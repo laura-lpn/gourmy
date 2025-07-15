@@ -22,7 +22,7 @@ export class ImageUploader extends HTMLElement {
       const existingImages = this.querySelector('.existing-images');
       const holder = document.createElement('div');
 
-      holder.className = 'grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-8';
+      holder.className = 'grid grid-cols-2 sm:grid-cols-3 gap-4';
       holder.setAttribute('data-collection-holder', '');
       holder.setAttribute('data-prototype', this.dataset.prototype);
 
@@ -35,7 +35,7 @@ export class ImageUploader extends HTMLElement {
 
       const addBtn = document.createElement('div');
       addBtn.className =
-        'add-image-btn relative w-32 h-32 bg-orange/10 rounded-lg flex items-center justify-center cursor-pointer hover:bg-orange/20';
+        'add-image-btn relative w-40 h-40 bg-orange/10 rounded-lg flex items-center justify-center cursor-pointer hover:bg-orange/20';
       addBtn.innerHTML =
         '<i class="fa-solid fa-plus text-orange text-2xl"></i>';
       holder.appendChild(addBtn);
@@ -90,14 +90,14 @@ export class ImageUploader extends HTMLElement {
     wrapper.classList.add(
       'relative',
       'image-item',
-      'w-32',
-      'h-32',
+      'w-40',
+      'h-40',
       'bg-gray-100',
       'rounded-lg',
       'overflow-hidden',
       'cursor-pointer'
     );
-    wrapper.innerHTML = newForm; // ✅ On insère TOUT le prototype
+    wrapper.innerHTML = newForm;
 
     const fileInput = wrapper.querySelector('input[type="file"]');
     const deleteFlag = wrapper.querySelector('.delete-flag');
