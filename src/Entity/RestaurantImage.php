@@ -22,11 +22,6 @@ class RestaurantImage extends BaseEntity
     #[ORM\ManyToOne(targetEntity: Restaurant::class, inversedBy: 'images')]
     private ?Restaurant $restaurant = null;
 
-    public function getId(): ?int
-    {
-        return $this->id;
-    }
-
     public function setImageFile(?File $imageFile = null): void
     {
         $this->imageFile = $imageFile;

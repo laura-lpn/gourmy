@@ -139,4 +139,8 @@
   form image-uploader a img {
     @apply !m-0;
   }
+
+  form[name="restaurant_charter"] section div {
+    @apply flex flex-row-reverse gap-2 items-center;
+  }
 }

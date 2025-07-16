@@ -15,4 +15,10 @@ class HomeController extends AbstractController
             'controller_name' => 'HomeController',
         ]);
     }
+
+    #[Route('/charte-restaurateur', name: 'app_charte_restaurateur')]
+    public function charteRestaurateur(): Response
+    {
+        return $this->render('public/charte_restaurateur.html.twig');
+    }
 }

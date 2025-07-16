@@ -3,7 +3,9 @@
 namespace App\Controller;
 
 use App\Entity\Restaurant;
+use App\Entity\RestaurantCharter;
 use App\Entity\Review;
+use App\Form\RestaurantCharterType;
 use App\Form\RestaurantType;
 use App\Repository\RestaurantRepository;
 use App\Service\GeocodingService;
@@ -77,13 +79,39 @@ class RestaurantController extends AbstractController
             $em->persist($user);
             $em->flush();
 
-            $this->addFlash('success', 'Votre demande de création de restaurant a bien été envoyée.');
-
-            return $this->redirectToRoute('app_restaurant_profile');
+            return $this->redirectToRoute('app_restaurant_charter', [
+                'id' => $restaurant->getId(),
+            ]);
         }
 
         return $this->render('restaurant/create.html.twig', [
             'restaurantForm' => $form->createView(),
+        ]);
+    }
+
+    #[Route('/restaurateur/restaurant/{id}/charte', name: 'app_restaurant_charter')]
+    public function charter(Restaurant $restaurant, Request $request, EntityManagerInterface $em): Response
+    {
+        $user = $this->getUser();
+        if (!$user || $user->getRestaurant()?->getId() !== $restaurant->getId()) {
+            $this->addFlash('error', 'Vous n’êtes pas autorisé à accéder à cette page.');
+            return $this->redirectToRoute('app_restaurateur');
+        }
+
+        $charter = new RestaurantCharter();
+        $charter->setRestaurant($restaurant);
+
+        $form = $this->createForm(RestaurantCharterType::class, $charter);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $em->persist($charter);
+            $em->flush();   
+            return $this->redirectToRoute('app_restaurant_profile');
+        }
+
+        return $this->render('restaurant/charter.html.twig', [
+            'charterForm' => $form->createView(),
             'restaurant' => $restaurant,
         ]);
     }
@@ -100,7 +128,8 @@ class RestaurantController extends AbstractController
         $user = $this->getUser();
 
         if (!$user->getRestaurant()) {
-            $this->addFlash('error', 'Vous n\'avez pas de restaurant associé à votre compte.');
+            $this->addFlash('success', 'Votre demande de création de restaurant a bien été envoyée.');
+
             return $this->redirectToRoute('app_restaurant_create');
         }
 
@@ -114,9 +143,6 @@ class RestaurantController extends AbstractController
         }
 
         $isValidated = $restaurant->isValided();
-        if (!$isValidated) {
-            $this->addFlash('warning', 'Votre restaurant n\'a pas encore été validé.');
-        }
 
         return $this->render('restaurant/profile.html.twig', [
             'restaurant' => $restaurant,
