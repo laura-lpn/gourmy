@@ -32,7 +32,7 @@ export class UserRoadtrips extends HTMLElement {
 
       if (!data.length) {
         container.innerHTML = `
-          <div class="col-span-full">
+          <div class="col-span-full py-6">
             <p class="text-center">
               ${this.isPublicTab 
                 ? "Cet utilisateur n'a pas encore créé de roadtrip"
