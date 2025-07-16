@@ -82,7 +82,7 @@ export class UserFavorites extends HTMLElement {
   renderRestaurants() {
     const container = this.querySelector('#favorites-restaurants');
     if (!this.restaurants.length) {
-      container.innerHTML = `<p class="text-center text-gray-500 col-span-full">Aucun restaurant favori</p>`;
+      container.innerHTML = `<p class="text-center col-span-full">Aucun restaurant favori</p>`;
       return;
     }
 
@@ -111,7 +111,7 @@ export class UserFavorites extends HTMLElement {
   renderRoadtrips() {
     const container = this.querySelector('#favorites-roadtrips');
     if (!this.roadtrips.length) {
-      container.innerHTML = `<p class="text-center text-gray-500 col-span-full">Aucun roadtrip favori</p>`;
+      container.innerHTML = `<p class="text-center col-span-full">Aucun roadtrip favori</p>`;
       return;
     }
 

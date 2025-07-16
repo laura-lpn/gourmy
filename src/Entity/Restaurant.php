@@ -138,6 +138,12 @@ class Restaurant extends BaseEntity
     #[ORM\OneToMany(targetEntity: RestaurantImage::class, mappedBy: 'restaurant', cascade: ['persist', 'remove'], orphanRemoval: true)]
     private Collection $images;
 
+    /**
+     * @var RestaurantCharter|null
+     */
+    #[ORM\OneToOne(mappedBy: 'restaurant', targetEntity: RestaurantCharter::class, cascade: ['persist', 'remove'])]
+    private ?RestaurantCharter $charter = null;
+
     public function __construct()
     {
         parent::__construct();
@@ -503,6 +509,22 @@ class Restaurant extends BaseEntity
                 $image->setRestaurant(null);
             }
         }
+        return $this;
+    }
+
+    public function getCharter(): ?RestaurantCharter
+    {
+        return $this->charter;
+    }
+
+    public function setCharter(?RestaurantCharter $charter): self
+    {
+        // important pour la synchronisation bidirectionnelle
+        if ($charter && $charter->getRestaurant() !== $this) {
+            $charter->setRestaurant($this);
+        }
+
+        $this->charter = $charter;
         return $this;
     }
 }
