@@ -34,6 +34,10 @@ export class RestaurantReviewManager extends HTMLElement {
 
     const container = this.querySelector('#reviews-container');
     container.innerHTML = '';
+    if (this.reviews.length === 0) {
+      container.innerHTML = '<p class="text-center">Aucun avis pour le moment</p>';
+      return;
+    }
 
     this.reviews.forEach(review => {
       const div = renderReview({
