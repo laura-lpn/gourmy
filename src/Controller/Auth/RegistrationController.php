@@ -9,6 +9,7 @@ use App\Security\EmailVerifier;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -20,7 +21,10 @@ use SymfonyCasts\Bundle\VerifyEmail\Exception\VerifyEmailExceptionInterface;
 
 class RegistrationController extends AbstractController
 {
-    public function __construct(private EmailVerifier $emailVerifier) {}
+    public function __construct(
+        private EmailVerifier $emailVerifier,
+        private ParameterBagInterface $params
+    ) {}
 
     #[Route('/inscription', name: 'app_register')]
     public function register(Request $request, UserPasswordHasherInterface $userPasswordHasher, EntityManagerInterface $entityManager): Response
@@ -57,8 +61,16 @@ class RegistrationController extends AbstractController
                     (new TemplatedEmail())
                         ->from(new Address('contact@gourmy.travel', 'Gourmy'))
                         ->to((string) $user->getEmail())
-                        ->subject('Please Confirm your Email')
+                        ->subject('Veuillez confirmer votre email')
                         ->htmlTemplate('email/confirmation_email.html.twig')
+                        ->context([
+                            'user' => $user,
+                            'logo_cid' => 'gourmy_logo'
+                        ])
+                        ->embedFromPath(
+                            $this->params->get('kernel.project_dir') . '/public/images/logo-gourmy.png',
+                            'gourmy_logo'
+                        )
                 );
 
                 $this->addFlash('success', 'Votre compte a bien été créé. Veuillez confirmer votre adresse email pour pouvoir vous connecter.');

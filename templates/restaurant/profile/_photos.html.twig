@@ -7,7 +7,7 @@
 			<img src="{{ vich_uploader_asset(review, 'imageFile') }}" alt="{{ review.title ?: 'Image d\'avis' }}" class="w-full h-48 object-cover rounded-xl shadow-sm">
 		{% endif %}
 	{% endfor %}
-	{% if reviews|filter(r => r.imageName is not empty)|length == 0 %}
+	{% if reviews|filter(r => r.imageName is not empty)|length == 0 and images|length == 0 %}
 		<p class="text-center col-span-full">Aucune image n’a encore été partagé</p>
 	{% endif %}
 </div>

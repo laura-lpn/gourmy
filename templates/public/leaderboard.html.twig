@@ -1,0 +1,34 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Classement des utilisateurs
+{% endblock %}
+
+{% block body %}
+	<div class="mt-28 max-w-3xl mx-auto">
+		<h1 class="my-h1 text-center">Classement des utilisateurs</h1>
+
+		<table class="w-full mt-6 border border-gray-200 rounded-lg overflow-hidden">
+			<thead class="bg-blue-500 text-white">
+				<tr>
+					<th class="py-2 px-4 text-left">Rang</th>
+					<th class="py-2 px-4 text-left">Utilisateur</th>
+					<th class="py-2 px-4 text-left">Points</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for u in users %}
+					<tr class="odd:bg-white even:bg-gray-50">
+						<td class="py-2 px-4">{{ loop.index }}</td>
+						<td class="py-2 px-4">
+							<a href="{{ path('app_user_show', {username: u.username}) }}" class="text-blue-600 hover:underline">
+								{{ u.firstName }}
+								{{ u.lastName }}
+							</a>
+						</td>
+						<td class="py-2 px-4">{{ u.points }}</td>
+					</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+	</div>
+{% endblock %}

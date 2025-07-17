@@ -39,6 +39,7 @@ export class ReviewList extends HTMLElement {
 
   render() {
     this.innerHTML = `
+    <div class="py-6">
       ${this.isOwner ? `
         <div class="text-sm mb-6 p-4 bg-orange/10 rounded">
           Vous êtes le propriétaire de ce restaurant. Pour répondre aux avis, allez à la section 
@@ -47,12 +48,12 @@ export class ReviewList extends HTMLElement {
       ` : this.userId && this.added ? `
         <button id="open-form" class="btn mx-auto block mb-6">Ajouter un avis</button>
       ` : this.added ? `
-        <p class="text-center text-sm">
+        <p class="text-center text-sm mb-4">
           <a href="/connexion?target=${location.pathname}" class="btn-secondary">Connectez-vous pour laisser un commentaire</a>
         </p>
       ` : ''}
 
-      <div id="reviews-container" class="space-y-6 mt-8"></div>
+      <div id="reviews-container" class="space-y-6"></div>
       <div class="pagination flex items-center justify-center gap-4 mt-6">
         <button id="prev-page" class="btn-secondary">Précédent</button>
         <span id="pagination-info" class="text-sm"></span>
@@ -60,6 +61,7 @@ export class ReviewList extends HTMLElement {
       </div>
 
       <modal-confirm id="confirm"></modal-confirm>
+    </div>
     `;
   }
 
@@ -113,6 +115,12 @@ export class ReviewList extends HTMLElement {
 
         const totalPages = Math.max(1, Math.ceil(this.total / this.limit));
         this.querySelector('#pagination-info').innerText = `Page ${this.page} / ${totalPages}`;
+
+        if (data.data.length === 0) {
+          this.querySelector('.pagination').classList.add('hidden');
+          container.innerHTML = '<p class="text-center">Aucun avis pour le moment</p>';
+          return;
+        }
 
         data.data.forEach(review => {
           const div = renderReview({

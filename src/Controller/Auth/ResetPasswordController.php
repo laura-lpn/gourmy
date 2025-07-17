@@ -8,6 +8,7 @@ use App\Form\ResetPasswordRequestFormType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -27,7 +28,8 @@ class ResetPasswordController extends AbstractController
 
     public function __construct(
         private ResetPasswordHelperInterface $resetPasswordHelper,
-        private EntityManagerInterface $entityManager
+        private EntityManagerInterface $entityManager,
+        private ParameterBagInterface $params
     ) {}
 
     #[Route('', name: 'app_forgot_password_request')]
@@ -122,7 +124,7 @@ class ResetPasswordController extends AbstractController
         ]);
     }
 
-    private function processSendingPasswordResetEmail(string $emailFormData, MailerInterface $mailer, TranslatorInterface $translator): RedirectResponse
+    private function processSendingPasswordResetEmail(string $emailFormData, MailerInterface $mailer): RedirectResponse
     {
         $user = $this->entityManager->getRepository(User::class)->findOneBy([
             'email' => $emailFormData,
@@ -142,11 +144,17 @@ class ResetPasswordController extends AbstractController
         $email = (new TemplatedEmail())
             ->from(new Address('support@gourmy.travel', 'Gourmy'))
             ->to((string) $user->getEmail())
-            ->subject('Your password reset request')
-            ->htmlTemplate('email/email.html.twig')
+            ->subject('Réinitialisation de votre mot de passe')
+            ->htmlTemplate('email/email_reset.html.twig')
             ->context([
                 'resetToken' => $resetToken,
-            ]);
+                'user' => $user,
+                'logo_cid' => 'gourmy_logo'
+            ])
+            ->embedFromPath(
+                $this->params->get('kernel.project_dir') . '/public/images/logo-gourmy.png',
+                'gourmy_logo'
+            );
 
         $mailer->send($email);
 

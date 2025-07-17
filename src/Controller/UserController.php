@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Form\EditUserType;
+use App\Repository\BadgeRepository;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -16,7 +17,7 @@ use Symfony\Component\Security\Http\Logout\LogoutUrlGenerator;
 final class UserController extends AbstractController
 {
     #[Route('/profil', name: 'app_user_profile')]
-    public function index(): Response
+    public function index(BadgeRepository $badgeRepo, UserRepository $userRepo): Response
     {
         $user = $this->getUser();
         if (!$user) {
@@ -26,9 +27,16 @@ final class UserController extends AbstractController
             fn($review) => $review->getImageName() !== null
         )->toArray();
 
+        $allUsers = $userRepo->findBy([], ['points' => 'DESC']);
+        $rank = array_search($user, $allUsers, true) + 1;
+        $allUsersCount = count($allUsers);
+
         return $this->render('user/profile.html.twig', [
             'user' => $user,
             'photos' => $photos,
+            'all_badges' => $badgeRepo->findAll(),
+            'rank' => $rank,
+            'all_users_count' => $allUsersCount,
             'favoriteRestaurants' => $user->getFavoriteRestaurants(),
             'favoriteRoadtrips' => $user->getFavoriteRoadtrips(),
         ]);
@@ -84,7 +92,7 @@ final class UserController extends AbstractController
     }
 
     #[Route('/utilisateur/@{username}', name: 'app_user_show')]
-    public function show(string $username, UserRepository $userRepository): Response
+    public function show(string $username, UserRepository $userRepository, BadgeRepository $badgeRepo): Response
     {
         $user = $userRepository->createQueryBuilder('u')
             ->where('LOWER(u.username) = :username')
@@ -100,9 +108,16 @@ final class UserController extends AbstractController
             fn($review) => $review->getImageName() !== null
         )->toArray();
 
+        $allUsers = $userRepository->findBy([], ['points' => 'DESC']);
+        $rank = array_search($user, $allUsers, true) + 1;
+        $allUsersCount = count($allUsers);
+
         return $this->render('user/show.html.twig', [
             'user' => $user,
-            'photos' => $photos
+            'photos' => $photos,
+            'all_badges' => $badgeRepo->findAll(),
+            'rank' => $rank,
+            'all_users_count' => $allUsersCount,
         ]);
     }
 }
