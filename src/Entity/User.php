@@ -118,6 +118,17 @@ class User extends BaseEntity implements UserInterface, PasswordAuthenticatedUse
     #[ORM\JoinTable(name: 'user_favorite_restaurants')]
     private Collection $favoriteRestaurants;
 
+    #[ORM\Column(type: "integer", options: ["default" => 0])]
+    private int $points = 0;
+
+    /**
+     * @var Collection<int, Badge>
+     */
+    #[ORM\ManyToMany(targetEntity: Badge::class, inversedBy: "users")]
+    #[ORM\JoinTable(name: "user_badges")]
+    private Collection $badges;
+
+
     public function __construct()
     {
         parent::__construct();
@@ -125,6 +136,7 @@ class User extends BaseEntity implements UserInterface, PasswordAuthenticatedUse
         $this->roadtrips = new ArrayCollection();
         $this->favoriteRoadtrips = new ArrayCollection();
         $this->favoriteRestaurants = new ArrayCollection();
+        $this->badges = new ArrayCollection();
     }
 
     public function getEmail(): string
@@ -415,5 +427,34 @@ class User extends BaseEntity implements UserInterface, PasswordAuthenticatedUse
     public function hasFavoriteRestaurant(Restaurant $restaurant): bool
     {
         return $this->favoriteRestaurants->contains($restaurant);
+    }
+
+    public function getPoints(): int
+    {
+        return $this->points;
+    }
+
+    public function addPoints(int $value): static
+    {
+        $this->points += $value;
+        return $this;
+    }
+
+    public function getBadges(): Collection
+    {
+        return $this->badges;
+    }
+
+    public function addBadge(Badge $badge): static
+    {
+        if (!$this->badges->contains($badge)) {
+            $this->badges->add($badge);
+        }
+        return $this;
+    }
+
+    public function hasBadge(Badge $badge): bool
+    {
+        return $this->badges->contains($badge);
     }
 }

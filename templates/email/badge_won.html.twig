@@ -1,0 +1,27 @@
+{% extends 'email/email_base.html.twig' %}
+
+{% block title %}Nouveau Badge Débloqué
+{% endblock %}
+
+{% block content %}
+	<h2 class="title" style="color:#098C8C; font-size:26px; margin-bottom:10px;">
+		Bravo
+		{{ user.firstName }}
+		!
+	</h2>
+	<p class="text" style="font-size:16px; color:#555; margin-bottom:20px;">
+		Vous venez de débloquer un nouveau badge sur
+		<strong>Gourmy</strong>
+		!
+	</p>
+	<div style="margin:20px auto; text-align:center;">
+		<div style="display:inline-block; padding:40px 15px; border:2px solid #098C8C; border-radius:12px; background-color:#fffdf8; max-width:250px;">
+			<img src="cid:{{ badge_image_cid }}" alt="{{ badge.name }}" style="width:120px; height:120px; border-radius:50%; background-color: {{ badge.backgroundColor }}; object-fit:contain; margin-bottom:10px;">
+			<h3 style="color:#ED8E08; font-size:20px; margin:5px 0;">{{ badge.name }}</h3>
+			<p style="font-size:14px; color:#666; margin:0;">{{ badge.description }}</p>
+		</div>
+	</div>
+	<a href="{{ absolute_url(path('app_user_show', {username: user.username})) }}" class="button" style="display:inline-block; margin-top:25px; background-color:#098C8C; color:white; text-decoration:none; padding:12px 25px; border-radius:6px; font-weight:bold; font-size:15px;">
+		Voir mes badges
+	</a>
+{% endblock %}

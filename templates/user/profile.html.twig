@@ -24,6 +24,14 @@
 			<div>
 				<h1 class="font-second text-blue text-4xl font-medium">{{ user.firstName ~ ' ' ~ user.lastName }}</h1>
 				<p class="text-orange font-medium text-lg">@{{ user.username|lower }}</p>
+				<p class="text-sm">
+					Classement général :
+					<strong class="font-medium text-blue">{{ rank }}<sup>e</sup>
+					</strong>
+					sur
+					{{ all_users_count }}
+					utilisateurs
+				</p>
 				<div class="mt-3 flex gap-4">
 					<button id="share-profile" type="button" class="btn-secondary flex items-center gap-2 text-sm" data-url="{{ app.request.scheme ~ '://' ~ app.request.host ~ path('app_user_show', { username: user.username|lower }) }}">
 						<i class="fa-solid fa-share-nodes"></i>
@@ -55,48 +63,48 @@
 
 		<section class="w-3/4 mx-auto mt-8">
 			<tab-view tabs='[
-				{
-					"title": "Photos",
-					"content": {{ include("user/profile/_photos.html.twig", { photos: photos })|json_encode|raw }}
-				},
-				{
-					"title": "Roadtrips",
-					"content": {{ include("user/profile/_roadtrips.html.twig", { isPublic: false })|json_encode|raw }}
-				},
-				{
-					"title": "Avis",
-					"content": "<review-list user-id=\"{{ app.user ? app.user.id : ' ' }}\" editable=\"true\"></review-list>"
-				},
-				{
-					"title": "Favoris",
-					"content": "<user-favorites></user-favorites>"
-				},
-				{
-					"title": "Badges",
-					"content": {{ include("user/profile/_badges.html.twig")|json_encode|raw }}
-				},
-				{
-					"title": "Carte",
-					"content": {{ include("user/profile/_map.html.twig")|json_encode|raw }}
-				}
-			]'></tab-view>
+								{
+									"title": "Photos",
+									"content": {{ include("user/profile/_photos.html.twig", { photos: photos })|json_encode|raw }}
+								},
+								{
+									"title": "Roadtrips",
+									"content": {{ include("user/profile/_roadtrips.html.twig", { isPublic: false })|json_encode|raw }}
+								},
+								{
+									"title": "Avis",
+									"content": "<review-list user-id=\"{{ app.user ? app.user.id : ' ' }}\" editable=\"true\"></review-list>"
+								},
+								{
+									"title": "Favoris",
+									"content": "<user-favorites></user-favorites>"
+								},
+								{
+									"title": "Badges",
+									"content": {{ include("user/profile/_badges.html.twig")|json_encode|raw }}
+								},
+								{
+									"title": "Carte",
+									"content": {{ include("user/profile/_map.html.twig")|json_encode|raw }}
+								}
+							]'></tab-view>
 		</section>
 	</div>
 
 	<script>
 		function confirmDeletion() {
-			const modal = document.getElementById('delete-confirm');
-			modal.show('Voulez-vous vraiment supprimer votre compte ?', () => {
-			window.location.href = "{{ path('app_user_delete') }}";
-			});
-		}
-		document.getElementById('share-profile')?.addEventListener('click', () => {
-			const url = document.getElementById('share-profile').dataset.url;
-			navigator.clipboard.writeText(url).then(() => {
-				const feedback = document.getElementById('copy-feedback');
-				feedback.classList.remove('hidden');
-				setTimeout(() => feedback.classList.add('hidden'), 2000);
-			});
-		});
+const modal = document.getElementById('delete-confirm');
+modal.show('Voulez-vous vraiment supprimer votre compte ?', () => {
+window.location.href = "{{ path('app_user_delete') }}";
+});
+}
+document.getElementById('share-profile') ?. addEventListener('click', () => {
+const url = document.getElementById('share-profile').dataset.url;
+navigator.clipboard.writeText(url).then(() => {
+const feedback = document.getElementById('copy-feedback');
+feedback.classList.remove('hidden');
+setTimeout(() => feedback.classList.add('hidden'), 2000);
+});
+});
 	</script>
 {% endblock %}
