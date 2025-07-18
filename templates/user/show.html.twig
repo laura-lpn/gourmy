@@ -15,6 +15,14 @@
 			<div>
 				<h1 class="font-second text-blue text-4xl font-medium">{{ user.firstName ~ ' ' ~ user.lastName }}</h1>
 				<p class="text-orange font-medium text-lg">@{{ user.username }}</p>
+				<p class="text-sm mt-2">
+					Classement général :
+					<strong class="font-medium text-blue">{{ rank }}<sup>e</sup>
+					</strong>
+					sur
+					{{ all_users_count }}
+					utilisateurs
+				</p>
 			</div>
 		</section>
 		<script type="module" src="{{ asset('webcomponents/TabView.js') }}"></script>

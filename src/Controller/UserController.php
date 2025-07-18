@@ -34,7 +34,7 @@ final class UserController extends AbstractController
         return $this->render('user/profile.html.twig', [
             'user' => $user,
             'photos' => $photos,
-            'all_badges' => $badgeRepo->findAll(),
+            'all_badges' => $badgeRepo->findby([], ['id' => 'ASC']),
             'rank' => $rank,
             'all_users_count' => $allUsersCount,
             'favoriteRestaurants' => $user->getFavoriteRestaurants(),
@@ -115,7 +115,7 @@ final class UserController extends AbstractController
         return $this->render('user/show.html.twig', [
             'user' => $user,
             'photos' => $photos,
-            'all_badges' => $badgeRepo->findAll(),
+            'all_badges' => $badgeRepo->findBy([], ['id' => 'ASC']),
             'rank' => $rank,
             'all_users_count' => $allUsersCount,
         ]);

@@ -3,8 +3,9 @@
 namespace App\Command;
 
 use App\Entity\User;
-use App\Service\BadgeManager;
 use App\Repository\UserRepository;
+use App\Service\BadgeManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -13,13 +14,14 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 #[AsCommand(
   name: 'badges:recalculate',
-  description: 'Recalcule et attribue tous les badges à tous les utilisateurs existants'
+  description: 'Recalcule les points et attribue les badges pour tous les utilisateurs existants'
 )]
 class RecalculateBadgesCommand extends Command
 {
   public function __construct(
     private UserRepository $userRepo,
-    private BadgeManager $badgeManager
+    private BadgeManager $badgeManager,
+    private EntityManagerInterface $em
   ) {
     parent::__construct();
   }
@@ -29,16 +31,33 @@ class RecalculateBadgesCommand extends Command
     $io = new SymfonyStyle($input, $output);
     $users = $this->userRepo->findAll();
 
-    $io->title('Recalcul des badges pour tous les utilisateurs');
+    $io->title('🔄 Recalcul des points et des badges pour tous les utilisateurs');
 
-    $count = 0;
+    $countUsers = 0;
     foreach ($users as $user) {
       /** @var User $user */
+      $oldPoints = $user->getPoints();
+
+      // ✅ Recalcule points + badges
       $this->badgeManager->checkAndGrantBadges($user);
-      $count++;
+
+      $newPoints = $user->getPoints();
+      $badgesCount = count($user->getBadges());
+
+      $io->text(sprintf(
+        "👤 %s (%s) : %d → %d points | %d badge(s)",
+        $user->getUsername(),
+        $user->getEmail(),
+        $oldPoints,
+        $newPoints,
+        $badgesCount
+      ));
+      $countUsers++;
     }
 
-    $io->success("✅ Badges recalculés pour {$count} utilisateurs.");
+    $this->em->flush();
+
+    $io->success("✅ Recalcul terminé pour {$countUsers} utilisateur(s).");
     return Command::SUCCESS;
   }
 }

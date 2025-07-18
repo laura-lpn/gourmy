@@ -434,6 +434,12 @@ class User extends BaseEntity implements UserInterface, PasswordAuthenticatedUse
         return $this->points;
     }
 
+    public function setPoints(int $points): static
+    {
+        $this->points = $points;
+        return $this;
+    }
+
     public function addPoints(int $value): static
     {
         $this->points += $value;

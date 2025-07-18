@@ -38,7 +38,7 @@ final class ApiRestaurantController extends AbstractController
 
         return $this->json($data);
     }
-    
+
     #[Route('/api/user/restaurants/{id}/favorite', name: 'api_user_restaurant_favorite_add', methods: ['POST'])]
     public function addFavorite(
         int $id,
@@ -79,5 +79,52 @@ final class ApiRestaurantController extends AbstractController
         $em->flush();
 
         return $this->json(['success' => true]);
+    }
+
+    #[Route('/api/restaurants/{id}', name: 'api_restaurants_details', methods: ['GET'])]
+    public function details(RestaurantRepository $restaurantRepo, int $id): JsonResponse
+    {
+        $restaurant = $restaurantRepo->find($id);
+
+        if (!$restaurant) {
+            return $this->json(['error' => 'Restaurant introuvable'], 404);
+        }
+
+        $charter = $restaurant->getCharter();
+        $types = $restaurant->getTypes()->map(fn($t) => $t->getName())->toArray();
+        $images = $restaurant->getImages()->map(fn($img) => [
+            'id' => $img->getId(),
+            'url' => '/uploads/restaurants/images/' . $img->getImageName()
+        ])->toArray();
+
+        return $this->json([
+            'id' => $restaurant->getId(),
+            'name' => $restaurant->getName(),
+            'siret' => $restaurant->getSiret(),
+            'description' => $restaurant->getDescription(),
+            'address' => $restaurant->getAddress(),
+            'postalCode' => $restaurant->getPostalCode(),
+            'city' => $restaurant->getCity(),
+            'country' => $restaurant->getCountry(),
+            'phoneNumber' => $restaurant->getPhoneNumber(),
+            'openingHours' => $restaurant->getOpeningHours(),
+            'priceRange' => $restaurant->getPriceRange(),
+            'website' => $restaurant->getWebsite(),
+            'latitude' => $restaurant->getLatitude(),
+            'longitude' => $restaurant->getLongitude(),
+            'types' => $types,
+            'banner' => $restaurant->getBannerName()
+                ? '/uploads/restaurants/banners/' . $restaurant->getBannerName()
+                : null,
+            'images' => $images,
+            'charter' => $charter ? [
+                'usesLocalProducts' => $charter->isUsesLocalProducts(),
+                'homemadeCuisine' => $charter->isHomemadeCuisine(),
+                'wasteReduction' => $charter->isWasteReduction(),
+                'transparentOrigin' => $charter->isTransparentOrigin(),
+                'professionalRepliesToReviews' => $charter->isProfessionalRepliesToReviews(),
+                'acceptsModeration' => $charter->isAcceptsModeration(),
+            ] : null
+        ]);
     }
 }

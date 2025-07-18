@@ -19,8 +19,15 @@ class BadgeManager
     private ParameterBagInterface $params
   ) {}
 
+  /**
+   * ✅ Recalcule les points de l'utilisateur et attribue les badges débloqués
+   */
   public function checkAndGrantBadges(User $user): void
   {
+    // ✅ Recalcul complet des points
+    $user->setPoints($this->calculateUserPoints($user));
+    $this->em->persist($user);
+
     $badges = $this->badgeRepo->findAll();
 
     foreach ($badges as $badge) {
@@ -38,24 +45,42 @@ class BadgeManager
     $this->em->flush();
   }
 
-  private function userMeetsBadgeCondition(User $user, $badge): bool
+  /**
+   * ✅ Calcule les points d'un utilisateur en fonction de ses reviews, photos et roadtrips
+   */
+  private function calculateUserPoints(User $user): int
   {
-    switch ($badge->getType()) {
-      case 'review':
-        return count($user->getReviews()) >= $badge->getConditionValue();
-      case 'photo':
-        $photoCount = array_reduce(
-          $user->getReviews()->toArray(),
-          fn($carry, $r) => $carry + ($r->getImageName() ? 1 : 0),
-          0
-        );
-        return $photoCount >= $badge->getConditionValue();
-      case 'roadtrip':
-        return count($user->getRoadtrips()) >= $badge->getConditionValue();
-    }
-    return false;
+    $reviewsCount = count($user->getReviews());
+    $photosCount = array_reduce(
+      $user->getReviews()->toArray(),
+      fn($carry, $r) => $carry + ($r->getImageName() ? 1 : 0),
+      0
+    );
+    $roadtripsCount = count($user->getRoadtrips());
+
+    return ($reviewsCount * 1) + ($photosCount * 1) + ($roadtripsCount * 2);
   }
 
+  /**
+   * ✅ Vérifie si l'utilisateur respecte la condition pour un badge
+   */
+  private function userMeetsBadgeCondition(User $user, $badge): bool
+  {
+    return match ($badge->getType()) {
+      'review' => count($user->getReviews()) >= $badge->getConditionValue(),
+      'photo' => array_reduce(
+        $user->getReviews()->toArray(),
+        fn($carry, $r) => $carry + ($r->getImageName() ? 1 : 0),
+        0
+      ) >= $badge->getConditionValue(),
+      'roadtrip' => count($user->getRoadtrips()) >= $badge->getConditionValue(),
+      default => false
+    };
+  }
+
+  /**
+   * ✅ Envoie un email lorsque l'utilisateur débloque un badge
+   */
   private function sendBadgeEmail(User $user, $badge): void
   {
     $badgeImagePath = match ($badge->getType()) {

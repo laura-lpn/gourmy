@@ -1,0 +1,212 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Admin - Badges
+{% endblock %}
+
+{% block body %}
+	<div
+		class="mt-28 w-3/4 mx-auto px-6">
+		<!-- Bouton retour Dashboard -->
+		<a href="{{ path('app_admin_dashboard') }}" class="btn-secondary inline-flex items-center mb-6">
+			<i class="fa-solid fa-arrow-left mr-2"></i>
+			Retour au Dashboard
+		</a>
+
+		<h1 class="text-3xl font-second text-center font-medium text-blue mb-6">Gestion des badges</h1>
+
+		<!-- Boutons -->
+		<div class="flex justify-between mb-6">
+			<button class="btn" onclick="recalculateBadges()">
+				<i class="fa-solid fa-arrows-rotate mr-2"></i>
+				Recalculer les badges
+			</button>
+			<button class="btn" onclick="openAddBadgeModal()">
+				<i class="fa-solid fa-plus mr-2"></i>
+				Ajouter un badge
+			</button>
+		</div>
+
+		<table class="bg-blue/5 w-full border-collapse rounded-xl border border-blue/10 overflow-hidden">
+			<thead>
+				<tr class="bg-blue/5 text-blue text-lg uppercase font-second">
+					<th class="p-2 text-left">Nom</th>
+					<th class="p-2 text-center">Description</th>
+					<th class="p-2 text-left">Type</th>
+					<th class="p-2 text-center">Condition</th>
+					<th class="p-2 text-center">Couleur</th>
+					<th class="p-2 text-center">Actions</th>
+				</tr>
+			</thead>
+			<tbody id="badges-table">
+				{% for badge in badges %}
+					<tr id="badge-{{ badge.id }}" class="border-b">
+						<td class="p-2">{{ badge.name }}</td>
+						<td class="p-2 text-center text-sm">{{ badge.description }}</td>
+						<td class="p-2 capitalize">{{ badge.type }}</td>
+						<td class="p-2 text-center">{{ badge.conditionValue }}</td>
+						<td class="p-2 text-center">
+							<span class="inline-block w-6 h-6 rounded-full border" style="background-color: {{ badge.backgroundColor }}"></span>
+						</td>
+						<td class="p-2 flex gap-2 justify-center">
+							<button class="px-3 py-1 rounded bg-blue text-white edit-btn" data-id="{{ badge.id }}" data-name="{{ badge.name }}" data-type="{{ badge.type }}" data-condition="{{ badge.conditionValue }}" data-color="{{ badge.backgroundColor }}" data-description="{{ badge.description }}">
+								<i class="fa-solid fa-pen"></i>
+							</button>
+							<button class="px-3 py-1 rounded bg-red-600 text-white delete-btn" data-id="{{ badge.id }}">
+								<i class="fa-solid fa-trash"></i>
+							</button>
+						</td>
+					</tr>
+				{% else %}
+					<tr>
+						<td colspan="6" class="text-center p-4">Aucun badge trouvé.</td>
+					</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+	</div>
+
+	<script type="module" src="{{ asset('webcomponents/ModalConfirm.js') }}"></script>
+	<modal-confirm id="admin-badges-modal"></modal-confirm>
+
+	<script type="module">
+		const modal = document.getElementById('admin-badges-modal');
+
+// ✅ Recalculer les badges
+async function recalculateBadges() {
+modal.show("Confirmer le recalcul de tous les badges ?", async () => {
+const res = await fetch('/admin/badges/recalculate', {method: 'POST'});
+const data = await res.json();
+alert(data.message);
+});
+}
+
+// ✅ Supprimer un badge
+async function deleteBadge(id) {
+modal.show("Supprimer définitivement ce badge ?", async () => {
+await fetch (`/admin/badges/delete/${id}`, {method: 'POST'});
+document.getElementById (`badge-${id}`).remove();
+});
+}
+
+// ✅ Ouverture Modal Édition
+function openEditBadgeModal(id, name, type, condition, color, description) {
+modal.showWithContent(`
+		<h2 class="text-xl font-medium text-blue mb-4">Modifier le badge</h2>
+		<div class="flex flex-col gap-3 w-full">
+				<label>Nom</label>
+				<input type="text" id="edit-name" value="${name}">
+				<label>Description</label>
+				<textarea id="edit-description">${
+description || ''
+}</textarea>
+				<label>Type</label>
+				<select id="edit-type">
+					<option value="review" ${
+type === 'review' ? 'selected' : ''
+}>Avis</option>
+					<option value="photo" ${
+type === 'photo' ? 'selected' : ''
+}>Photo</option>
+					<option value="roadtrip" ${
+type === 'roadtrip' ? 'selected' : ''
+}>Roadtrip</option>
+				</select>
+				<label>Condition (valeur)</label>
+				<input type="number" id="edit-condition" value="${condition}">
+				<label>Couleur</label>
+				<input type="color" id="edit-color" value="${color}">
+			</div>`, {
+showActions: true,
+showCloseIcon: true,
+onConfirm: async () => {
+const updatedName = document.getElementById('edit-name').value;
+const updatedType = document.getElementById('edit-type').value;
+const updatedCondition = document.getElementById('edit-condition').value;
+const updatedColor = document.getElementById('edit-color').value;
+const updatedDescription = document.getElementById('edit-description').value;
+await fetch (`/admin/badges/edit/${id}`, {
+method: 'POST',
+headers: {
+'Content-Type': 'application/json'
+},
+body: JSON.stringify(
+{
+name: updatedName,
+type: updatedType,
+conditionValue: updatedCondition,
+backgroundColor: updatedColor,
+description: updatedDescription
+}
+)
+});
+location.reload();
+}
+});
+}
+
+// ✅ Ouverture Modal Ajout
+function openAddBadgeModal() {
+modal.showWithContent(`
+			<h2 class="text-xl font-medium text-blue mb-4">Ajouter un badge</h2>
+			<div class="flex flex-col gap-3 w-full">
+					<label>Nom</label>
+					<input type="text" id="add-name">
+					<label>Description</label>
+					<textarea id="add-description"></textarea>
+					<label>Type</label>
+					<select id="add-type">
+							<option value="review">Avis</option>
+							<option value="photo">Photo</option>
+							<option value="roadtrip">Roadtrip</option>
+					</select>
+					<label>Condition (valeur)</label>
+					<input type="number" id="add-condition">
+					<label>Couleur</label>
+					<input type="color" id="add-color">
+			</div>
+	`, {
+showActions: true,
+showCloseIcon: true,
+onConfirm: async () => {
+const name = document.getElementById('add-name').value;
+const type = document.getElementById('add-type').value;
+const condition = document.getElementById('add-condition').value;
+const color = document.getElementById('add-color').value;
+const description = document.getElementById('add-description').value;
+await fetch(`/admin/badges/add`, {
+method: 'POST',
+headers: {
+'Content-Type': 'application/json'
+},
+body: JSON.stringify(
+{
+name,
+type,
+description,
+conditionValue: condition,
+backgroundColor: color
+}
+)
+});
+location.reload();
+}
+});
+}
+
+// ✅ Événements
+document.querySelectorAll('.delete-btn').forEach(btn => {
+btn.addEventListener('click', () => deleteBadge(btn.dataset.id));
+});
+
+document.querySelectorAll('.edit-btn').forEach(btn => {
+btn.addEventListener('click', () => {
+openEditBadgeModal(btn.dataset.id, btn.dataset.name, btn.dataset.type, btn.dataset.condition, btn.dataset.color, btn.dataset.description);
+});
+});
+
+window.openAddBadgeModal = openAddBadgeModal;
+window.recalculateBadges = recalculateBadges;
+window.deleteBadge = deleteBadge;
+window.openEditBadgeModal = openEditBadgeModal;
+	</script>
+{% endblock %}

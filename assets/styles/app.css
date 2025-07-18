@@ -136,6 +136,10 @@
     @apply rounded-lg object-cover bg-center aspect-square w-48 h-48 mt-1;
   }
 
+  form[name="edit_user"] a img {
+    @apply rounded-full object-cover bg-center aspect-square w-32 h-32 mt-1;
+  }
+
   form image-uploader a img {
     @apply !m-0;
   }

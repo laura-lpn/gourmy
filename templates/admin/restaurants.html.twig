@@ -1,0 +1,161 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Admin - Restaurants en attente
+{% endblock %}
+
+{% block body %}
+<div class="mt-28 w-3/4 mx-auto px-6">
+	<a href="{{ path('app_admin_dashboard') }}" class="btn-secondary inline-flex items-center mb-6">
+		<i class="fa-solid fa-arrow-left mr-2"></i>
+		Retour au Dashboard
+	</a>
+
+	<h1 class="text-3xl font-second text-center font-medium text-blue mb-6">Restaurants en attente</h1>
+
+	<table class="bg-blue/5 w-full border-collapse rounded-xl border border-blue/10 overflow-hidden">
+		<thead>
+			<tr class="bg-blue/5 text-blue text-lg uppercase font-second">
+				<th class="p-2 text-left">Nom</th>
+				<th class="p-2 text-left">Ville</th>
+				<th class="p-2">Actions</th>
+			</tr>
+		</thead>
+		<tbody id="restaurants-table">
+			{% for restaurant in restaurants %}
+				<tr id="row-{{ restaurant.id }}" class="border-b">
+					<td class="p-2">{{ restaurant.name }}</td>
+					<td class="p-2">{{ restaurant.city }}</td>
+					<td class="p-2 flex gap-2 justify-center">
+						<button class="px-3 py-1 rounded bg-blue text-white view-btn" data-id="{{ restaurant.id }}">
+							<i class="fa-solid fa-eye"></i>
+						</button>
+						<button class="bg-green-600 text-white px-3 py-1 rounded validate-btn" data-id="{{ restaurant.id }}">
+							<i class="fa-solid fa-check"></i>
+						</button>
+						<button class="bg-red-600 text-white px-3 py-1 rounded refuse-btn" data-id="{{ restaurant.id }}">
+							<i class="fa-solid fa-xmark"></i>
+						</button>
+					</td>
+				</tr>
+			{% else %}
+				<tr>
+					<td colspan="3" class="text-center p-4">Aucun restaurant en attente.</td>
+				</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+</div>
+
+<script type="module" src="{{ asset('webcomponents/ModalConfirm.js') }}"></script>
+<modal-confirm id="admin-modal"></modal-confirm>
+
+<script type="module">
+	const modal = document.getElementById('admin-modal');
+			
+					// ✅ Voir les détails d'un restaurant
+				async function showDetails(id) {
+				const res = await fetch (`/api/restaurants/${id}`);
+				const data = await res.json();
+		
+				let types = data.types.length ? data.types.join(', ') : '-';
+				let charter = data.charter ? `
+					<h4 class="font-medium text-blue mt-4 mb-2">Charte Gourmy</h4>
+					<ul class="list-disc text-sm pl-4 text-gray-600">
+						<li>
+							${data.charter.usesLocalProducts 
+									? '<i class="fa-solid fa-check text-green-600"></i>' 
+									: '<i class="fa-solid fa-xmark text-red-600"></i>'}
+							Produits locaux
+						</li>
+						<li>
+							${data.charter.homemadeCuisine 
+									? '<i class="fa-solid fa-check text-green-600"></i>' 
+									: '<i class="fa-solid fa-xmark text-red-600"></i>'}
+							Faits maison
+						</li>
+						<li>
+							${data.charter.wasteReduction 
+									? '<i class="fa-solid fa-check text-green-600"></i>' 
+									: '<i class="fa-solid fa-xmark text-red-600"></i>'}
+							Écoresponsable
+						</li>
+						<li>
+							${data.charter.transparentOrigin 
+									? '<i class="fa-solid fa-check text-green-600"></i>' 
+									: '<i class="fa-solid fa-xmark text-red-600"></i>'}
+							Origine transparente
+						</li>
+						<li>
+							${data.charter.professionalRepliesToReviews 
+									? '<i class="fa-solid fa-check text-green-600"></i>' 
+									: '<i class="fa-solid fa-xmark text-red-600"></i>'}
+							Réponses pro aux avis
+						</li>
+						<li>
+							${data.charter.acceptsModeration 
+									? '<i class="fa-solid fa-check text-green-600"></i>' 
+									: '<i class="fa-solid fa-xmark text-red-600"></i>'}
+							Accepte modération
+						</li>
+					</ul>
+				` : '';
+		
+		
+				let imagesHtml = '';
+				if (data.images.length) {
+				imagesHtml = '<div class="w-full grid grid-cols-3 md:grid-cols-4 gap-2 mt-4">';
+				data.images.forEach(img => {
+				imagesHtml += `<img src="${
+				img.url
+				}" class="w-full h-24 object-cover rounded-lg">`;
+				});
+				imagesHtml += '</div>';
+				}
+		
+				modal.showWithContent(`
+					<h2 class="text-xl font-medium text-blue mb-2">${data.name}</h2>
+					<p><strong class="font-medium text-blue">Ville :</strong> ${data.city} (${data.postalCode})</p>
+					<p><strong class="font-medium text-blue">Adresse :</strong> ${data.address}</p>
+					<p><strong class="font-medium text-blue">Pays :</strong> ${data.country}</p>
+					<p><strong class="font-medium text-blue">Téléphone :</strong> ${data.phoneNumber}</p>
+					<p><strong class="font-medium text-blue">Horaires :</strong> ${data.openingHours}</p>
+					<p><strong class="font-medium text-blue">Fourchette de prix :</strong> ${data.priceRange}</p>
+					<p><strong class="font-medium text-blue">Types de cuisine :</strong> ${types}</p>
+					<p><strong class="font-medium text-blue">Description :</strong> ${data.description}</p>
+					${imagesHtml.length ? `
+						<p><strong class="font-medium text-blue">Images :</strong></p>
+						${imagesHtml}
+					` : ''}
+					${charter}
+				`, { showActions: false, showCloseIcon: true });
+				}
+		
+				// ✅ Accepter un restaurant (sans rechargement)
+				async function validateRestaurant(id) {
+				modal.show("Confirmer la validation de ce restaurant ?", async () => {
+				await fetch (`/admin/restaurant/validate/${id}`, {method: 'POST'});
+				document.getElementById (`row-${id}`).remove();
+				});
+				}
+		
+				// ✅ Refuser un restaurant (sans rechargement)
+				async function refuseRestaurant(id) {
+				modal.show("Voulez-vous vraiment refuser ce restaurant ?", async () => {
+				await fetch (`/admin/restaurant/refuse/${id}`, {method: 'POST'});
+				document.getElementById (`row-${id}`).remove();
+				});
+				}
+		
+				document.querySelectorAll('.view-btn').forEach(btn => {
+					btn.addEventListener('click', () => showDetails(btn.dataset.id));
+				});
+		
+				document.querySelectorAll('.validate-btn').forEach(btn => {
+					btn.addEventListener('click', () => validateRestaurant(btn.dataset.id));
+				});
+		
+				document.querySelectorAll('.refuse-btn').forEach(btn => {
+					btn.addEventListener('click', () => refuseRestaurant(btn.dataset.id));
+				});
+			</script>
+			{% endblock %}

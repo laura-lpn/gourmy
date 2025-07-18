@@ -4,31 +4,74 @@
 {% endblock %}
 
 {% block body %}
-	<div class="mt-28 max-w-3xl mx-auto">
-		<h1 class="my-h1 text-center">Classement des utilisateurs</h1>
+	<div
+		class="mt-28 w-1/2 mx-auto px-6">
 
-		<table class="w-full mt-6 border border-gray-200 rounded-lg overflow-hidden">
-			<thead class="bg-blue-500 text-white">
-				<tr>
-					<th class="py-2 px-4 text-left">Rang</th>
-					<th class="py-2 px-4 text-left">Utilisateur</th>
-					<th class="py-2 px-4 text-left">Points</th>
-				</tr>
-			</thead>
-			<tbody>
-				{% for u in users %}
-					<tr class="odd:bg-white even:bg-gray-50">
-						<td class="py-2 px-4">{{ loop.index }}</td>
-						<td class="py-2 px-4">
-							<a href="{{ path('app_user_show', {username: u.username}) }}" class="text-blue-600 hover:underline">
-								{{ u.firstName }}
-								{{ u.lastName }}
-							</a>
-						</td>
-						<td class="py-2 px-4">{{ u.points }}</td>
+		<!-- Titre principal -->
+		<h1 class="my-h1 text-center mb-10">
+			Classement des utilisateurs
+		</h1>
+
+		<!-- Tableau du classement -->
+		<div class="bg-blue/5 rounded-xl border border-blue/10 overflow-hidden">
+			<table class="w-full border-collapse">
+				<thead class="bg-blue/20 text-blue uppercase text-sm font-second">
+					<tr>
+						<th class="p-3 text-left">Rang</th>
+						<th class="p-3 text-left">Utilisateur</th>
+						<th class="p-3 text-center">Points</th>
+						<th class="p-3 text-center">Badges</th>
 					</tr>
-				{% endfor %}
-			</tbody>
-		</table>
+				</thead>
+				<tbody>
+					{% for u in users %}
+						<tr
+							class="odd:bg-white even:bg-blue/5 hover:bg-blue/10 transition">
+							<!-- Rang -->
+							<td class="p-3 font-second">
+								{% if loop.index == 1 %}
+									<i class="fa-solid fa-medal text-amber-300"></i>
+								{% elseif loop.index == 2 %}
+									<i class="fa-solid fa-medal text-slate-400"></i>
+								{% elseif loop.index == 3 %}
+									<i class="fa-solid fa-medal text-red-800"></i>
+								{% else %}
+									{{ loop.index }}
+								{% endif %}
+							</td>
+
+							<!-- Utilisateur avec avatar -->
+							<td class="p-3 flex items-center gap-3">
+								{% if u.avatarName %}
+									<img src="{{ vich_uploader_asset(u, 'avatarFile') }}" alt="Avatar" class="w-8 h-8 rounded-full">
+								{% else %}
+									<img src="{{ asset('images/avatar-placeholder.png') }}" alt="Avatar par défaut" class="w-8 h-8 rounded-full">
+								{% endif %}
+								<a href="{{ path('app_user_show', {username: u.username}) }}" class="hover:text-blue">
+									{{ u.firstName }}
+									{{ u.lastName }}
+								</a>
+							</td>
+
+							<!-- Points -->
+							<td class="p-3 text-center font-medium">
+								{{ u.points }}
+							</td>
+
+							<!-- Badges -->
+							<td class="p-3 text-center">
+								{{ u.badges|length }}
+							</td>
+						</tr>
+					{% else %}
+						<tr>
+							<td colspan="4" class="p-4 text-center text-gray-500">
+								Aucun utilisateur trouvé.
+							</td>
+						</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+		</div>
 	</div>
 {% endblock %}
