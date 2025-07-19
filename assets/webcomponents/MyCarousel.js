@@ -124,8 +124,8 @@ export class MyCarousel extends HTMLElement {
       .join("");
 
     this.innerHTML = `
-      <div class="bg-${this.color === "blue" ? "blue" : "orange"}/5 rounded-2xl px-4 sm:px-8 lg:px-20 py-6 sm:py-8 overflow-hidden">
-        <div class="flex items-center justify-between mb-4 sm:mb-6 pl-2">
+      <div class="bg-${this.color === "blue" ? "blue" : "orange"}/5 rounded-2xl pl-4 sm:pl-8 lg:pl-20 py-6 sm:py-8 overflow-hidden">
+        <div class="flex items-center justify-between mb-4 sm:mb-6 pl-2 pr-4 sm:pr-8 lg:pr-20">
           ${
             this.title
               ? `

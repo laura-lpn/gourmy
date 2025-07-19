@@ -48,7 +48,7 @@
 		<roadtrip-search-form></roadtrip-search-form>
 	</section>
 
-	<section class="w-3/4 mx-auto mt-8">
+	<section class="w-3/4 mx-auto mt-12">
 		<my-carousel title="Découvrez nos roadtrips">
 			{% for roadtrip in roadtripsRecent %}
 				{% set images = roadtrip.steps|slice(0, 3)|map(step => step.restaurant.bannerName ? vich_uploader_asset(step.restaurant, 'bannerFile') : null)|filter(v => v) %}
@@ -88,7 +88,7 @@
 		</my-carousel>
 	</section>
 
-	<section class="w-3/4 mx-auto mt-12 flex flex-col px-8">
+	<section class="w-3/4 mx-auto mt-14 flex flex-col px-8">
 		<h2 class="text-blue text-lg sm:text-xl font-second font-medium flex items-center gap-4 sm:gap-6 mb-6">
 			<span class="block w-6 sm:w-8 h-0.5 rounded-md bg-blue"></span>
 			Nos restaurants partenaires
@@ -102,7 +102,7 @@
 		<a href="{{ path('app_restaurant_list') }}" class="btn mx-auto">Voir tous les partenaires</a>
 	</section>
 
-	<section class="w-3/4 mx-auto mt-12">
+	<section class="w-3/4 mx-auto mt-14">
 		<my-carousel title="Les avis sur nous" color="blue" visible="3">
 			{% for review in reviews %}
 				<article class="bg-white rounded-2xl p-6 flex flex-col justify-between text-center h-full">
@@ -121,7 +121,7 @@
 		</my-carousel>
 	</section>
 
-	<section class="w-3/4 mx-auto mt-12 flex flex-col lg:flex-row items-center px-8 gap-8 lg:gap-16">
+	<section class="w-3/4 mx-auto mt-14 flex flex-col lg:flex-row items-center px-8 gap-8 lg:gap-16">
 		<div class="w-full lg:w-2/5 relative">
 			<img src="{{ asset('images/pages/sample-food.jpg') }}" alt="Découvrez de nouvelles saveurs" class="w-full rounded-2xl object-cover h-80">
 			<div class="absolute -bottom-5 -right-5 w-24 h-24 bg-white rounded-full shadow-lg flex items-center justify-center">

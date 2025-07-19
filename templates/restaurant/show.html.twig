@@ -48,7 +48,7 @@
 				</h2>
 				<p>
 					<strong class="font-medium">Adresse :</strong>
-					{{ restaurant.address ~ ', ' ~ restaurant.postalCode ~ ' ' ~ restaurant.city ~ ', ' ~ restaurant.country }}</p>
+					{{ restaurant.address ~ ', ' ~ restaurant.postalCode ~ ' ' ~ restaurant.city ~ ', ' ~ restaurant.country|country_name }}</p>
 				<p>
 					<strong class="font-medium">Horaires :</strong>
 					{{ restaurant.openingHours }}</p>
