@@ -24,23 +24,6 @@ class UserActivityListener
         return;
       }
 
-      $points = 0;
-      if ($entity instanceof Review) {
-        $points += 1;
-        if ($entity->getImageName()) {
-          $points += 1; // bonus pour photo
-        }
-      }
-      if ($entity instanceof Roadtrip) {
-        $points += 2;
-      }
-
-      $user->addPoints($points);
-
-      $em = $args->getObjectManager();
-      $em->persist($user);
-      $em->flush();
-
       $this->badgeManager->checkAndGrantBadges($user);
     }
   }

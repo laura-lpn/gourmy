@@ -34,7 +34,7 @@ export function renderReview({ review, currentUserId, editable, onEditReview, on
         <button data-action="edit-review" class="btn-icon text-blue hover:text-blue" title="Modifier" data-id="${review.id}">
           <i class="fa-solid fa-pen"></i>
         </button>
-        <button data-action="delete-review" class="btn-icon text-red-500 hover:text-red-700" title="Supprimer" data-id="${review.id}">
+        <button data-action="delete-review" class="btn-icon text-red-600 hover:text-red-700" title="Supprimer" data-id="${review.id}">
           <i class="fa-solid fa-trash"></i>
         </button>
       </div>
