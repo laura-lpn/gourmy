@@ -8,6 +8,13 @@
 {% block title %}Accueil
 {% endblock %}
 
+{% block meta %}
+	<meta name="description" content="Gourmy, votre guide pour des roadtrips culinaires authentiques. Découvrez des restaurants locaux et vivez des expériences gastronomiques uniques.">
+	<meta property="og:title" content="Gourmy – Roadtrips culinaires & restaurants locaux">
+	<meta property="og:description" content="Planifiez votre roadtrip gourmand sur mesure et soutenez les restaurants qui valorisent le terroir. Explorez, savourez, partagez.">
+	<meta property="og:image" content="{{ asset('images/pages/home.jpg') }}">
+{% endblock %}
+
 {% block body %}
 	{% set reviews = [
 		{
@@ -137,9 +144,9 @@
 
 			<p class="leading-relaxed">
 				Plongez au cœur de la gastronomie locale et découvrez des adresses authentiques sélectionnées avec soin.
-								  Chaque étape est une invitation à savourer des plats uniques, préparés par des chefs passionnés qui mettent
-								  en valeur les produits de leur région. Laissez-vous guider par Gourmy et vivez une véritable aventure culinaire,
-								  entre découvertes gourmandes et rencontres inoubliables.
+												  Chaque étape est une invitation à savourer des plats uniques, préparés par des chefs passionnés qui mettent
+												  en valeur les produits de leur région. Laissez-vous guider par Gourmy et vivez une véritable aventure culinaire,
+												  entre découvertes gourmandes et rencontres inoubliables.
 			</p>
 
 			<a href="{{ path('app_register') }}" class="bg-orange text-white px-5 py-2 mt-2 rounded-md w-max hover:bg-orange/80 duration-300 transition-colors">

@@ -4,6 +4,21 @@
 	{{ roadtrip.title }}
 {% endblock %}
 
+{% block meta %}
+	<meta name="description" content="{{ roadtrip.description|length > 150 ? roadtrip.description|slice(0,150) ~ '...' : roadtrip.description }}">
+	<meta property="og:title" content="{{ roadtrip.title }} – Roadtrip culinaire Gourmy">
+	<meta property="og:description" content="{{ roadtrip.description|length > 200 ? roadtrip.description|slice(0,200) ~ '...' : roadtrip.description }}">
+	{% set ogImage = roadtrip.steps
+    |filter(step => step.restaurant and step.restaurant.bannerName)
+    |map(step => vich_uploader_asset(step.restaurant, 'bannerFile'))
+    |first %}
+	{% if ogImage %}
+		<meta property="og:image" content="{{ ogImage }}">
+	{% else %}
+		<meta property="og:image" content="{{ asset('images/pages/roadtrips.jpg') }}">
+	{% endif %}
+{% endblock %}
+
 {% block body %}
 	<div class="w-3/4 mx-auto px-6 py-8 mt-28">
 		{% for label, messages in app.flashes %}
@@ -18,9 +33,7 @@
 
 		{# Images + Description #}
 		<section class="relative flex flex-col md:flex-row gap-10 mb-12 items-center">
-			<button
-					class="absolute top-0 right-0 text-white text-lg z-20 bg-orange rounded-full pt-1 pb-0.5 px-2 favorite-btn"
-					data-id="{{ roadtrip.id }}">
+			<button class="absolute top-0 right-0 text-white text-lg z-20 bg-orange rounded-full pt-1 pb-0.5 px-2 favorite-btn" data-id="{{ roadtrip.id }}">
 				<i class="{{ isFavorite ? 'fa-solid' : 'fa-regular' }} fa-heart"></i>
 			</button>
 
@@ -127,31 +140,31 @@
 	</div>
 
 	<script type="module">
-    function initFavoriteBtns() {
-        document.querySelectorAll('.favorite-btn').forEach(btn => {
-            if (btn.dataset.init) return;
-            btn.dataset.init = "1";
+		function initFavoriteBtns() {
+document.querySelectorAll('.favorite-btn').forEach(btn => {
+if (btn.dataset.init) 
+return;
 
-            btn.addEventListener('click', (e) => {
-                e.preventDefault();
-                e.stopPropagation();
+btn.dataset.init = "1";
 
-                const id = btn.dataset.id;
-                const icon = btn.querySelector('i');
-                const isFav = icon.classList.contains('fa-solid');
+btn.addEventListener('click', (e) => {
+e.preventDefault();
+e.stopPropagation();
 
-                fetch(`/api/user/roadtrips/${id}/favorite`, {
-                    method: isFav ? 'DELETE' : 'POST'
-                })
-                .then(res => res.json())
-                .then(() => {
-                    icon.classList.toggle('fa-solid', !isFav);
-                    icon.classList.toggle('fa-regular', isFav);
-                });
-            });
-        });
-			}
-			initFavoriteBtns();
-			document.addEventListener('alpine:init', initFavoriteBtns);
+const id = btn.dataset.id;
+const icon = btn.querySelector('i');
+const isFav = icon.classList.contains('fa-solid');
+
+fetch (`/api/user/roadtrips/${id}/favorite`, {
+method: isFav ? 'DELETE' : 'POST'
+}).then(res => res.json()).then(() => {
+icon.classList.toggle('fa-solid', ! isFav);
+icon.classList.toggle('fa-regular', isFav);
+});
+});
+});
+}
+initFavoriteBtns();
+document.addEventListener('alpine:init', initFavoriteBtns);
 	</script>
 {% endblock %}

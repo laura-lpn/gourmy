@@ -75,19 +75,19 @@
 		<section class="w-3/4 mx-auto mt-8">
 			<script type="module" src="{{ asset('webcomponents/TabView.js') }}"></script>
 			<tab-view tabs='[
-			{
-				"title": "Infos",
-				"content": {{ include("restaurant/profile/_infos.html.twig", { restaurant: restaurant })|json_encode|raw }}
-			},
-			{
+				{
+					"title": "Infos",
+					"content": {{ include("restaurant/profile/_infos.html.twig", { restaurant: restaurant })|json_encode|raw }}
+				},
+				{
 					"title": "Avis",
 					"content": "<restaurant-review-manager restaurant-id=\"{{ restaurant.id }}\" csrf=\"{{ csrf_token(' review_response') }}\"></restaurant-review-manager>"
-			},
-			{
+				},
+				{
 					"title": "images",
 					"content": {{ include("restaurant/profile/_photos.html.twig", { reviews: restaurant.reviews, images: restaurant.images })|json_encode|raw }}
-				            }
-				        ]'></tab-view>
+				}
+			]'></tab-view>
 		</section>
 
 	</div>
