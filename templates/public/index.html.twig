@@ -1,14 +1,154 @@
 {% extends 'base.html.twig' %}
 
+{% block stylesheets %}
+	{{ parent() }}
+	<link rel="stylesheet" href="{{ asset('css/home.css') }}">
+{% endblock %}
+
 {% block title %}Accueil
 {% endblock %}
 
 {% block body %}
+	{% set reviews = [
+		{
+			'content': 'Une expérience incroyable ! Chaque restaurant proposé était une vraie découverte. J’ai adoré l’aspect authentique des adresses.',
+			'author': 'Thomas',
+			'age': 24
+		},
+		{
+			'content': 'Super concept ! J’ai pu organiser un roadtrip gourmand entre amis et tout le monde a adoré les étapes choisies par Gourmy.',
+			'author': 'Julie',
+			'age': 31
+		},
+		{
+			'content': 'J’ai découvert des petites pépites locales que je n’aurais jamais trouvées toute seule. Je recommande à 100% !',
+			'author': 'Clara',
+			'age': 27
+		},
+		{
+			'content': 'Les étapes étaient parfaitement sélectionnées, on sent que chaque restaurant a été choisi avec soin. Un vrai régal !',
+			'author': 'Marc',
+			'age': 35
+		},
+		{
+			'content': 'Gourmy m’a permis de redécouvrir ma propre région à travers des adresses que je ne connaissais même pas. Génial !',
+			'author': 'Sophie',
+			'age': 29
+		},
+		{
+			'content': 'Très facile à utiliser et vraiment pratique pour les amoureux de la bonne cuisine. Je recommande les yeux fermés !',
+			'author': 'Antoine',
+			'age': 41
+		}
+	] %}
+
 	<section class="relative bg-home bg-cover bg-center min-h-[80vh] flex flex-col items-center justify-center">
 		<div class="absolute inset-0 bg-black/40"></div>
 		<h1 class="z-10 text-white text-4xl text-center font-medium font-second px-4 mt-4">Votre aventure culinaire sur mesure !</h1>
 		<roadtrip-search-form></roadtrip-search-form>
 	</section>
 
+	<section class="w-3/4 mx-auto mt-12">
+		<my-carousel title="Découvrez nos roadtrips">
+			{% for roadtrip in roadtripsRecent %}
+				{% set images = roadtrip.steps|slice(0, 3)|map(step => step.restaurant.bannerName ? vich_uploader_asset(step.restaurant, 'bannerFile') : null)|filter(v => v) %}
+				{% set count = images|length %}
+				{% set isFavorite = userFavoritesRoadtrips is defined and roadtrip in userFavoritesRoadtrips %}
+				<article class="w-full bg-orange/10 rounded-xl py-4 px-4 flex flex-col h-full relative">
+					<button class="absolute top-2 right-2 text-white text-lg z-20 bg-orange rounded-full pt-1 pb-0.5 px-2 favorite-btn" data-id="{{ roadtrip.id }}">
+						<i class="{{ isFavorite ? 'fa-solid' : 'fa-regular' }} fa-heart"></i>
+					</button>
+					{% if count > 0 %}
+						<div class="mb-4">
+							{% if count == 1 %}
+								<img src="{{ images[0] }}" alt="Preview" class="object-cover h-24 w-full rounded-md">
+							{% elseif count == 2 %}
+								<div class="flex gap-2">
+									{% for image in images %}
+										<img src="{{ image }}" alt="Preview" class="object-cover h-24 w-1/2 rounded-md">
+									{% endfor %}
+								</div>
+							{% elseif count == 3 %}
+								<div class="flex gap-2 h-24">
+									<img src="{{ images[0] }}" alt="Preview" class="object-cover w-1/2 h-full rounded-md">
+									<div class="flex flex-col gap-2 w-1/2">
+										<img src="{{ images[1] }}" alt="Preview" class="object-cover h-[calc(50%_-_0.25rem)] w-full rounded-md">
+										<img src="{{ images[2] }}" alt="Preview" class="object-cover h-[calc(50%_-_0.25rem)] w-full rounded-md">
+									</div>
+								</div>
+							{% endif %}
+						</div>
+						<h3 class="text-lg font-second leading-tight font-medium text-orange mb-3">{{ roadtrip.title }}</h3>
+						<a href="{{ path('app_roadtrip_show', {'id': roadtrip.id}) }}" class="mt-auto block text-sm mr-auto px-4 py-1 bg-transparent text-orange border border-orange self-end rounded-md transition-colors duration-300 hover:bg-orange/20">
+							Voir
+						</a>
+					{% endif %}
+				</article>
+			{% endfor %}
+		</my-carousel>
+	</section>
+
+	<section class="w-3/4 mx-auto mt-14 flex flex-col px-8">
+		<h2 class="text-blue text-lg sm:text-xl font-second font-medium flex items-center gap-4 sm:gap-6 mb-6">
+			<span class="block w-6 sm:w-8 h-0.5 rounded-md bg-blue"></span>
+			Nos restaurants partenaires
+		</h2>
+
+		<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+			{% for restaurant in restaurants %}
+				{% include 'restaurant/_card.html.twig' with { restaurant: restaurant, userFavorites: userFavoritesRestaurants ?? null } %}
+			{% endfor %}
+		</div>
+		<a href="{{ path('app_restaurant_list') }}" class="btn mx-auto">Voir tous les partenaires</a>
+	</section>
+
+	<section class="w-3/4 mx-auto mt-14">
+		<my-carousel title="Les avis sur nous" color="blue" visible="3">
+			{% for review in reviews %}
+				<article class="bg-white rounded-2xl p-6 flex flex-col justify-between text-center h-full">
+					<div class="flex flex-col">
+						<i class="fa-solid fa-quote-right text-orange text-2xl ml-auto"></i>
+						<p class="text-sm leading-relaxed">
+							{{ review.content }}
+						</p>
+						<i class="fa-solid fa-quote-left text-orange text-2xl mr-auto"></i>
+					</div>
+					<p class="text-blue text-sm mt-4">{{ review.author }},
+						{{ review.age }}
+						ans</p>
+				</article>
+			{% endfor %}
+		</my-carousel>
+	</section>
+
+	<section class="w-3/4 mx-auto mt-14 flex flex-col lg:flex-row items-center px-8 gap-8 lg:gap-16">
+		<div class="w-full lg:w-2/5 relative">
+			<img src="{{ asset('images/pages/sample-food.jpg') }}" alt="Découvrez de nouvelles saveurs" class="w-full rounded-2xl object-cover h-80">
+			<div class="absolute -bottom-5 -right-5 w-24 h-24 bg-white rounded-full shadow-lg flex items-center justify-center">
+				<img src="{{ asset('images/chef-hat-blue.svg') }}" alt="Badge" class="w-16 h-16">
+			</div>
+		</div>
+
+		<div class="w-full lg:w-3/5 flex flex-col gap-4">
+			<h2 class="text-orange text-lg sm:text-xl font-second font-medium flex items-center gap-4 sm:gap-6">
+				<span class="block w-6 sm:w-8 h-0.5 rounded-md bg-orange"></span>
+				Découvrez de nouvelles saveurs
+			</h2>
+
+			<p class="leading-relaxed">
+				Plongez au cœur de la gastronomie locale et découvrez des adresses authentiques sélectionnées avec soin.
+								  Chaque étape est une invitation à savourer des plats uniques, préparés par des chefs passionnés qui mettent
+								  en valeur les produits de leur région. Laissez-vous guider par Gourmy et vivez une véritable aventure culinaire,
+								  entre découvertes gourmandes et rencontres inoubliables.
+			</p>
+
+			<a href="{{ path('app_register') }}" class="bg-orange text-white px-5 py-2 mt-2 rounded-md w-max hover:bg-orange/80 duration-300 transition-colors">
+				S’inscrire
+			</a>
+		</div>
+	</section>
+
+
 	<script type="module" src="{{ asset('webcomponents/roadtrips/RoadtripSearchForm.js') }}"></script>
+	<script type="module" src="{{ asset('webcomponents/MyCarousel.js') }}"></script>
 {% endblock %}

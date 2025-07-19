@@ -46,7 +46,7 @@
 				<p>{{ restaurant.description }}</p>
 
 				{# note #}
-				<div class="flex items-center gap-2 text-blue">
+				<div class="flex items-center gap-2 text-orange">
 					{% set avg = restaurant.averageRating %}
 					{% for i in 1..5 %}
 						<i class="fa{{ avg >= i ? 's' : (avg >= i - 0.5 ? 's' : 'r') }} fa-star text-sm"></i>
