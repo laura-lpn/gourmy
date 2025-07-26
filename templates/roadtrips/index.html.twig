@@ -3,6 +3,14 @@
 {% block title %}Nos Roadtrips
 {% endblock %}
 
+{% block meta %}
+  <meta name="description" content="Découvrez nos roadtrips culinaires pour savourer les meilleures adresses locales et authentiques partout en France.">
+  <meta property="og:title" content="Nos Roadtrips – Gourmy">
+  <meta property="og:description" content="Explorez les saveurs locales grâce à nos itinéraires gourmands personnalisés.">
+  <meta property="og:image" content="{{ asset('images/pages/roadtrips.jpg') }}">
+{% endblock %}
+
+
 {% block body %}
 	<section class="bg-roadtrips relative object-cover bg-center h-[65vh] flex items-center justify-center">
 		<div class="bg-black/35 w-full h-full absolute top-0 left-0 z-0"></div>

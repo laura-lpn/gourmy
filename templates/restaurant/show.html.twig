@@ -4,6 +4,17 @@
 	{{ restaurant.name }}
 {% endblock %}
 
+{% block meta %}
+	<meta name="description" content="{{ restaurant.description|length > 150 ? restaurant.description|slice(0,150) ~ '...' : restaurant.description }}">
+	<meta property="og:title" content="{{ restaurant.name }} – Restaurant partenaire Gourmy">
+	<meta property="og:description" content="Découvrez {{ restaurant.name }}, spécialiste {{ restaurant.types|map(t => t.name)|join(', ') }}. {{ restaurant.description|length > 150 ? restaurant.description|slice(0,150) ~ '...' : restaurant.description }}">
+	{% if restaurant.bannerName %}
+		<meta property="og:image" content="{{ vich_uploader_asset(restaurant, 'bannerFile') }}">
+	{% else %}
+		<meta property="og:image" content="{{ asset('images/pages/restaurants.jpg') }}">
+	{% endif %}
+{% endblock %}
+
 {% block body %}
 	<div class="w-3/4 mx-auto px-6 py-8 mt-28">
 		<section

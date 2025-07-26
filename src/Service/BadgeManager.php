@@ -20,11 +20,11 @@ class BadgeManager
   ) {}
 
   /**
-   * ✅ Recalcule les points de l'utilisateur et attribue les badges débloqués
+   * Recalcule les points de l'utilisateur et attribue les badges débloqués
    */
   public function checkAndGrantBadges(User $user): void
   {
-    // ✅ Recalcul complet des points
+    // Recalcul complet des points
     $user->setPoints($this->calculateUserPoints($user));
     $this->em->persist($user);
 
@@ -46,7 +46,7 @@ class BadgeManager
   }
 
   /**
-   * ✅ Calcule les points d'un utilisateur en fonction de ses reviews, photos et roadtrips
+   * Calcule les points d'un utilisateur en fonction de ses reviews, photos et roadtrips
    */
   private function calculateUserPoints(User $user): int
   {
@@ -62,7 +62,7 @@ class BadgeManager
   }
 
   /**
-   * ✅ Vérifie si l'utilisateur respecte la condition pour un badge
+   * Vérifie si l'utilisateur respecte la condition pour un badge
    */
   private function userMeetsBadgeCondition(User $user, $badge): bool
   {
@@ -79,7 +79,7 @@ class BadgeManager
   }
 
   /**
-   * ✅ Envoie un email lorsque l'utilisateur débloque un badge
+   * Envoie un email lorsque l'utilisateur débloque un badge
    */
   private function sendBadgeEmail(User $user, $badge): void
   {

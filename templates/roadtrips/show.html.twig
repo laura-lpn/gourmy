@@ -4,6 +4,21 @@
 	{{ roadtrip.title }}
 {% endblock %}
 
+{% block meta %}
+	<meta name="description" content="{{ roadtrip.description|length > 150 ? roadtrip.description|slice(0,150) ~ '...' : roadtrip.description }}">
+	<meta property="og:title" content="{{ roadtrip.title }} – Roadtrip culinaire Gourmy">
+	<meta property="og:description" content="{{ roadtrip.description|length > 200 ? roadtrip.description|slice(0,200) ~ '...' : roadtrip.description }}">
+	{% set ogImage = roadtrip.steps
+    |filter(step => step.restaurant and step.restaurant.bannerName)
+    |map(step => vich_uploader_asset(step.restaurant, 'bannerFile'))
+    |first %}
+	{% if ogImage %}
+		<meta property="og:image" content="{{ ogImage }}">
+	{% else %}
+		<meta property="og:image" content="{{ asset('images/pages/roadtrips.jpg') }}">
+	{% endif %}
+{% endblock %}
+
 {% block body %}
 	<div class="w-3/4 mx-auto px-6 py-8 mt-28">
 		{% for label, messages in app.flashes %}
