@@ -30,6 +30,24 @@ final class UserController extends AbstractController
         $allUsers = $userRepo->findBy([], ['points' => 'DESC']);
         $rank = array_search($user, $allUsers, true) + 1;
         $allUsersCount = count($allUsers);
+        $roadtrips = $user->getRoadtrips();
+        $mapData = [];
+        foreach ($roadtrips as $rt) {
+            $points = [];
+            foreach ($rt->getSteps() as $step) {
+                $restaurant = $step->getRestaurant();
+                if ($restaurant && $restaurant->getLatitude() && $restaurant->getLongitude()) {
+                    $points[] = [
+                        'lat' => $restaurant->getLatitude(),
+                        'lng' => $restaurant->getLongitude(),
+                        'name' => $restaurant->getName()
+                    ];
+                }
+            }
+            if (!empty($points)) {
+                $mapData[] = ['id' => $rt->getId(), 'title' => $rt->getTitle(), 'points' => $points];
+            }
+        }
 
         return $this->render('user/profile.html.twig', [
             'user' => $user,
@@ -37,8 +55,9 @@ final class UserController extends AbstractController
             'all_badges' => $badgeRepo->findby([], ['id' => 'ASC']),
             'rank' => $rank,
             'all_users_count' => $allUsersCount,
+            'roadtripsMap' => json_encode($mapData, JSON_UNESCAPED_UNICODE),
             'favoriteRestaurants' => $user->getFavoriteRestaurants(),
-            'favoriteRoadtrips' => $user->getFavoriteRoadtrips(),
+            'favoriteRoadtrips' => $user->getFavoriteRoadtrips()
         ]);
     }
 
@@ -111,6 +130,25 @@ final class UserController extends AbstractController
         $allUsers = $userRepository->findBy([], ['points' => 'DESC']);
         $rank = array_search($user, $allUsers, true) + 1;
         $allUsersCount = count($allUsers);
+        $roadtrips = $user->getRoadtrips()->filter(fn($rt) => $rt->isPublic());
+        $mapData = [];
+        foreach ($roadtrips as $rt) {
+            $points = [];
+            foreach ($rt->getSteps() as $step) {
+                $restaurant = $step->getRestaurant();
+                if ($restaurant && $restaurant->getLatitude() && $restaurant->getLongitude()) {
+                    $points[] = [
+                        'lat' => $restaurant->getLatitude(),
+                        'lng' => $restaurant->getLongitude(),
+                        'name' => $restaurant->getName()
+                    ];
+                }
+            }
+            if (!empty($points)) {
+                $mapData[] = ['id' => $rt->getId(), 'title' => $rt->getTitle(), 'points' => $points];
+            }
+        }
+
 
         return $this->render('user/show.html.twig', [
             'user' => $user,
@@ -118,6 +156,7 @@ final class UserController extends AbstractController
             'all_badges' => $badgeRepo->findBy([], ['id' => 'ASC']),
             'rank' => $rank,
             'all_users_count' => $allUsersCount,
+            'roadtripsMap' => json_encode($mapData, JSON_UNESCAPED_UNICODE)
         ]);
     }
 }

@@ -1,11 +1,20 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Espace Restaurateur – Gourmy{% endblock %}
+{% block title %}Espace Restaurateur – Gourmy
+{% endblock %}
+
+{% block meta %}
+	<meta name="description" content="Rejoignez Gourmy et valorisez votre cuisine locale. Augmentez votre visibilité sans commission et attirez des gourmets passionnés.">
+	<meta property="og:title" content="Espace Restaurateur – Devenez partenaire Gourmy">
+	<meta property="og:description" content="Intégrez une plateforme dédiée aux restaurants locaux. Profitez d’une visibilité ciblée et d’outils marketing, sans commission.">
+{% endblock %}
 
 {% block body %}
 	<section class="px-6 mt-28 pb-16 max-w-7xl mx-auto">
 		<h1 class="text-4xl font-second text-blue text-center mb-6">Faites rayonner votre cuisine sur Gourmy</h1>
-		<p class="text-lg text-center mb-8 max-w-3xl mx-auto">Rejoignez Gourmy et intégrez une plateforme pensée pour valoriser les restaurateurs locaux et passionnés. Profitez d’une visibilité ciblée, sans commission, dans un univers <em class="text-blue not-italic">100% terroir.</em></p>
+		<p class="text-lg text-center mb-8 max-w-3xl mx-auto">Rejoignez Gourmy et intégrez une plateforme pensée pour valoriser les restaurateurs locaux et passionnés. Profitez d’une visibilité ciblée, sans commission, dans un univers
+			<em class="text-blue not-italic">100% terroir.</em>
+		</p>
 		<div class="text-center">
 			<a href="{{ path('app_restaurant_create') }}" class="btn">Créer mon restaurant</a>
 		</div>
@@ -24,7 +33,8 @@
 			{% for avantage in avantages %}
 				<div class="bg-{{ avantage.color }}/5 rounded-xl p-6">
 					<h3 class="text-{{ avantage.color }} font-second font-medium text-lg mb-2">
-						<i class="fa-solid {{ avantage.icon }} mr-2"></i>{{ avantage.title }}
+						<i class="fa-solid {{ avantage.icon }} mr-2"></i>
+						{{ avantage.title }}
 					</h3>
 					<p class="text-sm">{{ avantage.text }}</p>
 				</div>

@@ -28,27 +28,26 @@
 		<script type="module" src="{{ asset('webcomponents/TabView.js') }}"></script>
 
 		<section class="w-3/4 mx-auto mt-8">
-			<tab-view tabs='[
-				{
-					"title": "Photos",
-					"content": {{ include("user/profile/_photos.html.twig", { photos: photos })|json_encode|raw }}
-				},
-				{
-					"title": "Roadtrips",
-					"content": {{ include("user/profile/_roadtrips.html.twig", {
-						isPublic: true,
-						username: user.username
-					})|escape('html')|json_encode|raw }}
-				},
-				{
-					"title": "Badges",
-					"content": {{ include("user/profile/_badges.html.twig")|json_encode|raw }}
-				},
-				{
-					"title": "Carte",
-					"content": {{ include("user/profile/_map.html.twig")|json_encode|raw }}
-				}
-			]'></tab-view>
+			<tab-view>
+				<tab-item title="Photos">
+					{{ include("user/profile/_photos.html.twig", { photos: photos })|raw }}
+				</tab-item>
+
+				<tab-item title="Roadtrips">
+					{{ include("user/profile/_roadtrips.html.twig", {
+                    isPublic: true,
+                    username: user.username
+                })|raw }}
+				</tab-item>
+
+				<tab-item title="Badges">
+					{{ include("user/profile/_badges.html.twig")|raw }}
+				</tab-item>
+
+				<tab-item title="Carte">
+					{{ include("user/profile/_map.html.twig")|raw }}
+				</tab-item>
+			</tab-view>
 		</section>
 	</div>
 {% endblock %}

@@ -1,5 +1,7 @@
 twig:
     file_name_pattern: '*.twig'
+    globals:
+        google_maps_api_key: '%google.maps.api_key%'
 
 when@test:
     twig:

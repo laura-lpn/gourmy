@@ -1,10 +1,10 @@
 <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 p-4">
 	{% for image in images %}
-		<img src="{{ vich_uploader_asset(image, 'imageFile') }}" alt="Image de restaurant" class="w-full h-48 object-cover rounded-xl shadow-sm">
+		<img src="{{ vich_uploader_asset(image, 'imageFile') }}" alt="Image de restaurant" class="w-full h-48 object-cover rounded-xl aspect-square">
 	{% endfor %}
 	{% for review in reviews %}
 		{% if review.imageName %}
-			<img src="{{ vich_uploader_asset(review, 'imageFile') }}" alt="{{ review.title ?: 'Image d\'avis' }}" class="w-full h-48 object-cover rounded-xl shadow-sm">
+			<img src="{{ vich_uploader_asset(review, 'imageFile') }}" alt="{{ review.title ?: 'Image d\'avis' }}" class="w-full h-48 object-cover rounded-xl aspect-square">
 		{% endif %}
 	{% endfor %}
 	{% if reviews|filter(r => r.imageName is not empty)|length == 0 and images|length == 0 %}

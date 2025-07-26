@@ -80,6 +80,22 @@
   .alert-success {
     @apply text-green-400;
   }
+
+  .map-card {
+    @apply bg-white shadow-md rounded-lg overflow-hidden w-24 font-sans;
+  }
+
+  .map-card-img {
+    @apply w-full h-12 bg-gray-200 object-cover;
+  }
+
+  .map-card-placeholder {
+    @apply w-full h-full flex items-center justify-center text-xs text-gray-500;
+  }
+
+  .map-card-title {
+    @apply p-1 text-center text-[11px] font-medium font-sans text-black;
+  }
 }
 
 @layer base {

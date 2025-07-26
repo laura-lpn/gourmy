@@ -64,12 +64,12 @@
 			{% set points = [] %}
 			{% for result in results %}
 				{% for restaurant in result.restaurants %}
-					{% set points = points|merge([{ lat: restaurant.latitude, lng: restaurant.longitude, name: restaurant.name }]) %}
+					{% set points = points|merge([{ lat: restaurant.latitude, lng: restaurant.longitude, name: restaurant.name, photo: restaurant.bannerName ? vich_uploader_asset(restaurant, 'bannerFile') : null }]) %}
 				{% endfor %}
 			{% endfor %}
 
 			<script type="module" src="{{ asset('webcomponents/maps/MapRoadtrip.js') }}"></script>
-			<map-roadtrip points='{{ points|json_encode|e("html_attr") }}'></map-roadtrip>
+			<map-roadtrip points='{{ points|json_encode|e("html_attr") }}' api-key="{{ google_maps_api_key }}"></map-roadtrip>
 		</section>
 
 		{# Étapes #}

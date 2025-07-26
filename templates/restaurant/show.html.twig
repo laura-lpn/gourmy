@@ -4,6 +4,17 @@
 	{{ restaurant.name }}
 {% endblock %}
 
+{% block meta %}
+	<meta name="description" content="{{ restaurant.description|length > 150 ? restaurant.description|slice(0,150) ~ '...' : restaurant.description }}">
+	<meta property="og:title" content="{{ restaurant.name }} – Restaurant partenaire Gourmy">
+	<meta property="og:description" content="Découvrez {{ restaurant.name }}, spécialiste {{ restaurant.types|map(t => t.name)|join(', ') }}. {{ restaurant.description|length > 150 ? restaurant.description|slice(0,150) ~ '...' : restaurant.description }}">
+	{% if restaurant.bannerName %}
+		<meta property="og:image" content="{{ vich_uploader_asset(restaurant, 'bannerFile') }}">
+	{% else %}
+		<meta property="og:image" content="{{ asset('images/pages/restaurants.jpg') }}">
+	{% endif %}
+{% endblock %}
+
 {% block body %}
 	<div class="w-3/4 mx-auto px-6 py-8 mt-28">
 		<section
@@ -74,7 +85,7 @@
 			</div>
 
 			<div class="md:w-1/2 w-full">
-				<map-preview address="{{ restaurant.address|e('html_attr') }}" postal-code="{{ restaurant.postalCode|e('html_attr') }}" city="{{ restaurant.city|e('html_attr') }}" country="{{ restaurant.country|e('html_attr') }}">
+				<map-preview address="{{ restaurant.address|e('html_attr') }}" postal-code="{{ restaurant.postalCode|e('html_attr') }}" city="{{ restaurant.city|e('html_attr') }}" country="{{ restaurant.country|e('html_attr') }}" api-key="{{ google_maps_api_key }}" name="{{ restaurant.name }}" photo="{{ vich_uploader_asset(restaurant, 'bannerFile') }}">
 					<div id="map" class="rounded-xl" style="height: 400px; width: 100%;"></div>
 				</map-preview>
 			</div>
@@ -110,6 +121,7 @@
 document.querySelectorAll('.favorite-btn').forEach(btn => {
 if (btn.dataset.init) 
 return;
+
 
 
 btn.dataset.init = "1";
