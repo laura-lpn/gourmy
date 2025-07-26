@@ -20,22 +20,22 @@ export class MapRoadtrip extends HTMLElement {
 	}
 
 	loadGoogleMapsScript() {
-		if (window.google?.maps) return Promise.resolve();
+    if (window.google?.maps) return Promise.resolve();
 
-		return new Promise((resolve, reject) => {
+    const apiKey = this.getAttribute("api-key");
+    return new Promise((resolve, reject) => {
 			if (document.querySelector('script[src*="maps.googleapis.com/maps/api/js"]')) {
-				// déjà en cours de chargement
 				return resolve();
 			}
 
 			const script = document.createElement("script");
-			script.src = "https://maps.googleapis.com/maps/api/js?key=AIzaSyCDWeDyCsZGLwzEDg6JpQ7tuOAoJQcv2L4&v=beta&libraries=maps,marker&loading=async";
+			script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&v=beta&libraries=maps,marker&loading=async`;
 			script.async = true;
 			script.defer = true;
 			script.onload = resolve;
 			script.onerror = reject;
 			document.head.appendChild(script);
-		});
+    });
 	}
 
 	waitForGoogleMapsReady() {

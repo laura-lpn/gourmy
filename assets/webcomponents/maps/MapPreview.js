@@ -19,12 +19,23 @@ export class MapPreview extends HTMLElement {
   }
 
   loadGoogleMapsScript() {
-    const script = document.createElement('script');
-    script.src = 'https://maps.googleapis.com/maps/api/js?key=AIzaSyCDWeDyCsZGLwzEDg6JpQ7tuOAoJQcv2L4&libraries=places&callback=initMap';
-    script.async = true;
-    script.defer = true;
-    document.head.appendChild(script);
-  }
+    if (window.google?.maps) return Promise.resolve();
+
+    const apiKey = this.getAttribute("api-key");
+    return new Promise((resolve, reject) => {
+			if (document.querySelector('script[src*="maps.googleapis.com/maps/api/js"]')) {
+				return resolve();
+			}
+
+			const script = document.createElement("script");
+			script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&v=beta&libraries=maps,marker&loading=async`;
+			script.async = true;
+			script.defer = true;
+			script.onload = resolve;
+			script.onerror = reject;
+			document.head.appendChild(script);
+    });
+	}
 
   initMap() {
     const mapContainer = this.querySelector('#map');

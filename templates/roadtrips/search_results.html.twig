@@ -69,7 +69,7 @@
 			{% endfor %}
 
 			<script type="module" src="{{ asset('webcomponents/maps/MapRoadtrip.js') }}"></script>
-			<map-roadtrip points='{{ points|json_encode|e("html_attr") }}'></map-roadtrip>
+			<map-roadtrip points='{{ points|json_encode|e("html_attr") }}' api-key="{{ google_maps_api_key }}"></map-roadtrip>
 		</section>
 
 		{# Étapes #}

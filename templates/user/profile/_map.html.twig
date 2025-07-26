@@ -1,2 +1,4 @@
-<div class="h-64 py-6 px-8 rounded-lg bg-gray-100">
+<div class="h-64 rounded-lg bg-gray-100">
+	<map-user-roadtrips roadtrips='{{ roadtripsMap|raw }}' api-key="{{ google_maps_api_key }}"></map-user-roadtrips>
 </div>
+<script type="module" src="{{ asset('webcomponents/maps/MapUserRoadtrips.js') }}"></script>
