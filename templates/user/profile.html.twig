@@ -62,32 +62,31 @@
 		<script type="module" src="{{ asset('webcomponents/TabView.js') }}"></script>
 
 		<section class="w-3/4 mx-auto mt-8">
-			<tab-view tabs='[
-								{
-									"title": "Photos",
-									"content": {{ include("user/profile/_photos.html.twig", { photos: photos })|json_encode|raw }}
-								},
-								{
-									"title": "Roadtrips",
-									"content": {{ include("user/profile/_roadtrips.html.twig", { isPublic: false })|json_encode|raw }}
-								},
-								{
-									"title": "Avis",
-									"content": "<review-list user-id=\"{{ app.user ? app.user.id : ' ' }}\" editable=\"true\"></review-list>"
-								},
-								{
-									"title": "Favoris",
-									"content": "<user-favorites></user-favorites>"
-								},
-								{
-									"title": "Badges",
-									"content": {{ include("user/profile/_badges.html.twig")|json_encode|raw }}
-								},
-								{
-									"title": "Carte",
-									"content": {{ include("user/profile/_map.html.twig")|json_encode|raw }}
-								}
-							]'></tab-view>
+			<tab-view>
+				<tab-item title="Photos">
+					{{ include("user/profile/_photos.html.twig", { photos: photos })|raw }}
+				</tab-item>
+
+				<tab-item title="Roadtrips">
+					{{ include("user/profile/_roadtrips.html.twig", { isPublic: false })|raw }}
+				</tab-item>
+
+				<tab-item title="Avis">
+					<review-list user-id="{{ app.user ? app.user.id : ' ' }}" editable="true"></review-list>
+				</tab-item>
+
+				<tab-item title="Favoris">
+					<user-favorites></user-favorites>
+				</tab-item>
+
+				<tab-item title="Badges">
+					{{ include("user/profile/_badges.html.twig")|raw }}
+				</tab-item>
+
+				<tab-item title="Carte">
+					{{ include("user/profile/_map.html.twig")|raw }}
+				</tab-item>
+			</tab-view>
 		</section>
 	</div>
 
