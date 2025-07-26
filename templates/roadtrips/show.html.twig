@@ -67,7 +67,7 @@
 			{% set points = [] %}
 			{% for step in roadtrip.steps %}
 				{% if step.restaurant %}
-					{% set points = points|merge([{ lat: step.restaurant.latitude, lng: step.restaurant.longitude, name: step.restaurant.name }]) %}
+					{% set points = points|merge([{ lat: step.restaurant.latitude, lng: step.restaurant.longitude, name: step.restaurant.name, photo: step.restaurant.bannerName ? vich_uploader_asset(step.restaurant, 'bannerFile') : null }]) %}
 				{% endif %}
 			{% endfor %}
 			<script type="module" src="{{ asset('webcomponents/maps/MapRoadtrip.js') }}"></script>

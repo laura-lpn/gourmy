@@ -74,7 +74,7 @@
 			</div>
 
 			<div class="md:w-1/2 w-full">
-				<map-preview address="{{ restaurant.address|e('html_attr') }}" postal-code="{{ restaurant.postalCode|e('html_attr') }}" city="{{ restaurant.city|e('html_attr') }}" country="{{ restaurant.country|e('html_attr') }}" api-key="{{ google_maps_api_key }}">
+				<map-preview address="{{ restaurant.address|e('html_attr') }}" postal-code="{{ restaurant.postalCode|e('html_attr') }}" city="{{ restaurant.city|e('html_attr') }}" country="{{ restaurant.country|e('html_attr') }}" api-key="{{ google_maps_api_key }}" name="{{ restaurant.name }}" photo="{{ vich_uploader_asset(restaurant, 'bannerFile') }}">
 					<div id="map" class="rounded-xl" style="height: 400px; width: 100%;"></div>
 				</map-preview>
 			</div>
@@ -110,6 +110,7 @@
 document.querySelectorAll('.favorite-btn').forEach(btn => {
 if (btn.dataset.init) 
 return;
+
 
 
 btn.dataset.init = "1";
