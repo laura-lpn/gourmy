@@ -144,12 +144,19 @@ class Restaurant extends BaseEntity
     #[ORM\OneToOne(mappedBy: 'restaurant', targetEntity: RestaurantCharter::class, cascade: ['persist', 'remove'])]
     private ?RestaurantCharter $charter = null;
 
+    /**
+     * @var Collection<int, User>
+     */
+    #[ORM\ManyToMany(targetEntity: User::class, mappedBy: 'favoriteRestaurants')]
+    private Collection $userFavorites;
+
     public function __construct()
     {
         parent::__construct();
         $this->reviews = new ArrayCollection();
         $this->types = new ArrayCollection();
         $this->images = new ArrayCollection();
+        $this->userFavorites = new ArrayCollection();
     }
 
     #[PrePersist]
@@ -525,6 +532,33 @@ class Restaurant extends BaseEntity
         }
 
         $this->charter = $charter;
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, User>
+     */
+    public function getUserFavorites(): Collection
+    {
+        return $this->userFavorites;
+    }
+
+    public function addUserFavorite(User $user): static
+    {
+        if (!$this->userFavorites->contains($user)) {
+            $this->userFavorites->add($user);
+            $user->addFavoriteRestaurant($this);
+        }
+
+        return $this;
+    }
+
+    public function removeUserFavorite(User $user): static
+    {
+        if ($this->userFavorites->removeElement($user)) {
+            $user->removeFavoriteRestaurant($this);
+        }
+
         return $this;
     }
 }

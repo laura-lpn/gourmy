@@ -8,12 +8,15 @@ use App\Entity\Review;
 use App\Form\RestaurantCharterType;
 use App\Form\RestaurantType;
 use App\Repository\RestaurantRepository;
+use App\Repository\StepRepository;
 use App\Service\GeocodingService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\UX\Chartjs\Builder\ChartBuilderInterface;
+use Symfony\UX\Chartjs\Model\Chart;
 
 class RestaurantController extends AbstractController
 {
@@ -106,7 +109,7 @@ class RestaurantController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $em->persist($charter);
-            $em->flush();   
+            $em->flush();
             return $this->redirectToRoute('app_restaurant_profile');
         }
 
@@ -117,8 +120,11 @@ class RestaurantController extends AbstractController
     }
 
     #[Route('/restaurateur/mon-restaurant', name: 'app_restaurant_profile')]
-    public function restaurantProfile(RestaurantRepository $restaurantRepository): Response
-    {
+    public function restaurantProfile(
+        RestaurantRepository $restaurantRepository,
+        StepRepository $stepRepository,
+        ChartBuilderInterface $chartBuilder
+    ): Response {
         if (!$this->getUser()) {
             $this->addFlash('error', 'Vous devez être connecté pour accéder à cette page.');
             return $this->redirectToRoute('app_login');
@@ -129,14 +135,10 @@ class RestaurantController extends AbstractController
 
         if (!$user->getRestaurant()) {
             $this->addFlash('success', 'Votre demande de création de restaurant a bien été envoyée.');
-
             return $this->redirectToRoute('app_restaurant_create');
         }
 
-        $restaurantid = $user->getRestaurant()->getId();
-
-        $restaurant = $restaurantRepository->find($restaurantid);
-
+        $restaurant = $restaurantRepository->find($user->getRestaurant()->getId());
         if (!$restaurant) {
             $this->addFlash('error', 'Restaurant introuvable.');
             return $this->redirectToRoute('app_restaurant_create');
@@ -144,9 +146,120 @@ class RestaurantController extends AbstractController
 
         $isValidated = $restaurant->isValided();
 
+        // Filtrer uniquement les vrais avis clients (pas les réponses)
+        $reviews = $restaurant->getReviews()->filter(fn($r) => !$r->isResponse());
+
+        $nbReviews = count($reviews);
+        $avgRating = $restaurant->getAverageRating() ?? 0;
+        $nbFavorites = $restaurant->getUserFavorites()->count();
+        $nbRoadtrips = $stepRepository->count(['restaurant' => $restaurant]);
+
+        // Répartition des notes
+        $ratings = [0, 0, 0, 0, 0];
+        foreach ($reviews as $review) {
+            $r = (int)floor($review->getRating());
+            if ($r >= 1 && $r <= 5) {
+                $ratings[$r - 1]++;
+            }
+        }
+
+        $chart = $chartBuilder->createChart(Chart::TYPE_BAR);
+        $chart->setData([
+            'labels' => ['1★', '2★', '3★', '4★', '5★'],
+            'datasets' => [[
+                'label' => 'Répartition des notes',
+                'backgroundColor' => ['#e11d48', '#7c3aed', '#098C8C', '#65a30d', '#ED8E06'],
+                'borderColor' => '#050505',
+                'data' => $ratings,
+            ]],
+        ]);
+        $chart->setOptions(['responsive' => true, 'plugins' => ['legend' => ['display' => false]]]);
+
+        // Évolution des avis par mois
+        $reviewsByMonth = [];
+        foreach ($reviews as $review) {
+            $month = $review->getCreatedAt()->format('Y-m');
+            $reviewsByMonth[$month] = ($reviewsByMonth[$month] ?? 0) + 1;
+        }
+        ksort($reviewsByMonth);
+
+        $labels = array_keys($reviewsByMonth);
+        $dataEvolution = array_values($reviewsByMonth);
+
+        $chartEvolution = $chartBuilder->createChart(Chart::TYPE_LINE);
+        $chartEvolution->setData([
+            'labels' => $labels,
+            'datasets' => [[
+                'label' => 'Évolution des avis',
+                'borderColor' => '#050505',
+                'backgroundColor' => '#098C8C',
+                'fill' => true,
+                'tension' => 0.3,
+                'data' => $dataEvolution,
+                'borderWidth' => 0,
+                'borderRadius' => 5,
+                'spacing' => 5,
+            ]],
+        ]);
+        $chartEvolution->setOptions([
+            'responsive' => true,
+            'plugins' => ['legend' => ['display' => false]],
+            'scales' => ['y' => ['beginAtZero' => true, 'ticks' => ['stepSize' => 1]]],
+        ]);
+
+        // Donut chart Avis vs Favoris
+        $chartDonut = $chartBuilder->createChart(Chart::TYPE_DOUGHNUT);
+        $chartDonut->setData([
+            'labels' => ['Avis', 'Mis en favoris', 'Roadtrips'],
+            'datasets' => [[
+                'data' => [$nbReviews, $nbFavorites, $nbRoadtrips],
+                'backgroundColor' => ['#e11d48', '#098C8C', '#ED8E06'],
+                'borderWidth' => 0,
+                'borderRadius' => 5,
+                'spacing' => 5,
+            ]],
+        ]);
+        $chartDonut->setOptions([
+            'responsive' => true,
+            'plugins' => [
+                'legend' => [
+                    "position" => "right",
+                    "align" => "middle",
+                    'labels' => [
+                        'color' => '#050505',
+                        'boxWidth' => 20,
+                        'boxHeight' => 20,
+                        'usePointStyle' => true,
+                        'pointStyle' => 'circle',
+                    ],
+                ],
+            ],
+        ]);
+
+        // Stats récapitulatives
+        $totalReviews = array_sum($dataEvolution);
+        $averagePerMonth = $totalReviews > 0 ? round($totalReviews / count($dataEvolution), 1) : 0;
+        $mostActiveMonth = $labels ? max(array_keys($reviewsByMonth)) : null;
+        $mostActiveCount = $mostActiveMonth ? $reviewsByMonth[$mostActiveMonth] : 0;
+        $leastActiveMonth = $labels ? min(array_keys($reviewsByMonth)) : null;
+        $leastActiveCount = $leastActiveMonth ? $reviewsByMonth[$leastActiveMonth] : 0;
+
         return $this->render('restaurant/profile.html.twig', [
             'restaurant' => $restaurant,
-            'isValidated' => $isValidated
+            'isValidated' => $isValidated,
+            'nbReviews' => $nbReviews,
+            'avgRating' => $avgRating,
+            'nbFavorites' => $nbFavorites,
+            'nbRoadtrips' => $nbRoadtrips,
+            'chart' => $chart,
+            'chartEvolution' => $chartEvolution,
+            'chartDonut' => $chartDonut,
+            'totalReviews' => $totalReviews,
+            'averagePerMonth' => $averagePerMonth,
+            'mostActiveMonth' => $mostActiveMonth,
+            'mostActiveCount' => $mostActiveCount,
+            'leastActiveMonth' => $leastActiveMonth,
+            'leastActiveCount' => $leastActiveCount,
         ]);
     }
 
