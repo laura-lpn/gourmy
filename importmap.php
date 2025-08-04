@@ -28,4 +28,7 @@ return [
     'scheduler' => [
         'version' => '0.23.2',
     ],
+    'chart.js' => [
+        'version' => '3.9.1',
+    ],
 ];
