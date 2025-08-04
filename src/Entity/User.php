@@ -60,7 +60,7 @@ class User extends BaseEntity implements UserInterface, PasswordAuthenticatedUse
     #[Assert\Type(type: 'bool', message: 'La valeur doit être de type booléen.')]
     private bool $isVerified = false;
 
-    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    #[ORM\OneToOne(inversedBy: 'owner', cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
     private ?Restaurant $restaurant = null;
 
@@ -114,7 +114,7 @@ class User extends BaseEntity implements UserInterface, PasswordAuthenticatedUse
     /**
      * @var Collection<int, Restaurant>
      */
-    #[ORM\ManyToMany(targetEntity: Restaurant::class)]
+    #[ORM\ManyToMany(targetEntity: Restaurant::class, inversedBy: 'userFavorites')]
     #[ORM\JoinTable(name: 'user_favorite_restaurants')]
     private Collection $favoriteRestaurants;
 

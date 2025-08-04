@@ -35,13 +35,14 @@ final class UserController extends AbstractController
         foreach ($roadtrips as $rt) {
             $points = [];
             foreach ($rt->getSteps() as $step) {
-                $restaurant = $step->getRestaurant();
-                if ($restaurant && $restaurant->getLatitude() && $restaurant->getLongitude()) {
-                    $points[] = [
-                        'lat' => $restaurant->getLatitude(),
-                        'lng' => $restaurant->getLongitude(),
-                        'name' => $restaurant->getName()
-                    ];
+                foreach ($step->getRestaurants() as $restaurant) {
+                    if ($restaurant->getLatitude() && $restaurant->getLongitude()) {
+                        $points[] = [
+                            'lat' => $restaurant->getLatitude(),
+                            'lng' => $restaurant->getLongitude(),
+                            'name' => $restaurant->getName()
+                        ];
+                    }
                 }
             }
             if (!empty($points)) {
@@ -135,13 +136,14 @@ final class UserController extends AbstractController
         foreach ($roadtrips as $rt) {
             $points = [];
             foreach ($rt->getSteps() as $step) {
-                $restaurant = $step->getRestaurant();
-                if ($restaurant && $restaurant->getLatitude() && $restaurant->getLongitude()) {
-                    $points[] = [
-                        'lat' => $restaurant->getLatitude(),
-                        'lng' => $restaurant->getLongitude(),
-                        'name' => $restaurant->getName()
-                    ];
+                foreach ($step->getRestaurants() as $restaurant) {
+                    if ($restaurant->getLatitude() && $restaurant->getLongitude()) {
+                        $points[] = [
+                            'lat' => $restaurant->getLatitude(),
+                            'lng' => $restaurant->getLongitude(),
+                            'name' => $restaurant->getName()
+                        ];
+                    }
                 }
             }
             if (!empty($points)) {

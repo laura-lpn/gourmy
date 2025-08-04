@@ -1,4 +1,8 @@
-{% set images = roadtrip.steps|slice(0, 3)|map(step => step.restaurant.bannerName ? vich_uploader_asset(step.restaurant, 'bannerFile') : null)|filter(v => v) %}
+{% set images = roadtrip.steps
+	|map(step => step.restaurants|first)
+	|filter(r => r and r.bannerName)
+	|map(r => vich_uploader_asset(r, 'bannerFile'))
+	|slice(0, 3) %}
 {% set count = images|length %}
 {% set isFavorite = userFavorites is defined and roadtrip in userFavorites %}
 
@@ -22,13 +26,13 @@
 						{% endfor %}
 					</div>
 				{% elseif count == 3 %}
-            <div class="flex gap-2 h-24">
-              <img src="{{ images[0] }}" alt="Preview" class="object-cover w-1/2 h-full rounded-md">
-              <div class="flex flex-col gap-2 w-1/2 h-full">
-                <img src="{{ images[1] }}" alt="Preview" class="object-cover h-[calc(50%_-_0.25rem)] w-full rounded-md">
-                <img src="{{ images[2] }}" alt="Preview" class="object-cover h-[calc(50%_-_0.25rem)] w-full rounded-md">
-              </div>
-            </div>
+					<div class="flex gap-2 h-24">
+						<img src="{{ images[0] }}" alt="Preview" class="object-cover w-1/2 h-full rounded-md">
+						<div class="flex flex-col gap-2 w-1/2 h-full">
+							<img src="{{ images[1] }}" alt="Preview" class="object-cover h-[calc(50%_-_0.25rem)] w-full rounded-md">
+							<img src="{{ images[2] }}" alt="Preview" class="object-cover h-[calc(50%_-_0.25rem)] w-full rounded-md">
+						</div>
+					</div>
 				{% endif %}
 			</div>
 		{% endif %}
@@ -62,6 +66,8 @@
 document.querySelectorAll('.favorite-btn').forEach(btn => {
 if (btn.dataset.init) 
 return;
+
+
 
 btn.dataset.init = "1";
 

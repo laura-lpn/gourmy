@@ -52,12 +52,12 @@ final class RoadtripController extends AbstractController
                 'restaurants' => $restaurants,
             ];
 
-            $stepsForSave[] = array_map(fn($restaurant) => [
+            $stepsForSave[] = [
                 'town' => $town,
                 'meals' => $meals,
                 'cuisine' => $cuisine,
-                'restaurantId' => $restaurant->getId(),
-            ], $restaurants);
+                'restaurantIds' => array_map(fn($r) => $r->getId(), $restaurants),
+            ];
         }
 
         $user = $this->getUser();
@@ -93,27 +93,31 @@ final class RoadtripController extends AbstractController
             ->setAuthor($user)
             ->setIsPublic($isPublic);
 
-        foreach ($stepsData as $index => $stepGroup) {
-            foreach ($stepGroup as $stepData) {
-                $restaurant = $repo->find($stepData['restaurantId']);
-                if (!$restaurant) continue;
+        foreach ($stepsData as $index => $stepData) {
+            $step = new Step();
+            $step->setTown($stepData['town']);
+            $step->setMeals($stepData['meals'] ?? 1);
+            $step->setPosition($index);
 
-                $step = new Step();
-                $step->setTown($stepData['town']);
-                $step->setMeals($stepData['meals'] ?? 1);
-                $step->setPosition($index);
-                $step->setRestaurant($restaurant);
-                $cuisineCodes = is_array($stepData['cuisine']) ? $stepData['cuisine'] : [$stepData['cuisine']];
-                foreach ($cuisineCodes as $code) {
-                    if (!$code) continue;
-                    $type = $typeRepo->findOneBy(['name' => $code]);
-                    if ($type) {
-                        $step->addCuisine($type);
-                    }
+            // Ajouter les restaurants
+            foreach ($stepData['restaurantIds'] ?? [] as $restoId) {
+                $restaurant = $repo->find($restoId);
+                if ($restaurant) {
+                    $step->addRestaurant($restaurant);
                 }
-                $step->setRoadtrip($roadtrip);
-                $roadtrip->addStep($step);
             }
+
+            // Ajouter les types de cuisine
+            $cuisineCodes = is_array($stepData['cuisine']) ? $stepData['cuisine'] : [$stepData['cuisine']];
+            foreach ($cuisineCodes as $code) {
+                if (!$code) continue;
+                $type = $typeRepo->findOneBy(['name' => $code]);
+                if ($type) {
+                    $step->addCuisine($type);
+                }
+            }
+            $step->setRoadtrip($roadtrip);
+            $roadtrip->addStep($step);
         }
 
         $em->persist($roadtrip);

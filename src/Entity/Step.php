@@ -24,9 +24,8 @@ class Step
     #[ORM\Column(type: 'integer')]
     private ?int $position = 0;
 
-    #[ORM\ManyToOne]
-    #[ORM\JoinColumn(nullable: true)]
-    private ?Restaurant $restaurant = null;
+    #[ORM\ManyToMany(targetEntity: Restaurant::class)]
+    private Collection $restaurants;
 
     #[ORM\ManyToOne(inversedBy: 'steps')]
     #[ORM\JoinColumn(nullable: false)]
@@ -38,6 +37,7 @@ class Step
     public function __construct()
     {
         $this->cuisine = new ArrayCollection();
+        $this->restaurants = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -78,17 +78,6 @@ class Step
         return $this;
     }
 
-    public function getRestaurant(): ?Restaurant
-    {
-        return $this->restaurant;
-    }
-
-    public function setRestaurant(?Restaurant $restaurant): static
-    {
-        $this->restaurant = $restaurant;
-        return $this;
-    }
-
     public function getRoadtrip(): ?Roadtrip
     {
         return $this->roadtrip;
@@ -120,6 +109,29 @@ class Step
     public function removeCuisine(TypeRestaurant $cuisine): static
     {
         $this->cuisine->removeElement($cuisine);
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Restaurant>
+     */
+    public function getRestaurants(): Collection
+    {
+        return $this->restaurants;
+    }
+
+    public function addRestaurant(Restaurant $restaurant): static
+    {
+        if (!$this->restaurants->contains($restaurant)) {
+            $this->restaurants->add($restaurant);
+        }
+
+        return $this;
+    }
+
+    public function removeRestaurant(Restaurant $restaurant): static
+    {
+        $this->restaurants->removeElement($restaurant);
         return $this;
     }
 }

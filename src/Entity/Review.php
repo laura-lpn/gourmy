@@ -31,11 +31,11 @@ class Review extends BaseEntity
     #[ORM\JoinColumn(nullable: false)]
     private ?User $author = null;
 
-    #[ORM\OneToOne(targetEntity: self::class, cascade: ['persist', 'remove'])]
-    #[ORM\JoinColumn(name: "response_id", referencedColumnName: "id", nullable: true, onDelete: "SET NULL")]
+    #[ORM\OneToOne(mappedBy: 'originalReview', targetEntity: self::class, cascade: ['persist', 'remove'])]
     private ?self $response = null;
 
-    #[ORM\OneToOne(mappedBy: 'response', targetEntity: self::class)]
+    #[ORM\OneToOne(inversedBy: 'response', targetEntity: self::class)]
+    #[ORM\JoinColumn(name: "original_review_id", referencedColumnName: "id", nullable: true, onDelete: "SET NULL")]
     private ?self $originalReview = null;
 
     #[Vich\UploadableField(mapping: 'reviews_image', fileNameProperty: 'imageName')]

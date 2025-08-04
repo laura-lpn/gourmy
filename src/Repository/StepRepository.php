@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Entity\Restaurant;
 use App\Entity\Step;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -16,28 +17,14 @@ class StepRepository extends ServiceEntityRepository
         parent::__construct($registry, Step::class);
     }
 
-    //    /**
-    //     * @return Step[] Returns an array of Step objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('s')
-    //            ->andWhere('s.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('s.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
-
-    //    public function findOneBySomeField($value): ?Step
-    //    {
-    //        return $this->createQueryBuilder('s')
-    //            ->andWhere('s.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+    public function countByRestaurant(Restaurant $restaurant): int
+    {
+        return $this->createQueryBuilder('s')
+            ->join('s.restaurants', 'r')
+            ->where('r = :restaurant')
+            ->setParameter('restaurant', $restaurant)
+            ->select('COUNT(s.id)')
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
 }

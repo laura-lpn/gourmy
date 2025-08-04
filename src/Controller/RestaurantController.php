@@ -152,7 +152,7 @@ class RestaurantController extends AbstractController
         $nbReviews = count($reviews);
         $avgRating = $restaurant->getAverageRating() ?? 0;
         $nbFavorites = $restaurant->getUserFavorites()->count();
-        $nbRoadtrips = $stepRepository->count(['restaurant' => $restaurant]);
+        $nbRoadtrips = $stepRepository->countByRestaurant($restaurant);
 
         // Répartition des notes
         $ratings = [0, 0, 0, 0, 0];

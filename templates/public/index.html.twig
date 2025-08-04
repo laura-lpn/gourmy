@@ -58,7 +58,11 @@
 	<section class="w-3/4 mx-auto mt-12">
 		<my-carousel title="Découvrez nos roadtrips">
 			{% for roadtrip in roadtripsRecent %}
-				{% set images = roadtrip.steps|slice(0, 3)|map(step => step.restaurant.bannerName ? vich_uploader_asset(step.restaurant, 'bannerFile') : null)|filter(v => v) %}
+				{% set images = roadtrip.steps
+					|map(s => s.restaurants|filter(r => r.bannerName)|map(r => vich_uploader_asset(r, 'bannerFile')))
+					|reduce((acc, curr) => acc|merge(curr), [])
+					|slice(0, 3)
+				%}
 				{% set count = images|length %}
 				{% set isFavorite = userFavoritesRoadtrips is defined and roadtrip in userFavoritesRoadtrips %}
 				<article class="w-full bg-orange/10 rounded-xl py-4 px-4 flex flex-col h-full relative">
@@ -144,9 +148,9 @@
 
 			<p class="leading-relaxed">
 				Plongez au cœur de la gastronomie locale et découvrez des adresses authentiques sélectionnées avec soin.
-												  Chaque étape est une invitation à savourer des plats uniques, préparés par des chefs passionnés qui mettent
-												  en valeur les produits de leur région. Laissez-vous guider par Gourmy et vivez une véritable aventure culinaire,
-												  entre découvertes gourmandes et rencontres inoubliables.
+																  Chaque étape est une invitation à savourer des plats uniques, préparés par des chefs passionnés qui mettent
+																  en valeur les produits de leur région. Laissez-vous guider par Gourmy et vivez une véritable aventure culinaire,
+																  entre découvertes gourmandes et rencontres inoubliables.
 			</p>
 
 			<a href="{{ path('app_register') }}" class="bg-orange text-white px-5 py-2 mt-2 rounded-md w-max hover:bg-orange/80 duration-300 transition-colors">

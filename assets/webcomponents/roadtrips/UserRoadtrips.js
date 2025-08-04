@@ -67,9 +67,11 @@ export class UserRoadtrips extends HTMLElement {
     const stepCount = steps.length;
     const cities = [...new Set(steps.map(s => s.town).filter(Boolean))];
     const images = steps
-      .filter(s => s.restaurant?.banner)
+      .flatMap(s => s.restaurants || [])
+      .filter(r => r.banner)
       .slice(0, 3)
-      .map(s => s.restaurant.banner);
+      .map(r => r.banner);
+
 
     const imageHtml = (() => {
       if (images.length === 1) {
@@ -84,8 +86,8 @@ export class UserRoadtrips extends HTMLElement {
           <div class="flex gap-2 h-24">
             <img src="${images[0]}" alt="Preview" class="object-cover w-1/2 h-full rounded-md">
             <div class="flex flex-col gap-2 w-1/2">
-              <img src="${images[1]}" alt="Preview" class="object-cover h-1/2 w-full rounded-md">
-              <img src="${images[2]}" alt="Preview" class="object-cover h-1/2 w-full rounded-md">
+              <img src="${images[1]}" alt="Preview" class="object-cover h-[calc(50%_-_0.25rem)] w-full rounded-md">
+              <img src="${images[2]}" alt="Preview" class="object-cover h-[calc(50%_-_0.25rem)] w-full rounded-md">
             </div>
           </div>`;
       }

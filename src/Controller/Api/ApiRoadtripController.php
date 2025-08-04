@@ -29,9 +29,10 @@ final class ApiRoadtripController extends AbstractController
             'isPublic' => $r->isPublic(),
             'steps' => array_map(fn($s) => [
                 'town' => $s->getTown(),
-                'restaurant' => $s->getRestaurant() ? [
-                    'banner' => $baseUrl . '/uploads/restaurants/banners/' . $s->getRestaurant()->getBannerName(),
-                ] : null
+                'restaurants' => array_map(fn($r) => [
+                    'name' => $r->getName(),
+                    'banner' => $baseUrl . '/uploads/restaurants/banners/' . $r->getBannerName(),
+                ], $s->getRestaurants()->toArray())
             ], $r->getSteps()->toArray())
         ], $roadtrips);
 
@@ -96,9 +97,10 @@ final class ApiRoadtripController extends AbstractController
             'isPublic' => $r->isPublic(),
             'steps' => array_map(fn($s) => [
                 'town' => $s->getTown(),
-                'restaurant' => $s->getRestaurant() ? [
-                    'banner' => $baseUrl . '/uploads/restaurants/banners/' . $s->getRestaurant()->getBannerName(),
-                ] : null
+                'restaurants' => array_map(fn($r) => [
+                    'name' => $r->getName(),
+                    'banner' => $baseUrl . '/uploads/restaurants/banners/' . $r->getBannerName(),
+                ], $s->getRestaurants()->toArray())
             ], $r->getSteps()->toArray())
         ], $roadtrips);
 
@@ -123,9 +125,10 @@ final class ApiRoadtripController extends AbstractController
             'isPublic' => $r->isPublic(),
             'steps' => array_map(fn($s) => [
                 'town' => $s->getTown(),
-                'restaurant' => $s->getRestaurant() ? [
-                    'banner' => $baseUrl . '/uploads/restaurants/banners/' . $s->getRestaurant()->getBannerName(),
-                ] : null
+                'restaurants' => array_map(fn($r) => [
+                    'name' => $r->getName(),
+                    'banner' => $baseUrl . '/uploads/restaurants/banners/' . $r->getBannerName(),
+                ], $s->getRestaurants()->toArray())
             ], $r->getSteps()->toArray())
         ], $favorites->toArray());
 
