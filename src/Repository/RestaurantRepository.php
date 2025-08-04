@@ -62,4 +62,15 @@ class RestaurantRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
+
+    public function searchByName(string $term): array
+    {
+        return $this->createQueryBuilder('r')
+            ->andWhere('LOWER(r.name) LIKE LOWER(:term)')
+            ->setParameter('term', '%' . $term . '%')
+            ->andWhere('r.isValided = true')
+            ->orderBy('r.name', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
 }

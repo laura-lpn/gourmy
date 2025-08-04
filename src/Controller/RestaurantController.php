@@ -343,6 +343,20 @@ class RestaurantController extends AbstractController
         return $this->redirectToRoute('app_restaurateur');
     }
 
+    #[Route('/restaurants/search', name: 'app_restaurant_search')]
+    public function search(Request $request, RestaurantRepository $repository): Response
+    {
+        $query = trim($request->query->get('q', ''));
+
+        $restaurants = $query
+            ? $repository->searchByName($query)
+            : $repository->findBy(['isValided' => true], ['name' => 'ASC']);
+
+        return $this->render('restaurant/_list.html.twig', [
+            'restaurants' => $restaurants,
+        ]);
+    }
+
     #[Route('/restaurants/{slug}', name: 'app_restaurant_show')]
     public function showRestaurant($slug, RestaurantRepository $restaurantRepository): Response
     {
