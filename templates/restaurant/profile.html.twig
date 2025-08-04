@@ -83,6 +83,15 @@
 				<tab-item title="Images">
 					{{ include("restaurant/profile/_photos.html.twig", { reviews: restaurant.reviews, images: restaurant.images })|raw }}
 				</tab-item>
+				<tab-item title="Statistiques">
+					{{ include("restaurant/profile/_stats.html.twig", {
+					restaurant: restaurant,
+					nbReviews: nbReviews,
+					avgRating: avgRating,
+					nbFavorites: nbFavorites,
+					chart: chart
+				})|raw }}
+				</tab-item>
 			</tab-view>
 		</section>
 

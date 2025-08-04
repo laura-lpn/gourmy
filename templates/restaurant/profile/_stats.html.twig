@@ -1,0 +1,68 @@
+<div class="w-full flex flex-col items-center">
+	<div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+		<div class="bg-blue/5 p-4 rounded-lg text-center border border-blue/10">
+			<h3 class="text-xl font-second text-blue">{{ nbReviews }}</h3>
+			<p class="text-sm">Avis</p>
+		</div>
+
+		<div class="bg-orange/5 p-4 border border-orange/10 rounded-lg text-center">
+			<h3 class="text-xl font-second text-orange">{{ nbFavorites }}</h3>
+			<p class="text-sm">Mises en favoris</p>
+		</div>
+
+		<div class="bg-lime-50 border border-lime-100 p-4 rounded-lg text-center">
+			<h3 class="text-xl font-second text-lime-600">{{ avgRating|number_format(1) }}/5</h3>
+			<p class="text-sm">Note moyenne</p>
+		</div>
+
+		<div class="bg-violet-50 border border-violet-100 p-4 rounded-lg text-center">
+			<h3 class="text-xl font-second text-violet-600">{{ nbRoadtrips }}</h3>
+			<p class="text-sm">Présent dans des roadtrips</p>
+		</div>
+	</div>
+	<section class="mt-2 grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
+		<div class="mt-8 bg-rose-50 border border-rose-100 rounded-lg p-6 w-full max-w-md">
+			<h4 class="text-lg font-second text-rose-600 text-center mb-4">Répartition des notes</h4>
+			{{ render_chart(chart) }}
+		</div>
+
+		<div class="mt-8 border bg-amber-50 border-amber-100 rounded-lg p-6 w-full max-w-md">
+			<h4 class="text-lg text-amber-600 font-second text-center mb-4">Évolution des avis par mois</h4>
+			{{ render_chart(chartEvolution) }}
+
+			<table class="mt-6 w-full text-sm text-left border-t border-amber-200">
+				<tbody>
+					<tr class="border-b border-amber-200">
+						<th class="py-2 font-medium">Total des avis</th>
+						<td class="py-2 text-right">{{ totalReviews }}</td>
+					</tr>
+					<tr class="border-b border-amber-200">
+						<th class="py-2 font-medium">Moyenne par mois</th>
+						<td class="py-2 text-right">{{ averagePerMonth }}</td>
+					</tr>
+					<tr class="border-b border-amber-200">
+						<th class="py-2 font-medium">Mois le plus actif</th>
+						<td class="py-2 text-right">
+							{{ mostActiveMonth|date('F Y') }}
+							({{ mostActiveCount }}
+							avis)
+						</td>
+					</tr>
+					<tr>
+						<th class="py-2 font-medium">Mois le moins actif</th>
+						<td class="py-2 text-right">
+							{{ leastActiveMonth|date('F Y') }}
+							({{ leastActiveCount }}
+							avis)
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+
+		<div class="mt-8 bg-emerald-50 border border-emerald-100 rounded-lg p-6 w-full max-w-md">
+			<h4 class="text-lg text-emerald-600 font-second text-center mb-4">Avis vs Mis en favoris vs Roadtrips</h4>
+			{{ render_chart(chartDonut) }}
+		</div>
+	</section>
+</div>
