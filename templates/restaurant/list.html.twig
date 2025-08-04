@@ -21,11 +21,10 @@
 		</h1>
 	</section>
 
-	<section class="py-12 px-6 max-w-7xl mx-auto">
-		<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-			{% for restaurant in restaurants %}
-				{{ include('restaurant/_card.html.twig', { restaurant: restaurant }) }}
-			{% endfor %}
+	<section class="py-12 px-6 max-w-7xl w-full mx-auto">
+		<search-bar data-url="{{ path('app_restaurant_search') }}"></search-bar>
+		<div id="restaurant-results" class="mt-6">
+			{{ include('restaurant/_list.html.twig', { restaurants: restaurants }) }}
 		</div>
 	</section>
 {% endblock %}
