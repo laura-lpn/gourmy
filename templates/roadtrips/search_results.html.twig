@@ -130,7 +130,7 @@
 	</div>
 
 	<dialog id="saveModal" class="rounded-lg py-6 px-8 w-full bg-white max-w-xl backdrop:bg-black/50 fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50">
-		<form method="POST" action="{{ path('roadtrip_save') }}" class="my-form">
+		<form method="POST" action="{{ path('app_roadtrip_save') }}" class="my-form">
 			<input type="hidden" name="stepsData" value='{{ stepsForSave|json_encode|e('html_attr') }}'>
 			<div class="flex justify-between items-center">
 				<h2 class="text-xl font-medium font-second">Enregistrer ce roadtrip</h2>
@@ -144,7 +144,7 @@
 				<textarea id="description" name="description" rows="3" required class="w-full border px-3 py-2 rounded"></textarea>
 			</div>
 			<div class="flex items-center justify-start !flex-row mt-4 !w-auto">
-				<input type="checkbox" id="isPublic" name="isPublic" class="mr-2">
+				<input type="checkbox" id="isPublic" name="isPublic" class="mr-2 accent-orange">
 				<label for="isPublic">Rendre ce roadtrip public</label>
 			</div>
 			<div class="flex !flex-row gap-6 justify-end mt-4">

@@ -118,10 +118,11 @@ export class UserFavorites extends HTMLElement {
     container.innerHTML = this.roadtrips.map(rt => {
       const stepCount = rt.steps.length;
       const cities = [...new Set(rt.steps.map(s => s.town).filter(Boolean))];
-      const images = rt.steps
-        .filter(s => s.restaurant?.banner)
+      const images = steps
+        .flatMap(s => s.restaurants || [])
+        .filter(r => r?.banner)
         .slice(0, 3)
-        .map(s => s.restaurant.banner);
+        .map(r => r.banner);
 
       const imageHtml = (() => {
         if (images.length === 1) {

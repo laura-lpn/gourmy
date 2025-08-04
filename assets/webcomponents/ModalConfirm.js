@@ -79,7 +79,6 @@ export class ModalConfirm extends HTMLElement {
       this.confirmBtn.removeEventListener('click', this.currentHandler);
     }
 
-    // ✅ Définit le nouveau handler
     this.currentHandler = () => {
       onConfirm();
       this.close();
@@ -94,7 +93,6 @@ export class ModalConfirm extends HTMLElement {
 
   close() {
     this.dialog.close();
-    // ✅ Nettoie le listener pour éviter des exécutions ultérieures
     if (this.currentHandler) {
       this.confirmBtn.removeEventListener('click', this.currentHandler);
       this.currentHandler = null;
