@@ -127,57 +127,57 @@ final class RoadtripController extends AbstractController
         return $this->redirectToRoute('app_roadtrip_show', ['id' => $roadtrip->getId()]);
     }
 
-    #[Route('/roadtrips/creer', name: 'app_roadtrip_create', methods: ['GET', 'POST'])]
-    public function create(
-        Request $request,
-        EntityManagerInterface $em,
-        RestaurantRepository $restaurantRepo,
-        TypeRestaurantRepository $typeRepo
-    ): Response {
-        if (!$this->getUser()) {
-            $this->addFlash('danger', 'Vous devez être connecté pour créer un roadtrip.');
-            return $this->redirectToRoute('app_login');
-        }
+    // #[Route('/roadtrips/creer', name: 'app_roadtrip_create', methods: ['GET', 'POST'])]
+    // public function create(
+    //     Request $request,
+    //     EntityManagerInterface $em,
+    //     RestaurantRepository $restaurantRepo,
+    //     TypeRestaurantRepository $typeRepo
+    // ): Response {
+    //     if (!$this->getUser()) {
+    //         $this->addFlash('danger', 'Vous devez être connecté pour créer un roadtrip.');
+    //         return $this->redirectToRoute('app_login');
+    //     }
 
-        if ($request->isMethod('POST')) {
-            $data = json_decode($request->getContent(), true);
-            $roadtrip = new Roadtrip();
-            $roadtrip->setTitle($data['title'] ?? '')
-                ->setDescription($data['description'] ?? '')
-                ->setIsPublic($data['isPublic'] ?? false)
-                ->setAuthor($this->getUser());
+    //     if ($request->isMethod('POST')) {
+    //         $data = json_decode($request->getContent(), true);
+    //         $roadtrip = new Roadtrip();
+    //         $roadtrip->setTitle($data['title'] ?? '')
+    //             ->setDescription($data['description'] ?? '')
+    //             ->setIsPublic($data['isPublic'] ?? false)
+    //             ->setAuthor($this->getUser());
 
-            foreach ($data['steps'] ?? [] as $index => $stepData) {
-                $step = new Step();
-                $step->setTown($stepData['town'] ?? '')
-                    ->setPosition($index);
+    //         foreach ($data['steps'] ?? [] as $index => $stepData) {
+    //             $step = new Step();
+    //             $step->setTown($stepData['town'] ?? '')
+    //                 ->setPosition($index);
 
-                if (isset($stepData['cuisine'])) {
-                    $type = $typeRepo->findOneBy(['name' => $stepData['cuisine']]);
-                    if ($type) {
-                        $step->addCuisine($type);
-                    }
-                }
+    //             if (isset($stepData['cuisine'])) {
+    //                 $type = $typeRepo->findOneBy(['name' => $stepData['cuisine']]);
+    //                 if ($type) {
+    //                     $step->addCuisine($type);
+    //                 }
+    //             }
 
-                foreach ($stepData['restaurantIds'] ?? [] as $restaurantId) {
-                    $restaurant = $restaurantRepo->find($restaurantId);
-                    if ($restaurant) {
-                        $step->addRestaurant($restaurant);
-                    }
-                }
+    //             foreach ($stepData['restaurantIds'] ?? [] as $restaurantId) {
+    //                 $restaurant = $restaurantRepo->find($restaurantId);
+    //                 if ($restaurant) {
+    //                     $step->addRestaurant($restaurant);
+    //                 }
+    //             }
 
-                $step->setRoadtrip($roadtrip);
-                $roadtrip->addStep($step);
-            }
+    //             $step->setRoadtrip($roadtrip);
+    //             $roadtrip->addStep($step);
+    //         }
 
-            $em->persist($roadtrip);
-            $em->flush();
+    //         $em->persist($roadtrip);
+    //         $em->flush();
 
-            return $this->json(['success' => true, 'id' => $roadtrip->getId()]);
-        }
+    //         return $this->json(['success' => true, 'id' => $roadtrip->getId()]);
+    //     }
 
-        return $this->render('roadtrips/create.html.twig');
-    }
+    //     return $this->render('roadtrips/create.html.twig');
+    // }
 
     #[Route('/roadtrips/{id}', name: 'app_roadtrip_show')]
     public function show(int $id, RoadtripRepository $roadtripRepository): Response
