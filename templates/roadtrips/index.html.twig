@@ -4,10 +4,10 @@
 {% endblock %}
 
 {% block meta %}
-  <meta name="description" content="Découvrez nos roadtrips culinaires pour savourer les meilleures adresses locales et authentiques partout en France.">
-  <meta property="og:title" content="Nos Roadtrips – Gourmy">
-  <meta property="og:description" content="Explorez les saveurs locales grâce à nos itinéraires gourmands personnalisés.">
-  <meta property="og:image" content="{{ asset('images/pages/roadtrips.jpg') }}">
+	<meta name="description" content="Découvrez nos roadtrips culinaires pour savourer les meilleures adresses locales et authentiques partout en France.">
+	<meta property="og:title" content="Nos Roadtrips – Gourmy">
+	<meta property="og:description" content="Explorez les saveurs locales grâce à nos itinéraires gourmands personnalisés.">
+	<meta property="og:image" content="{{ asset('images/pages/roadtrips.jpg') }}">
 {% endblock %}
 
 
@@ -20,7 +20,12 @@
 		</h1>
 	</section>
 
-	<section class="py-12 px-6 max-w-7xl mx-auto">
+	<section class="py-12 px-6 max-w-7xl mx-auto flex flex-col items-end">
+		{# {% if app.user %}
+			<a href="{{ path('app_roadtrip_create') }}" class="btn mb-6">
+				<i class="fa-solid fa-plus mr-2"></i>Créer un roadtrip
+			</a>
+		{% endif %} #}
 		<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
 			{% for roadtrip in roadtrips %}
 				{% include 'roadtrips/_card.html.twig' with { roadtrip: roadtrip } %}

@@ -1,0 +1,51 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Créer un roadtrip
+{% endblock %}
+
+{% block body %}
+	<div class="w-2/5 mx-auto px-6 py-12 mt-28">
+		<h1 class="text-3xl font-second font-medium text-orange text-center mb-8">Créer un roadtrip</h1>
+
+		<div id="form-errors" class="alert alert-danger hidden mb-6"></div>
+
+		<form id="roadtrip-create-form" class="my-form">
+			<section class="bg-blue/5 rounded-xl p-6 w-full">
+				<h2 class="text-xl font-medium flex gap-6 items-center font-second text-blue mb-4">
+					<span class="h-0.5 rounded-md bg-blue w-8 block"></span>
+					Informations générales
+				</h2>
+				<div class="space-y-4">
+					<input name="title" placeholder="Titre du roadtrip" type="text" required>
+					<textarea name="description" rows="4" placeholder="Description du roadtrip" required></textarea>
+					<label class="flex items-center gap-2 text-sm">
+						<input type="checkbox" name="isPublic" class="accent-orange">Rendre ce roadtrip public
+					</label>
+				</div>
+			</section>
+
+			<section class="bg-orange/5 rounded-xl p-6 w-full" id="steps-section">
+				<h2 class="text-xl font-medium flex gap-6 items-center font-second text-orange mb-4">
+					<span class="h-0.5 rounded-md bg-orange w-8 block"></span>
+					Étapes du roadtrip
+				</h2>
+
+				<roadtrip-form>
+					<div id="steps-container" class="space-y-6"></div>
+					<button type="button" id="add-step" class="btn-secondary mt-4">Ajouter une étape</button>
+				</roadtrip-form>
+				<modal-confirm id="modal"></modal-confirm>
+			</section>
+
+			<div class="flex !flex-row justify-center gap-4 mt-6">
+				<a href="{{ path('app_roadtrips') }}" class="btn-secondary">Annuler</a>
+				<button type="submit" class="btn">Créer</button>
+			</div>
+		</form>
+	</div>
+
+
+	<script type="module" src="{{ asset('webcomponents/roadtrips/RoadtripForm.js') }}"></script>
+	<script type="module" src="{{ asset('webcomponents/ModalConfirm.js') }}"></script>
+	<script type="module" src="{{ asset('webcomponents/SearchBar.js') }}"></script>
+{% endblock %}

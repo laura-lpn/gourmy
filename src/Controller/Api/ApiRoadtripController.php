@@ -5,6 +5,9 @@ namespace App\Controller\Api;
 use App\Repository\RoadtripRepository;
 use App\Repository\UserRepository;
 use App\Entity\Roadtrip;
+use App\Entity\Step;
+use App\Repository\RestaurantRepository;
+use App\Repository\TypeRestaurantRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -106,6 +109,51 @@ final class ApiRoadtripController extends AbstractController
 
         return $this->json($data);
     }
+
+    // #[Route('/api/user/roadtrips/create', name: 'api_user_roadtrip_create', methods: ['POST'])]
+    // public function createCustom(Request $request, EntityManagerInterface $em, RestaurantRepository $repo, TypeRestaurantRepository $typeRepo): JsonResponse
+    // {
+    //     $user = $this->getUser();
+    //     if (!$user) {
+    //         return $this->json(['error' => 'Non authentifié'], 401);
+    //     }
+
+    //     $data = json_decode($request->getContent(), true);
+
+    //     $roadtrip = new Roadtrip();
+    //     $roadtrip->setTitle($data['title'] ?? '');
+    //     $roadtrip->setDescription($data['description'] ?? '');
+    //     $roadtrip->setIsPublic($data['isPublic'] ?? false);
+    //     $roadtrip->setAuthor($user);
+
+    //     foreach ($data['steps'] ?? [] as $index => $stepData) {
+    //         $step = new Step();
+    //         $step->setTown($stepData['town'] ?? '');
+    //         $step->setPosition($index);
+
+    //         if (!empty($stepData['cuisine'])) {
+    //             $type = $typeRepo->findOneBy(['name' => $stepData['cuisine']]);
+    //             if ($type) {
+    //                 $step->addCuisine($type);
+    //             }
+    //         }
+
+    //         foreach ($stepData['restaurantIds'] ?? [] as $rid) {
+    //             $r = $repo->find($rid);
+    //             if ($r) {
+    //                 $step->addRestaurant($r);
+    //             }
+    //         }
+
+    //         $step->setRoadtrip($roadtrip);
+    //         $roadtrip->addStep($step);
+    //     }
+
+    //     $em->persist($roadtrip);
+    //     $em->flush();
+
+    //     return $this->json(['success' => true]);
+    // }
 
     #[Route('/api/user/roadtrips/favorites', name: 'api_user_roadtrip_favorites', methods: ['GET'])]
     public function favorites(Request $request): JsonResponse

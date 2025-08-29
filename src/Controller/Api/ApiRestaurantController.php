@@ -6,6 +6,8 @@ use App\Repository\RestaurantRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
 final class ApiRestaurantController extends AbstractController
@@ -79,6 +81,26 @@ final class ApiRestaurantController extends AbstractController
         $em->flush();
 
         return $this->json(['success' => true]);
+    }
+
+    #[Route('/api/restaurants/by-town', name: 'api_restaurants_by_town', methods: ['GET'])]
+    public function restaurantsByTown(Request $request, RestaurantRepository $repo): Response
+    {
+        $town = $request->query->get('town');
+        $q = $request->query->get('q');
+
+        $restaurants = $repo->createQueryBuilder('r')
+            ->where('r.city = :town')
+            ->andWhere('r.isValided = true')
+            ->andWhere('r.name LIKE :q')
+            ->setParameter('town', $town)
+            ->setParameter('q', "%$q%")
+            ->getQuery()
+            ->getResult();
+
+        return $this->render('roadtrips/_restaurant_search_results.html.twig', [
+            'restaurants' => $restaurants
+        ]);
     }
 
     #[Route('/api/restaurants/{id}', name: 'api_restaurants_details', methods: ['GET'])]
