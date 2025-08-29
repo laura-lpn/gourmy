@@ -5,64 +5,114 @@
 
 {% block body %}
 	<div
-		class="mt-28 w-3/4 mx-auto px-6">
+		class="mt-28 max-w-6xl w-11/12 mx-auto px-4 sm:px-6 lg:px-8">
+
 		<!-- Bouton retour Dashboard -->
 		<a href="{{ path('app_admin_dashboard') }}" class="btn-secondary inline-flex items-center mb-6">
 			<i class="fa-solid fa-arrow-left mr-2"></i>
 			Retour au Dashboard
 		</a>
 
-		<h1 class="text-3xl font-second text-center font-medium text-blue mb-6">Gestion des badges</h1>
+		<h1 class="text-2xl sm:text-3xl font-second text-center font-medium text-blue mb-6">
+			Gestion des badges
+		</h1>
 
-		<!-- Boutons -->
-		<div class="flex justify-between mb-6">
-			<button class="btn" onclick="recalculateBadges()">
+		<!-- Boutons actions -->
+		<div class="flex flex-col sm:flex-row gap-3 sm:gap-4 sm:justify-between sm:items-center mb-6">
+			<button class="btn w-full sm:w-auto" onclick="recalculateBadges()">
 				<i class="fa-solid fa-arrows-rotate mr-2"></i>
 				Recalculer les badges
 			</button>
-			<button class="btn" onclick="openAddBadgeModal()">
+			<button class="btn w-full sm:w-auto" onclick="openAddBadgeModal()">
 				<i class="fa-solid fa-plus mr-2"></i>
 				Ajouter un badge
 			</button>
 		</div>
 
-		<table class="bg-blue/5 w-full border-collapse rounded-xl border border-blue/10 overflow-hidden">
-			<thead>
-				<tr class="bg-blue/5 text-blue text-lg uppercase font-second">
-					<th class="p-2 text-left">Nom</th>
-					<th class="p-2 text-center">Description</th>
-					<th class="p-2 text-left">Type</th>
-					<th class="p-2 text-center">Condition</th>
-					<th class="p-2 text-center">Couleur</th>
-					<th class="p-2 text-center">Actions</th>
-				</tr>
-			</thead>
-			<tbody id="badges-table">
-				{% for badge in badges %}
-					<tr id="badge-{{ badge.id }}" class="border-b">
-						<td class="p-2">{{ badge.name }}</td>
-						<td class="p-2 text-center text-sm">{{ badge.description }}</td>
-						<td class="p-2 capitalize">{{ badge.type }}</td>
-						<td class="p-2 text-center">{{ badge.conditionValue }}</td>
-						<td class="p-2 text-center">
-							<span class="inline-block w-6 h-6 rounded-full border" style="background-color: {{ badge.backgroundColor }}"></span>
-						</td>
-						<td class="p-2 flex gap-2 justify-center">
-							<button class="px-3 py-1 rounded bg-blue text-white edit-btn" data-id="{{ badge.id }}" data-name="{{ badge.name }}" data-type="{{ badge.type }}" data-condition="{{ badge.conditionValue }}" data-color="{{ badge.backgroundColor }}" data-description="{{ badge.description }}">
-								<i class="fa-solid fa-pen"></i>
-							</button>
-							<button class="px-3 py-1 rounded bg-red-600 text-white delete-btn" data-id="{{ badge.id }}">
-								<i class="fa-solid fa-trash"></i>
-							</button>
-						</td>
+		{# ===== Vue Mobile (cartes) ===== #}
+		<ul class="lg:hidden space-y-3" id="badges-cards">
+			{% for badge in badges %}
+				<li class="bg-white border border-blue/10 rounded-xl p-4 flex items-start gap-4" data-badge-id="{{ badge.id }}">
+					<span class="w-8 h-8 rounded-full border shrink-0" style="background-color: {{ badge.backgroundColor }}" title="{{ badge.backgroundColor }}" aria-label="Couleur {{ badge.backgroundColor }}"></span>
+
+					<div class="min-w-0 flex-1">
+						<p class="font-second text-blue font-medium truncate">{{ badge.name }}</p>
+						<p class="text-xs text-gray-600 mt-0.5 line-clamp-2">{{ badge.description }}</p>
+
+						<div class="mt-2 flex flex-wrap items-center gap-2 text-xs">
+							<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-blue/10 text-blue capitalize">
+								<i class="fa-solid fa-tag"></i>
+								{{ badge.type }}
+							</span>
+							<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-gray-100">
+								<i class="fa-solid fa-signal"></i>
+								{{ badge.conditionValue }}
+							</span>
+						</div>
+					</div>
+
+					<div class="flex flex-col gap-2 shrink-0">
+						<button class="px-3 py-2 rounded bg-blue text-white edit-btn" title="Modifier" data-id="{{ badge.id }}" data-name="{{ badge.name }}" data-type="{{ badge.type }}" data-condition="{{ badge.conditionValue }}" data-color="{{ badge.backgroundColor }}" data-description="{{ badge.description }}">
+							<i class="fa-solid fa-pen"></i>
+							<span class="sr-only">Modifier</span>
+						</button>
+						<button class="px-3 py-2 rounded bg-red-600 text-white delete-btn" title="Supprimer" data-id="{{ badge.id }}">
+							<i class="fa-solid fa-trash"></i>
+							<span class="sr-only">Supprimer</span>
+						</button>
+					</div>
+				</li>
+			{% else %}
+				<li class="text-center text-gray-500 bg-white border border-blue/10 rounded-xl p-4">
+					Aucun badge trouvé.
+				</li>
+			{% endfor %}
+		</ul>
+
+		{# ===== Vue Desktop (tableau) ===== #}
+		<div class="hidden lg:block overflow-x-auto rounded-xl border border-blue/10 bg-white">
+			<table class="w-full min-w-[800px] border-collapse">
+				<thead>
+					<tr class="bg-blue/10 text-blue text-sm uppercase font-second">
+						<th class="p-3 text-left">Nom</th>
+						<th class="p-3 text-left w-2/5">Description</th>
+						<th class="p-3 text-left">Type</th>
+						<th class="p-3 text-center">Condition</th>
+						<th class="p-3 text-center">Couleur</th>
+						<th class="p-3 text-center w-40">Actions</th>
 					</tr>
-				{% else %}
-					<tr>
-						<td colspan="6" class="text-center p-4">Aucun badge trouvé.</td>
-					</tr>
-				{% endfor %}
-			</tbody>
-		</table>
+				</thead>
+				<tbody id="badges-table">
+					{% for badge in badges %}
+						<tr id="badge-{{ badge.id }}" class="odd:bg-white even:bg-blue/5 hover:bg-blue/10 transition">
+							<td class="p-3 align-top">{{ badge.name }}</td>
+							<td class="p-3 align-top text-sm text-gray-800">{{ badge.description }}</td>
+							<td class="p-3 align-top capitalize">{{ badge.type }}</td>
+							<td class="p-3 align-top text-center">{{ badge.conditionValue }}</td>
+							<td class="p-3 align-top text-center">
+								<span class="inline-block w-6 h-6 rounded-full border" style="background-color: {{ badge.backgroundColor }}" title="{{ badge.backgroundColor }}" aria-label="Couleur {{ badge.backgroundColor }}"></span>
+							</td>
+							<td class="p-3">
+								<div class="flex items-center justify-center gap-2">
+									<button class="px-3 py-1.5 rounded bg-blue text-white edit-btn" title="Modifier" data-id="{{ badge.id }}" data-name="{{ badge.name }}" data-type="{{ badge.type }}" data-condition="{{ badge.conditionValue }}" data-color="{{ badge.backgroundColor }}" data-description="{{ badge.description }}">
+										<i class="fa-solid fa-pen"></i>
+										<span class="sr-only">Modifier</span>
+									</button>
+									<button class="px-3 py-1.5 rounded bg-red-600 text-white delete-btn" title="Supprimer" data-id="{{ badge.id }}">
+										<i class="fa-solid fa-trash"></i>
+										<span class="sr-only">Supprimer</span>
+									</button>
+								</div>
+							</td>
+						</tr>
+					{% else %}
+						<tr>
+							<td colspan="6" class="text-center p-4 text-gray-500">Aucun badge trouvé.</td>
+						</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+		</div>
 	</div>
 
 	<script type="module" src="{{ asset('webcomponents/ModalConfirm.js') }}"></script>
@@ -71,7 +121,7 @@
 	<script type="module">
 		const modal = document.getElementById('admin-badges-modal');
 
-// ✅ Recalculer les badges
+// ===== Actions =====
 async function recalculateBadges() {
 modal.show("Confirmer le recalcul de tous les badges ?", async () => {
 const res = await fetch('/admin/badges/recalculate', {method: 'POST'});
@@ -80,42 +130,47 @@ alert(data.message);
 });
 }
 
-// ✅ Supprimer un badge
 async function deleteBadge(id) {
 modal.show("Supprimer définitivement ce badge ?", async () => {
 await fetch (`/admin/badges/delete/${id}`, {method: 'POST'});
-document.getElementById (`badge-${id}`).remove();
+// Supprime dans le tableau desktop
+const tr = document.getElementById (`badge-${id}`);
+if (tr) 
+tr.remove();
+
+// Supprime la carte mobile
+document.querySelectorAll (`[data-badge-id="${id}"]`).forEach(el => el.remove());
 });
 }
 
-// ✅ Ouverture Modal Édition
 function openEditBadgeModal(id, name, type, condition, color, description) {
 modal.showWithContent(`
-		<h2 class="text-xl font-medium text-blue mb-4">Modifier le badge</h2>
-		<div class="flex flex-col gap-3 w-full">
-				<label>Nom</label>
-				<input type="text" id="edit-name" value="${name}">
-				<label>Description</label>
-				<textarea id="edit-description">${
+      <h2 class="text-xl font-medium text-blue mb-4">Modifier le badge</h2>
+      <div class="flex flex-col gap-3 w-full">
+        <label>Nom</label>
+        <input type="text" id="edit-name" value="${name}">
+        <label>Description</label>
+        <textarea id="edit-description">${
 description || ''
 }</textarea>
-				<label>Type</label>
-				<select id="edit-type">
-					<option value="review" ${
+        <label>Type</label>
+        <select id="edit-type">
+          <option value="review" ${
 type === 'review' ? 'selected' : ''
 }>Avis</option>
-					<option value="photo" ${
+          <option value="photo" ${
 type === 'photo' ? 'selected' : ''
 }>Photo</option>
-					<option value="roadtrip" ${
+          <option value="roadtrip" ${
 type === 'roadtrip' ? 'selected' : ''
 }>Roadtrip</option>
-				</select>
-				<label>Condition (valeur)</label>
-				<input type="number" id="edit-condition" value="${condition}">
-				<label>Couleur</label>
-				<input type="color" id="edit-color" value="${color}">
-			</div>`, {
+        </select>
+        <label>Condition (valeur)</label>
+        <input type="number" id="edit-condition" value="${condition}">
+        <label>Couleur</label>
+        <input type="color" id="edit-color" value="${color}">
+      </div>
+    `, {
 showActions: true,
 showCloseIcon: true,
 onConfirm: async () => {
@@ -124,6 +179,7 @@ const updatedType = document.getElementById('edit-type').value;
 const updatedCondition = document.getElementById('edit-condition').value;
 const updatedColor = document.getElementById('edit-color').value;
 const updatedDescription = document.getElementById('edit-description').value;
+
 await fetch (`/admin/badges/edit/${id}`, {
 method: 'POST',
 headers: {
@@ -139,32 +195,32 @@ description: updatedDescription
 }
 )
 });
+
 location.reload();
 }
 });
 }
 
-// ✅ Ouverture Modal Ajout
 function openAddBadgeModal() {
 modal.showWithContent(`
-			<h2 class="text-xl font-medium text-blue mb-4">Ajouter un badge</h2>
-			<div class="flex flex-col gap-3 w-full">
-					<label>Nom</label>
-					<input type="text" id="add-name">
-					<label>Description</label>
-					<textarea id="add-description"></textarea>
-					<label>Type</label>
-					<select id="add-type">
-							<option value="review">Avis</option>
-							<option value="photo">Photo</option>
-							<option value="roadtrip">Roadtrip</option>
-					</select>
-					<label>Condition (valeur)</label>
-					<input type="number" id="add-condition">
-					<label>Couleur</label>
-					<input type="color" id="add-color">
-			</div>
-	`, {
+      <h2 class="text-xl font-medium text-blue mb-4">Ajouter un badge</h2>
+      <div class="flex flex-col gap-3 w-full">
+        <label>Nom</label>
+        <input type="text" id="add-name">
+        <label>Description</label>
+        <textarea id="add-description"></textarea>
+        <label>Type</label>
+        <select id="add-type">
+          <option value="review">Avis</option>
+          <option value="photo">Photo</option>
+          <option value="roadtrip">Roadtrip</option>
+        </select>
+        <label>Condition (valeur)</label>
+        <input type="number" id="add-condition">
+        <label>Couleur</label>
+        <input type="color" id="add-color">
+      </div>
+    `, {
 showActions: true,
 showCloseIcon: true,
 onConfirm: async () => {
@@ -173,7 +229,8 @@ const type = document.getElementById('add-type').value;
 const condition = document.getElementById('add-condition').value;
 const color = document.getElementById('add-color').value;
 const description = document.getElementById('add-description').value;
-await fetch(`/admin/badges/add`, {
+
+await fetch('/admin/badges/add', {
 method: 'POST',
 headers: {
 'Content-Type': 'application/json'
@@ -188,12 +245,13 @@ backgroundColor: color
 }
 )
 });
+
 location.reload();
 }
 });
 }
 
-// ✅ Événements
+// Bind events (table + cartes)
 document.querySelectorAll('.delete-btn').forEach(btn => {
 btn.addEventListener('click', () => deleteBadge(btn.dataset.id));
 });

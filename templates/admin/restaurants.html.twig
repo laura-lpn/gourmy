@@ -1,161 +1,165 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Admin - Restaurants en attente
-{% endblock %}
+{% block title %}Admin - Restaurants en attente{% endblock %}
 
 {% block body %}
-<div class="mt-28 w-3/4 mx-auto px-6">
-	<a href="{{ path('app_admin_dashboard') }}" class="btn-secondary inline-flex items-center mb-6">
-		<i class="fa-solid fa-arrow-left mr-2"></i>
-		Retour au Dashboard
-	</a>
+<div class="mt-28 max-w-6xl w-11/12 mx-auto px-4 sm:px-6 lg:px-8">
+  <a href="{{ path('app_admin_dashboard') }}" class="btn-secondary inline-flex items-center mb-6">
+    <i class="fa-solid fa-arrow-left mr-2"></i>
+    Retour au Dashboard
+  </a>
 
-	<h1 class="text-3xl font-second text-center font-medium text-blue mb-6">Restaurants en attente</h1>
+  <h1 class="text-2xl sm:text-3xl font-second text-center font-medium text-blue mb-6">
+    Restaurants en attente
+  </h1>
 
-	<table class="bg-blue/5 w-full border-collapse rounded-xl border border-blue/10 overflow-hidden">
-		<thead>
-			<tr class="bg-blue/5 text-blue text-lg uppercase font-second">
-				<th class="p-2 text-left">Nom</th>
-				<th class="p-2 text-left">Ville</th>
-				<th class="p-2">Actions</th>
-			</tr>
-		</thead>
-		<tbody id="restaurants-table">
-			{% for restaurant in restaurants %}
-				<tr id="row-{{ restaurant.id }}" class="border-b">
-					<td class="p-2">{{ restaurant.name }}</td>
-					<td class="p-2">{{ restaurant.city }}</td>
-					<td class="p-2 flex gap-2 justify-center">
-						<button class="px-3 py-1 rounded bg-blue text-white view-btn" data-id="{{ restaurant.id }}">
-							<i class="fa-solid fa-eye"></i>
-						</button>
-						<button class="bg-green-600 text-white px-3 py-1 rounded validate-btn" data-id="{{ restaurant.id }}">
-							<i class="fa-solid fa-check"></i>
-						</button>
-						<button class="bg-red-600 text-white px-3 py-1 rounded refuse-btn" data-id="{{ restaurant.id }}">
-							<i class="fa-solid fa-xmark"></i>
-						</button>
-					</td>
-				</tr>
-			{% else %}
-				<tr>
-					<td colspan="3" class="text-center p-4">Aucun restaurant en attente.</td>
-				</tr>
-			{% endfor %}
-		</tbody>
-	</table>
+  {# ===== Vue Mobile (cartes) ===== #}
+  <ul class="lg:hidden space-y-3" id="restaurants-cards">
+    {% for restaurant in restaurants %}
+      <li class="bg-white border border-blue/10 rounded-xl p-4 flex items-start justify-between gap-3" data-row-id="{{ restaurant.id }}">
+        <div class="min-w-0">
+          <p class="font-second font-medium text-blue truncate">{{ restaurant.name }}</p>
+          <p class="text-sm text-gray-600">{{ restaurant.city }}</p>
+        </div>
+        <div class="flex items-center gap-2 shrink-0">
+          <button class="px-3 py-2 rounded bg-blue text-white view-btn" title="Voir" data-id="{{ restaurant.id }}">
+            <i class="fa-solid fa-eye"></i><span class="sr-only">Voir</span>
+          </button>
+          <button class="px-3 py-2 rounded bg-green-600 text-white validate-btn" title="Valider" data-id="{{ restaurant.id }}">
+            <i class="fa-solid fa-check"></i><span class="sr-only">Valider</span>
+          </button>
+          <button class="px-3 py-2 rounded bg-red-600 text-white refuse-btn" title="Refuser" data-id="{{ restaurant.id }}">
+            <i class="fa-solid fa-xmark"></i><span class="sr-only">Refuser</span>
+          </button>
+        </div>
+      </li>
+    {% else %}
+      <li class="text-center text-gray-500 bg-white border border-blue/10 rounded-xl p-4">
+        Aucun restaurant en attente
+      </li>
+    {% endfor %}
+  </ul>
+
+  {# ===== Vue Desktop (tableau) ===== #}
+  <div class="hidden lg:block overflow-x-auto rounded-xl border border-blue/10 bg-white">
+    <table class="w-full min-w-[640px] border-collapse">
+      <thead>
+        <tr class="bg-blue/10 text-blue text-sm uppercase font-second">
+          <th class="p-3 text-left">Nom</th>
+          <th class="p-3 text-left">Ville</th>
+          <th class="p-3 text-center w-44">Actions</th>
+        </tr>
+      </thead>
+      <tbody id="restaurants-table">
+        {% for restaurant in restaurants %}
+          <tr class="odd:bg-white even:bg-blue/5 hover:bg-blue/10 transition" data-row-id="{{ restaurant.id }}">
+            <td class="p-3">{{ restaurant.name }}</td>
+            <td class="p-3">{{ restaurant.city }}</td>
+            <td class="p-3">
+              <div class="flex items-center justify-center gap-2">
+                <button class="px-3 py-1.5 rounded bg-blue text-white view-btn" title="Voir" data-id="{{ restaurant.id }}">
+                  <i class="fa-solid fa-eye"></i><span class="sr-only">Voir</span>
+                </button>
+                <button class="px-3 py-1.5 rounded bg-green-600 text-white validate-btn" title="Valider" data-id="{{ restaurant.id }}">
+                  <i class="fa-solid fa-check"></i><span class="sr-only">Valider</span>
+                </button>
+                <button class="px-3 py-1.5 rounded bg-red-600 text-white refuse-btn" title="Refuser" data-id="{{ restaurant.id }}">
+                  <i class="fa-solid fa-xmark"></i><span class="sr-only">Refuser</span>
+                </button>
+              </div>
+            </td>
+          </tr>
+        {% else %}
+          <tr>
+            <td colspan="3" class="text-center p-4 text-gray-500">Aucun restaurant en attente</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
 </div>
 
 <script type="module" src="{{ asset('webcomponents/ModalConfirm.js') }}"></script>
 <modal-confirm id="admin-modal"></modal-confirm>
 
 <script type="module">
-	const modal = document.getElementById('admin-modal');
-			
-					// ✅ Voir les détails d'un restaurant
-				async function showDetails(id) {
-				const res = await fetch (`/api/restaurants/${id}`);
-				const data = await res.json();
-		
-				let types = data.types.length ? data.types.join(', ') : '-';
-				let charter = data.charter ? `
-					<h4 class="font-medium text-blue mt-4 mb-2">Charte Gourmy</h4>
-					<ul class="list-disc text-sm pl-4 text-gray-600">
-						<li>
-							${data.charter.usesLocalProducts 
-									? '<i class="fa-solid fa-check text-green-600"></i>' 
-									: '<i class="fa-solid fa-xmark text-red-600"></i>'}
-							Produits locaux
-						</li>
-						<li>
-							${data.charter.homemadeCuisine 
-									? '<i class="fa-solid fa-check text-green-600"></i>' 
-									: '<i class="fa-solid fa-xmark text-red-600"></i>'}
-							Faits maison
-						</li>
-						<li>
-							${data.charter.wasteReduction 
-									? '<i class="fa-solid fa-check text-green-600"></i>' 
-									: '<i class="fa-solid fa-xmark text-red-600"></i>'}
-							Écoresponsable
-						</li>
-						<li>
-							${data.charter.transparentOrigin 
-									? '<i class="fa-solid fa-check text-green-600"></i>' 
-									: '<i class="fa-solid fa-xmark text-red-600"></i>'}
-							Origine transparente
-						</li>
-						<li>
-							${data.charter.professionalRepliesToReviews 
-									? '<i class="fa-solid fa-check text-green-600"></i>' 
-									: '<i class="fa-solid fa-xmark text-red-600"></i>'}
-							Réponses pro aux avis
-						</li>
-						<li>
-							${data.charter.acceptsModeration 
-									? '<i class="fa-solid fa-check text-green-600"></i>' 
-									: '<i class="fa-solid fa-xmark text-red-600"></i>'}
-							Accepte modération
-						</li>
-					</ul>
-				` : '';
-		
-		
-				let imagesHtml = '';
-				if (data.images.length) {
-				imagesHtml = '<div class="w-full grid grid-cols-3 md:grid-cols-4 gap-2 mt-4">';
-				data.images.forEach(img => {
-				imagesHtml += `<img src="${
-				img.url
-				}" class="w-full h-24 object-cover rounded-lg">`;
-				});
-				imagesHtml += '</div>';
-				}
-		
-				modal.showWithContent(`
-					<h2 class="text-xl font-medium text-blue mb-2">${data.name}</h2>
-					<p><strong class="font-medium text-blue">Ville :</strong> ${data.city} (${data.postalCode})</p>
-					<p><strong class="font-medium text-blue">Adresse :</strong> ${data.address}</p>
-					<p><strong class="font-medium text-blue">Pays :</strong> ${data.country}</p>
-					<p><strong class="font-medium text-blue">Téléphone :</strong> ${data.phoneNumber}</p>
-					<p><strong class="font-medium text-blue">Horaires :</strong> ${data.openingHours}</p>
-					<p><strong class="font-medium text-blue">Fourchette de prix :</strong> ${data.priceRange}</p>
-					<p><strong class="font-medium text-blue">Types de cuisine :</strong> ${types}</p>
-					<p><strong class="font-medium text-blue">Description :</strong> ${data.description}</p>
-					${imagesHtml.length ? `
-						<p><strong class="font-medium text-blue">Images :</strong></p>
-						${imagesHtml}
-					` : ''}
-					${charter}
-				`, { showActions: false, showCloseIcon: true });
-				}
-		
-				// ✅ Accepter un restaurant (sans rechargement)
-				async function validateRestaurant(id) {
-				modal.show("Confirmer la validation de ce restaurant ?", async () => {
-				await fetch (`/admin/restaurant/validate/${id}`, {method: 'POST'});
-				document.getElementById (`row-${id}`).remove();
-				});
-				}
-		
-				// ✅ Refuser un restaurant (sans rechargement)
-				async function refuseRestaurant(id) {
-				modal.show("Voulez-vous vraiment refuser ce restaurant ?", async () => {
-				await fetch (`/admin/restaurant/refuse/${id}`, {method: 'POST'});
-				document.getElementById (`row-${id}`).remove();
-				});
-				}
-		
-				document.querySelectorAll('.view-btn').forEach(btn => {
-					btn.addEventListener('click', () => showDetails(btn.dataset.id));
-				});
-		
-				document.querySelectorAll('.validate-btn').forEach(btn => {
-					btn.addEventListener('click', () => validateRestaurant(btn.dataset.id));
-				});
-		
-				document.querySelectorAll('.refuse-btn').forEach(btn => {
-					btn.addEventListener('click', () => refuseRestaurant(btn.dataset.id));
-				});
-			</script>
-			{% endblock %}
+  const modal = document.getElementById('admin-modal');
+
+  // Supprime toutes les occurrences (carte + ligne tableau)
+  function removeAllRowsById(id) {
+    document.querySelectorAll(`[data-row-id="${id}"]`).forEach(el => el.remove());
+  }
+
+  async function showDetails(id) {
+    const res = await fetch(`/api/restaurants/${id}`);
+    const data = await res.json();
+
+    const types = (data.types && data.types.length) ? data.types.join(', ') : '-';
+
+    const iconOk = '<i class="fa-solid fa-check text-green-600 mr-1"></i>';
+    const iconKo = '<i class="fa-solid fa-xmark text-red-600 mr-1"></i>';
+
+    const charter = data.charter ? `
+      <h4 class="font-medium text-blue mt-4 mb-2">Charte Gourmy</h4>
+      <ul class="list-disc text-sm pl-4 text-gray-600 space-y-1">
+        <li>${data.charter.usesLocalProducts ? iconOk : iconKo} Produits locaux</li>
+        <li>${data.charter.homemadeCuisine ? iconOk : iconKo} Faits maison</li>
+        <li>${data.charter.wasteReduction ? iconOk : iconKo} Écoresponsable</li>
+        <li>${data.charter.transparentOrigin ? iconOk : iconKo} Origine transparente</li>
+        <li>${data.charter.professionalRepliesToReviews ? iconOk : iconKo} Réponses pro aux avis</li>
+        <li>${data.charter.acceptsModeration ? iconOk : iconKo} Accepte modération</li>
+      </ul>
+    ` : '';
+
+    let imagesHtml = '';
+    if (data.images && data.images.length) {
+      imagesHtml = `
+        <div class="w-full grid grid-cols-3 sm:grid-cols-4 gap-2 mt-4">
+          ${data.images.map(img => `<img src="${img.url}" class="w-full h-24 object-cover rounded-lg" />`).join('')}
+        </div>
+      `;
+    }
+
+    modal.showWithContent(`
+      <h2 class="text-xl font-medium text-blue mb-2">${data.name}</h2>
+      <p><strong class="font-medium text-blue">Ville :</strong> ${data.city} ${data.postalCode ? '(' + data.postalCode + ')' : ''}</p>
+      <p><strong class="font-medium text-blue">Adresse :</strong> ${data.address || '-'}</p>
+      <p><strong class="font-medium text-blue">Pays :</strong> ${data.country || '-'}</p>
+      <p><strong class="font-medium text-blue">Téléphone :</strong> ${data.phoneNumber || '-'}</p>
+      <p><strong class="font-medium text-blue">Horaires :</strong> ${data.openingHours || '-'}</p>
+      <p><strong class="font-medium text-blue">Fourchette de prix :</strong> ${data.priceRange || '-'}</p>
+      <p><strong class="font-medium text-blue">Types de cuisine :</strong> ${types}</p>
+      <p><strong class="font-medium text-blue">Description :</strong> ${data.description || '-'}</p>
+      ${imagesHtml ? `<p class="mt-2"><strong class="font-medium text-blue">Images :</strong></p>${imagesHtml}` : ''}
+      ${charter}
+    `, { showActions: false, showCloseIcon: true });
+  }
+
+  // Valider
+  async function validateRestaurant(id) {
+    modal.show("Confirmer la validation de ce restaurant ?", async () => {
+      await fetch(`/admin/restaurant/validate/${id}`, { method: 'POST' });
+      removeAllRowsById(id);
+    });
+  }
+
+  // Refuser
+  async function refuseRestaurant(id) {
+    modal.show("Voulez-vous vraiment refuser ce restaurant ?", async () => {
+      await fetch(`/admin/restaurant/refuse/${id}`, { method: 'POST' });
+      removeAllRowsById(id);
+    });
+  }
+
+  // Bind events
+  document.querySelectorAll('.view-btn').forEach(btn => {
+    btn.addEventListener('click', () => showDetails(btn.dataset.id));
+  });
+  document.querySelectorAll('.validate-btn').forEach(btn => {
+    btn.addEventListener('click', () => validateRestaurant(btn.dataset.id));
+  });
+  document.querySelectorAll('.refuse-btn').forEach(btn => {
+    btn.addEventListener('click', () => refuseRestaurant(btn.dataset.id));
+  });
+</script>
+{% endblock %}
