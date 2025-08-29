@@ -1,35 +1,56 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Nos Roadtrips
-{% endblock %}
+{% block title %}Nos Roadtrips{% endblock %}
 
 {% block meta %}
-	<meta name="description" content="Découvrez nos roadtrips culinaires pour savourer les meilleures adresses locales et authentiques partout en France.">
-	<meta property="og:title" content="Nos Roadtrips – Gourmy">
-	<meta property="og:description" content="Explorez les saveurs locales grâce à nos itinéraires gourmands personnalisés.">
-	<meta property="og:image" content="{{ asset('images/pages/roadtrips.jpg') }}">
+  <meta name="description" content="Découvrez nos roadtrips culinaires pour savourer les meilleures adresses locales et authentiques partout en France.">
+  <meta property="og:title" content="Nos Roadtrips – Gourmy">
+  <meta property="og:description" content="Explorez les saveurs locales grâce à nos itinéraires gourmands personnalisés.">
+  <meta property="og:image" content="{{ asset('images/pages/roadtrips.jpg') }}">
 {% endblock %}
 
-
 {% block body %}
-	<section class="bg-roadtrips relative object-cover bg-center h-[65vh] flex items-center justify-center">
-		<div class="bg-black/35 w-full h-full absolute top-0 left-0 z-0"></div>
+  {# HERO #}
+  <section class="relative bg-roadtrips bg-cover bg-center min-h-[55vh] sm:min-h-[60vh] lg:min-h-[65vh] flex items-center justify-center px-4 py-16">
+    <div class="absolute inset-0 bg-black/35"></div>
+    <h1 class="relative z-10 text-white text-3xl sm:text-4xl lg:text-5xl font-medium font-second text-center px-2">
+      Nos roadtrips
+    </h1>
+  </section>
 
-		<h1 class="text-white text-4xl font-medium font-second relative z-10">
-			Nos roadtrips
-		</h1>
-	</section>
+  {# LISTE #}
+  <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-12">
+    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6 sm:mb-8">
+      <h2 class="sr-only">Liste des roadtrips</h2>
 
-	<section class="py-12 px-6 max-w-7xl mx-auto flex flex-col items-end">
-		{# {% if app.user %}
-			<a href="{{ path('app_roadtrip_create') }}" class="btn mb-6">
-				<i class="fa-solid fa-plus mr-2"></i>Créer un roadtrip
-			</a>
-		{% endif %} #}
-		<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-			{% for roadtrip in roadtrips %}
-				{% include 'roadtrips/_card.html.twig' with { roadtrip: roadtrip } %}
-			{% endfor %}
-		</div>
-	</section>
+      {# Bouton créer (optionnel) #}
+      {# 
+      {% if app.user %}
+        <a href="{{ path('app_roadtrip_create') }}" class="btn self-end sm:self-auto">
+          <i class="fa-solid fa-plus mr-2"></i>Créer un roadtrip
+        </a>
+      {% endif %}
+      #}
+    </div>
+
+    {% if roadtrips is empty %}
+      <div class="w-full bg-orange/5 border border-orange/20 rounded-2xl p-6 sm:p-8 text-center">
+        <p class="text-blue font-second text-lg mb-2">Aucun roadtrip pour le moment</p>
+        <p class="text-sm text-gray-600 mb-4">Revenez bientôt ou créez le vôtre pour inspirer la communauté Gourmy.</p>
+        {# 
+        {% if app.user %}
+          <a href="{{ path('app_roadtrip_create') }}" class="btn">Créer un roadtrip</a>
+        {% else %}
+          <a href="{{ path('app_login') }}" class="btn-secondary">Se connecter</a>
+        {% endif %}
+        #}
+      </div>
+    {% else %}
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
+        {% for roadtrip in roadtrips %}
+          {% include 'roadtrips/_card.html.twig' with { roadtrip: roadtrip } %}
+        {% endfor %}
+      </div>
+    {% endif %}
+  </section>
 {% endblock %}

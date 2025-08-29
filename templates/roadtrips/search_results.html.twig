@@ -90,9 +90,12 @@
 						<strong class="font-medium">{{ result.meals }}</strong>
 					</p>
 
-					{% if result.cuisine %}
+					{% set types = result.cuisines is defined ? result.cuisines
+            : (result.cuisine is defined ? result.cuisine : []) %}
+
+					{% if types is not empty %}
 						<div class="flex flex-wrap gap-2 mb-4">
-							{% for type in result.cuisine is iterable ? result.cuisine : [result.cuisine] %}
+							{% for type in (types is iterable ? types : [types]) %}
 								<span class="px-2 py-1 text-xs rounded-full bg-blue text-white">
 									{{ type }}
 								</span>

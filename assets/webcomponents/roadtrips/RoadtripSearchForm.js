@@ -23,7 +23,7 @@ export class RoadtripSearchForm extends HTMLElement {
               <!-- Colonne vide pour aligner le bouton supprimer -->
               <span class="col-span-1"></span>
             </div>
-            <div id="steps-container" class="flex flex-col w-full h-fit mt-2" aria-live="polite"></div>
+            <div id="steps-container" class="flex flex-col w-full h-fit mt-2 sm:gap-4" aria-live="polite"></div>
 
             <div class="flex justify-between items-center pt-2 gap-4">
               <button type="button" id="add-step" class="text-orange mx-auto text-sm font-medium flex items-center gap-2 rounded px-2 py-1">
@@ -52,9 +52,7 @@ export class RoadtripSearchForm extends HTMLElement {
     this.addEventListener('click', (e) => {
       const target = e.target instanceof Element ? e.target : null;
 
-      const inOptions = target && target.closest('.cuisine-options');
-      if (inOptions) {
-        // Empêche toute fermeture parasite
+      if (target && target.closest('.cuisine-options')) {
         e.stopPropagation();
         return;
       }
@@ -142,7 +140,6 @@ export class RoadtripSearchForm extends HTMLElement {
     }).join('');
 
     return `
-      <!-- step = relative pour créer un contexte -->
       <fieldset class="step relative px-3 pb-2 space-y-3 transition-all duration-200 ease-out" data-index="${index}">
         <legend class="sr-only">Étape ${index + 1}</legend>
 
@@ -173,14 +170,14 @@ export class RoadtripSearchForm extends HTMLElement {
               <i class="fa-solid fa-pepper-hot" aria-hidden="true"></i><span class="text-black">Type de cuisine</span>
             </label>
             <button type="button"
-              class="toggle-cuisine-dropdown bg-white border border-blue rounded-lg px-3 w-full py-2 text-left flex items-center justify-between"
+              class="toggle-cuisine-dropdown relative z-10 bg-white border border-blue rounded-lg px-3 w-full py-2 text-left flex items-center justify-between"
               aria-haspopup="listbox" aria-expanded="false" aria-controls="${idBase}-cuisine-list" data-placeholder="Choisir les types">
               <span class="truncate">Choisir les types</span>
               <i class="fa-solid fa-chevron-down ml-2 text-gray-500" aria-hidden="true"></i>
             </button>
             <!-- z-50 pour passer au-dessus des étapes suivantes -->
             <div id="${idBase}-cuisine-list"
-              class="cuisine-options hidden absolute z-50 bg-white border rounded w-full mt-1 shadow p-2 space-y-1 max-h-44 overflow-y-auto transition-all duration-200 ease-out opacity-0 -translate-y-2 pointer-events-auto"
+              class="cuisine-options hidden absolute left-0 top-full z-[60] bg-white border rounded w-full mt-1 shadow p-2 space-y-1 max-h-44 overflow-y-auto transition-all duration-200 ease-out opacity-0 -translate-y-2 pointer-events-auto"
               role="listbox" aria-multiselectable="true">
               ${cuisineChecks}
             </div>
@@ -281,6 +278,8 @@ export class RoadtripSearchForm extends HTMLElement {
 
   // --- Animations dropdown ---
   openDropdown(btn, panel) {
+    const step = btn.closest('.step');
+    if (step) step.classList.add('z-50');
     btn.setAttribute('aria-expanded', 'true');
     // état initial
     panel.classList.remove('hidden');
@@ -310,6 +309,7 @@ export class RoadtripSearchForm extends HTMLElement {
       const panel = btn.nextElementSibling;
       if (panel) this.closeDropdown(btn, panel);
     });
+    this.querySelectorAll('.step.z-50').forEach(step => step.classList.remove('z-50'));
   }
   // --- /Animations dropdown ---
 
