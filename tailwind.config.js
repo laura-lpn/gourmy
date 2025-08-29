@@ -36,8 +36,8 @@ module.exports = {
           'main': '0px 0px 15px #00000029',
         },
         fontSize: {
-          xxs: '.5rem',
-          xs: '.75rem',
+          xxs: '.75rem',
+          xs: '.9rem',
           sm: '1rem',
           base: '1.2rem',
           lg: '1.3rem',

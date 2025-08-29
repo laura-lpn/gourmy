@@ -1,28 +1,43 @@
-<footer class="w-full flex flex-col items-center justify-center gap-2 bg-paleBlue py-4">
-	<div class="flex items-center gap-24 mx-auto">
-		<a href="{{path('app_home')}}">
-			<img src="{{ asset('images/logo.svg') }}" alt="Logo Gourmy" class="h-24">
+<footer class="w-full flex flex-col items-center justify-center gap-2 bg-paleBlue py-8">
+	<div class="flex flex-col lg:flex-row lg:items-start gap-8 lg:gap-24">
+		<a href="{{ path('app_home') }}" class="inline-flex place-self-center">
+			<img src="{{ asset('images/logo.svg') }}" alt="Logo Gourmy" class="h-16 md:h-20">
 		</a>
-		<div class="text-blue flex items-center gap-6">
-			<a href="">
-				<i class="fa-brands fa-instagram text-3xl"></i>
+		<div class="text-blue flex items-center gap-6 place-self-center">
+			<a href="#" aria-label="Instagram" class="hover:text-orange transition-colors">
+				<i class="fa-brands fa-instagram text-2xl md:text-3xl"></i>
 			</a>
-			<a href="">
-				<i class="fa-brands fa-tiktok text-3xl"></i>
+			<a href="#" aria-label="TikTok" class="hover:text-orange transition-colors">
+				<i class="fa-brands fa-tiktok text-2xl md:text-3xl"></i>
+			</a>
+			<a href="#" aria-label="LinkedIn" class="hover:text-orange transition-colors">
+				<i class="fa-brands fa-linkedin-in text-2xl md:text-3xl"></i>
 			</a>
 		</div>
-		<div class="flex gap-10 mx-auto font-light">
-			<nav class="flex flex-col gap-2">
+
+		<div class="flex justify-center">
+			<nav class="flex flex-col gap-1 font-light text-xs">
+				<span class="text-blue font-medium mb-1">Découvrir</span>
 				<a href="{{ path('app_user_leaderboard') }}" class="hover:text-blue">Classement des utilisateurs</a>
 				<a href="{{ path('app_charte_restaurateur') }}" class="hover:text-blue">Charte des restaurateurs</a>
-				<a href="/" class="hover:text-blue">Mentions légales</a>
 			</nav>
-			<nav class="flex flex-col gap-2">
-				<a href="/" class="hover:text-blue">Politiques de confidentialité</a>
+		</div>
+		<div class="flex justify-center">
+			<nav class="flex flex-col gap-1 font-light text-xs">
+				<span class="text-blue font-medium mb-1">Légal & Conditions</span>
+				<a href="/" class="hover:text-blue">Politique de confidentialité</a>
 				<a href="/" class="hover:text-blue">CGU</a>
 				<a href="/" class="hover:text-blue">CGV</a>
+				<a href="/" class="hover:text-blue">Mentions légales</a>
 			</nav>
 		</div>
 	</div>
-	<p class="text-orange text-center text-xs">© Copyright Gourmy 2025</p>
+
+	<hr class="my-6 border-blue/15 w-4/5 mx-auto">
+
+	<div class="flex justify-center gap-3">
+		<p class="text-orange text-xs text-center">
+			© Copyright Gourmy 2025
+		</p>
+	</div>
 </footer>
