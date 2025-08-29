@@ -1,7 +1,16 @@
-<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 min-h-[300px]" id="restaurant-results">
-	{% for restaurant in restaurants %}
-		{{ include('restaurant/_card.html.twig', { restaurant: restaurant }) }}
-	{% else %}
-		<p class="text-center col-span-full">Aucun restaurant trouvé</p>
-	{% endfor %}
-</div>
+{% if restaurants is empty %}
+  <div class="w-full bg-orange/5 border border-orange/20 rounded-2xl p-6 sm:p-8 text-center">
+    <p class="text-blue font-second text-lg mb-2">Aucun restaurant trouvé</p>
+    <p class="text-sm text-gray-600">Ajustez vos filtres ou élargissez votre zone de recherche.</p>
+  </div>
+{% else %}
+  <div
+    id="restaurant-results"
+    class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 lg:gap-8 min-h-[300px]"
+    role="list"
+  >
+    {% for restaurant in restaurants %}
+      {{ include('restaurant/_card.html.twig', { restaurant: restaurant }) }}
+    {% endfor %}
+  </div>
+{% endif %}

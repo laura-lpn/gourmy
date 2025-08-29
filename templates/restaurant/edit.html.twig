@@ -1,97 +1,112 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Éditer mon restaurant
-{% endblock %}
+{% block title %}Éditer mon restaurant{% endblock %}
 
 {% block body %}
-	<div class="w-2/5 mx-auto px-6 py-8 mt-28">
+  <div class="max-w-5xl w-11/12 lg:w-3/4 mx-auto px-4 sm:px-6 lg:px-8 py-8 mt-28">
 
-		<h1 class="text-3xl font-second font-medium text-orange text-center mb-8">Éditer mon restaurant</h1>
+    <h1 class="text-2xl sm:text-3xl font-second font-medium text-orange text-center mb-8">
+      Éditer mon restaurant
+    </h1>
 
-		{% for label, messages in app.flashes %}
-			{% for message in messages %}
-				<div class="alert alert-{{ label }} mb-4">
-					{% autoescape false %}
-						{{ message }}
-					{% endautoescape %}
-				</div>
-			{% endfor %}
-		{% endfor %}
+    {# Flashs #}
+    {% for label, messages in app.flashes %}
+      {% for message in messages %}
+        <div class="alert alert-{{ label }} mb-4 max-w-3xl mx-auto">
+          {% autoescape false %}{{ message }}{% endautoescape %}
+        </div>
+      {% endfor %}
+    {% endfor %}
 
-		{{ form_start(restaurantForm, {'attr': {'class': 'space-y-8'}}) }}
+    {{ form_start(restaurantForm, {'attr': {'class': 'space-y-8'}}) }}
 
-		{# Infos générales #}
-		<section class="bg-blue/5 rounded-xl p-6">
-			<h2 class="text-xl font-medium flex gap-6 items-center font-second text-blue mb-4">
-				<span class="h-0.5 rounded-md bg-blue w-8 block"></span>
-				Informations générales
-			</h2>
-			<div class="space-y-4">
-				{{ form_row(restaurantForm.name) }}
-				{{ form_row(restaurantForm.siret) }}
-				{{ form_row(restaurantForm.bannerFile) }}
-				{{ form_row(restaurantForm.description) }}
-			</div>
-		</section>
+    {# Informations générales #}
+    <section class="bg-blue/5 rounded-xl p-5 sm:p-6">
+      <h2 class="text-lg sm:text-xl font-medium flex gap-4 items-center font-second text-blue mb-4">
+        <span class="h-0.5 rounded-md bg-blue w-6 sm:w-8 block"></span>
+        Informations générales
+      </h2>
 
-		{# Images du restaurant #}
-		<section class="bg-orange/5 rounded-xl p-6">
-			<h2 class="text-xl font-medium flex gap-6 items-center font-second text-orange mb-4">
-				<span class="h-0.5 rounded-md bg-orange w-8 block"></span>
-				Images du restaurant
-			</h2>
-			<image-uploader data-prototype="{{ form_widget(restaurantForm.images.vars.prototype) | e('html_attr') }}">
-				<div class="existing-images grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-					{% for imageField in restaurantForm.images %}
-						<div class="relative image-item w-40 h-40 bg-gray-100 rounded-lg overflow-hidden cursor-pointer" style="background-image: url('{{ vich_uploader_asset(imageField.vars.value, 'imageFile') }}');
-								background-size: cover;
-								background-position: center;">
-							{{ form_widget(imageField.imageFile, {'attr': {'class': 'hidden image-input'}}) }}
-							{{ form_widget(imageField._delete, {'attr': {'class': 'delete-flag hidden'}}) }}
-							<button type="button" class="absolute top-1 right-1 bg-blue text-white text-xs rounded-full px-2 py-1 remove-image-btn">
-								<i class="fa-solid fa-xmark"></i>
-							</button>
-						</div>
-					{% endfor %}
-				</div>
-			</image-uploader>
-			<script type="module" src="{{ asset('webcomponents/ImageUploader.js') }}"></script>
-		</section>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>{{ form_row(restaurantForm.name) }}</div>
+        <div>{{ form_row(restaurantForm.siret) }}</div>
 
-		{# Coordonnées #}
-		<section class="bg-blue/5 rounded-xl p-6">
-			<h2 class="text-xl font-medium flex gap-6 items-center font-second text-blue mb-4">
-				<span class="h-0.5 rounded-md bg-blue w-8 block"></span>
-				Coordonnées
-			</h2>
-			<div class="space-y-4">
-				{{ form_row(restaurantForm.address) }}
-				{{ form_row(restaurantForm.postalCode) }}
-				{{ form_row(restaurantForm.city) }}
-				{{ form_row(restaurantForm.country) }}
-				{{ form_row(restaurantForm.phoneNumber) }}
-			</div>
-		</section>
+        <div class="md:col-span-2">{{ form_row(restaurantForm.bannerFile) }}</div>
 
-		{# Infos pratiques #}
-		<section class="bg-orange/5 rounded-xl p-6">
-			<h2 class="text-xl font-medium flex gap-6 items-center font-second text-orange mb-4">
-				<span class="h-0.5 rounded-md bg-orange w-8 block"></span>
-				Infos pratiques
-			</h2>
-			<div class="space-y-4">
-				{{ form_row(restaurantForm.openingHours) }}
-				{{ form_row(restaurantForm.types) }}
-				{{ form_row(restaurantForm.priceRange) }}
-				{{ form_row(restaurantForm.website) }}
-			</div>
-		</section>
+        <div class="md:col-span-2">{{ form_row(restaurantForm.description) }}</div>
+      </div>
+    </section>
 
-		<div class="flex justify-center gap-4 mt-6">
-			<a href="{{ path('app_restaurateur') }}" class="btn-secondary">Annuler</a>
-			<button type="submit" class="btn">Modifier</button>
-		</div>
+    {# Images du restaurant #}
+    <section class="bg-orange/5 rounded-xl p-5 sm:p-6">
+      <h2 class="text-lg sm:text-xl font-medium flex gap-4 items-center font-second text-orange mb-4">
+        <span class="h-0.5 rounded-md bg-orange w-6 sm:w-8 block"></span>
+        Images du restaurant
+      </h2>
 
-		{{ form_end(restaurantForm) }}
-	</div>
+      <image-uploader data-prototype="{{ form_widget(restaurantForm.images.vars.prototype) | e('html_attr') }}">
+        {# Grille responsive d’images #}
+        <div class="existing-images grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+          {% for imageField in restaurantForm.images %}
+            <div
+              class="relative image-item w-full aspect-square bg-gray-100 rounded-lg overflow-hidden cursor-pointer bg-cover bg-center"
+              style="background-image: url('{{ vich_uploader_asset(imageField.vars.value, 'imageFile') }}');"
+            >
+              {{ form_widget(imageField.imageFile, {'attr': {'class': 'hidden image-input'}}) }}
+              {{ form_widget(imageField._delete, {'attr': {'class': 'delete-flag hidden'}}) }}
+
+              <button
+                type="button"
+                class="absolute top-1 right-1 bg-blue text-white text-xs rounded-full px-2 py-1 remove-image-btn"
+                aria-label="Supprimer l’image"
+              >
+                <i class="fa-solid fa-xmark"></i>
+              </button>
+            </div>
+          {% endfor %}
+        </div>
+      </image-uploader>
+
+      <script type="module" src="{{ asset('webcomponents/ImageUploader.js') }}"></script>
+    </section>
+
+    {# Coordonnées #}
+    <section class="bg-blue/5 rounded-xl p-5 sm:p-6">
+      <h2 class="text-lg sm:text-xl font-medium flex gap-4 items-center font-second text-blue mb-4">
+        <span class="h-0.5 rounded-md bg-blue w-6 sm:w-8 block"></span>
+        Coordonnées
+      </h2>
+
+      {# Grille 3 colonnes en md+ pour mieux répartir (CP + Ville) #}
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="md:col-span-3">{{ form_row(restaurantForm.address) }}</div>
+        <div class="md:col-span-1">{{ form_row(restaurantForm.postalCode) }}</div>
+        <div class="md:col-span-2">{{ form_row(restaurantForm.city) }}</div>
+        <div class="md:col-span-2">{{ form_row(restaurantForm.country) }}</div>
+        <div class="md:col-span-1">{{ form_row(restaurantForm.phoneNumber) }}</div>
+      </div>
+    </section>
+
+    {# Infos pratiques #}
+    <section class="bg-orange/5 rounded-xl p-5 sm:p-6">
+      <h2 class="text-lg sm:text-xl font-medium flex gap-4 items-center font-second text-orange mb-4">
+        <span class="h-0.5 rounded-md bg-orange w-6 sm:w-8 block"></span>
+        Infos pratiques
+      </h2>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>{{ form_row(restaurantForm.openingHours) }}</div>
+        <div>{{ form_row(restaurantForm.types) }}</div>
+        <div>{{ form_row(restaurantForm.priceRange) }}</div>
+        <div>{{ form_row(restaurantForm.website) }}</div>
+      </div>
+    </section>
+
+    <div class="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4 mt-6">
+      <a href="{{ path('app_restaurateur') }}" class="btn-secondary text-center">Annuler</a>
+      <button type="submit" class="btn">Modifier</button>
+    </div>
+
+    {{ form_end(restaurantForm) }}
+  </div>
 {% endblock %}

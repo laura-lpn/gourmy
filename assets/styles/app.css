@@ -161,7 +161,7 @@
   }
 
   form[name="restaurant_charter"] section div {
-    @apply flex flex-row-reverse gap-2 items-center;
+    @apply flex-row-reverse gap-2 items-center;
   }
 
   body {

@@ -6,7 +6,7 @@ export class RoadtripSearchForm extends HTMLElement {
 
     this.innerHTML = `
       <section class="relative w-full max-w-4xl mx-auto mt-6 z-10">
-        <div class="bg-white p-4 rounded-xl shadow-lg w-full">
+        <div class="bg-white px-4 py-6 rounded-xl shadow-lg w-full">
           <form method="GET" action="/roadtrip/recherche" id="roadtrip-form" class="w-full">
             <!-- En-tête colonnes: visible seulement en sm+ -->
             <!-- En-tête colonnes: visible seulement en sm+ -->

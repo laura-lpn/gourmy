@@ -1,30 +1,33 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}
-	Nos restaurants partenaires
-{% endblock %}
+{% block title %}Nos restaurants partenaires{% endblock %}
 
 {% block meta %}
-	<meta name="description" content="Découvrez nos restaurants partenaires engagés pour une cuisine locale et authentique. Soutenez des chefs passionnés à travers la France.">
-	<meta property="og:title" content="Nos restaurants partenaires – Gourmy">
-	<meta property="og:description" content="Une sélection unique de restaurants locaux, sélectionnés pour leur authenticité et leur engagement pour le terroir.">
-	<meta property="og:image" content="{{ asset('images/pages/restaurants.jpg') }}">
+  <meta name="description" content="Découvrez nos restaurants partenaires engagés pour une cuisine locale et authentique. Soutenez des chefs passionnés à travers la France.">
+  <meta property="og:title" content="Nos restaurants partenaires – Gourmy">
+  <meta property="og:description" content="Une sélection unique de restaurants locaux, sélectionnés pour leur authenticité et leur engagement pour le terroir.">
+  <meta property="og:image" content="{{ asset('images/pages/restaurants.jpg') }}">
 {% endblock %}
 
 {% block body %}
+  {# HERO #}
+  <section class="relative bg-restaurants bg-cover bg-center min-h-[55vh] sm:min-h-[60vh] lg:min-h-[65vh] flex items-center justify-center px-4 py-16">
+    <div class="absolute inset-0 bg-black/35"></div>
+    <h1 class="relative z-10 text-white text-3xl sm:text-4xl lg:text-5xl font-medium font-second text-center px-2">
+      Nos restaurants partenaires
+    </h1>
+  </section>
 
-	<section class="bg-restaurants relative object-cover bg-center h-[65vh] flex items-center justify-center">
-		<div class="bg-black/35 w-full h-full absolute top-0 left-0 z-0"></div>
+  {# CONTENU #}
+  <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-12">
+    <h2 class="sr-only">Recherche et résultats</h2>
 
-		<h1 class="text-white text-4xl font-medium font-second relative z-10">
-			Nos restaurants partenaires
-		</h1>
-	</section>
+    <div class="w-full max-w-3xl mx-auto">
+      <search-bar data-url="{{ path('app_restaurant_search') }}"></search-bar>
+    </div>
 
-	<section class="py-12 px-6 max-w-7xl w-full mx-auto">
-		<search-bar data-url="{{ path('app_restaurant_search') }}"></search-bar>
-		<div id="restaurant-results" class="mt-10">
-			{{ include('restaurant/_list.html.twig', { restaurants: restaurants }) }}
-		</div>
-	</section>
+    <div id="restaurant-results" class="mt-8 sm:mt-10" aria-live="polite">
+      {{ include('restaurant/_list.html.twig', { restaurants: restaurants }) }}
+    </div>
+  </section>
 {% endblock %}
