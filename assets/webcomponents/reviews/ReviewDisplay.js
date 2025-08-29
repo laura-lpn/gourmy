@@ -14,7 +14,7 @@ export function renderReview({
   const reviewCard = document.createElement('div');
   reviewCard.className = [
     // conteneur
-    "bg-white rounded-2xl w-full sm:w-11/12 md:w-4/5 mx-auto shadow-main",
+    "bg-white rounded-2xl w-full lg:w-4/5 mx-auto shadow-main",
     // paddings responsive
     "p-4 sm:p-5 md:p-6",
     // layout responsive

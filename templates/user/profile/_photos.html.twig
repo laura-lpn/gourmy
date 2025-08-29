@@ -1,6 +1,6 @@
-<div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8 py-6 px-8">
+<div class="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 lg:gap-8 py-1 px-2 lg:py-6 lg:px-8">
 	{% for review in photos %}
-		<img src="{{ vich_uploader_asset(review, 'imageFile') }}" alt="{{ review.title ?: 'Photo d’un avis' }}" class="w-48 h-48 object-cover aspect-square rounded-xl">
+		<img src="{{ vich_uploader_asset(review, 'imageFile') }}" alt="{{ review.title ?: 'Photo d’un avis' }}" class="w-full object-cover aspect-square rounded-xl">
 	{% endfor %}
 	{% if photos|length == 0 %}
 		<p class="text-center col-span-full">Aucune photo disponible</p>

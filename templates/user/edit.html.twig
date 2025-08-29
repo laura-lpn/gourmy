@@ -1,34 +1,70 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Modifier le profil
-{% endblock %}
+{% block title %}Modifier le profil{% endblock %}
 
 {% block body %}
-	<h1 class="my-h1 mt-28">Modifier le profil</h1>
-	<div class="flex flex-col justify-center items-center gap-4 w-4/5 lg:w-1/3 mx-auto">
+  <div class="max-w-5xl w-11/12 lg:w-3/4 mx-auto px-4 sm:px-6 lg:px-8 py-8 mt-28">
 
-		{% for label, messages in app.flashes %}
-			{% for message in messages %}
-				<div class="alert alert-{{ label }}">
-					{% autoescape false %}
-						{{ message }}
-					{% endautoescape %}
-				</div>
-			{% endfor %}
-		{% endfor %}
-		<div>
-			{{ form_start(userForm, { attr: { 'data-turbo': 'false', 'class': 'my-form' }, method: 'POST' }) }}
-			{{ form_row(userForm.avatarFile) }}
-			{{ form_row(userForm.firstName) }}
-			{{ form_row(userForm.lastName) }}
-			{{ form_row(userForm.email) }}
-			{{ form_row(userForm.username) }}
-			{{ form_row(userForm.plainPassword) }}
-			<div class="flex !flex-row justify-center gap-2">
-				<a class="btn-secondary" href='{{ path('app_user_profile') }}'>Annuler</a>
-				<button type="submit" class="btn">Modifier</button>
-			</div>
-			{{ form_end(userForm) }}
-		</div>
+    <h1 class="text-2xl sm:text-3xl font-second font-medium text-orange text-center mb-8">
+      Modifier le profil
+    </h1>
 
-	{% endblock %}
+    {# Flashs #}
+    {% for label, messages in app.flashes %}
+      {% for message in messages %}
+        <div class="alert alert-{{ label }} mb-4 max-w-3xl mx-auto">
+          {% autoescape false %}{{ message }}{% endautoescape %}
+        </div>
+      {% endfor %}
+    {% endfor %}
+
+    {{ form_start(userForm, { attr: { 'data-turbo': 'false', 'class': 'my-form space-y-8' }, method: 'POST' }) }}
+
+      {# Informations générales #}
+      <section class="bg-blue/5 rounded-xl p-5 sm:p-6 w-full">
+        <h2 class="text-lg sm:text-xl font-medium flex gap-4 items-center font-second text-blue mb-4">
+          <span class="h-0.5 rounded-md bg-blue w-6 sm:w-8 block"></span>
+          Informations générales
+        </h2>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="md:col-span-2">
+            {{ form_row(userForm.avatarFile) }}
+          </div>
+          <div>
+            {{ form_row(userForm.firstName) }}
+          </div>
+          <div>
+            {{ form_row(userForm.lastName) }}
+          </div>
+          <div class="md:col-span-2">
+            {{ form_row(userForm.username) }}
+          </div>
+        </div>
+      </section>
+
+      {# Compte & sécurité #}
+      <section class="bg-orange/5 rounded-xl p-5 sm:p-6 w-full">
+        <h2 class="text-lg sm:text-xl font-medium flex gap-4 items-center font-second text-orange mb-4">
+          <span class="h-0.5 rounded-md bg-orange w-6 sm:w-8 block"></span>
+          Compte & sécurité
+        </h2>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            {{ form_row(userForm.email) }}
+          </div>
+          <div>
+            {{ form_row(userForm.plainPassword) }}
+          </div>
+        </div>
+      </section>
+
+      <div class="flex flex-col sm:!flex-row justify-center gap-3 sm:gap-4 mt-6">
+        <a class="btn-secondary text-center" href="{{ path('app_user_profile') }}">Annuler</a>
+        <button type="submit" class="btn">Modifier</button>
+      </div>
+
+    {{ form_end(userForm) }}
+  </div>
+{% endblock %}
