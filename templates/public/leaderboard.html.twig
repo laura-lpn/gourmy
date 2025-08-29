@@ -5,73 +5,78 @@
 
 {% block body %}
 	<div
-		class="mt-28 w-1/2 mx-auto px-6">
+		class="mt-28 max-w-6xl w-11/12 lg:w-3/4 mx-auto px-4 sm:px-6">
 
-		<!-- Titre principal -->
-		<h1 class="my-h1 text-center mb-10">
+		<!-- Titre -->
+		<h1 class="text-2xl sm:text-3xl font-second font-medium text-blue text-center mb-8">
 			Classement des utilisateurs
 		</h1>
 
-		<!-- Tableau du classement -->
+		<!-- Tableau (scroll horizontal sur mobile) -->
 		<div class="bg-blue/5 rounded-xl border border-blue/10 overflow-hidden">
-			<table class="w-full border-collapse">
-				<thead class="bg-blue/20 text-blue uppercase text-sm font-second">
-					<tr>
-						<th class="p-3 text-left">Rang</th>
-						<th class="p-3 text-left">Utilisateur</th>
-						<th class="p-3 text-center">Points</th>
-						<th class="p-3 text-center">Badges</th>
-					</tr>
-				</thead>
-				<tbody>
-					{% for u in users %}
-						<tr
-							class="odd:bg-white even:bg-blue/5 hover:bg-blue/10 transition">
-							<!-- Rang -->
-							<td class="p-3 font-second">
-								{% if loop.index == 1 %}
-									<i class="fa-solid fa-medal text-amber-300"></i>
-								{% elseif loop.index == 2 %}
-									<i class="fa-solid fa-medal text-slate-400"></i>
-								{% elseif loop.index == 3 %}
-									<i class="fa-solid fa-medal text-red-800"></i>
-								{% else %}
-									{{ loop.index }}
-								{% endif %}
-							</td>
-
-							<!-- Utilisateur avec avatar -->
-							<td class="p-3 flex items-center gap-3">
-								{% if u.avatarName %}
-									<img src="{{ vich_uploader_asset(u, 'avatarFile') }}" alt="Avatar" class="w-8 h-8 rounded-full">
-								{% else %}
-									<img src="{{ asset('images/avatar-placeholder.png') }}" alt="Avatar par défaut" class="w-8 h-8 rounded-full">
-								{% endif %}
-								<a href="{{ path('app_user_show', {username: u.username}) }}" class="hover:text-blue">
-									{{ u.firstName }}
-									{{ u.lastName }}
-								</a>
-							</td>
-
-							<!-- Points -->
-							<td class="p-3 text-center font-medium">
-								{{ u.points }}
-							</td>
-
-							<!-- Badges -->
-							<td class="p-3 text-center">
-								{{ u.badges|length }}
-							</td>
-						</tr>
-					{% else %}
+			<div class="overflow-x-auto">
+				<table class="w-full border-collapse min-w-[640px]">
+					<thead class="bg-blue/20 text-blue uppercase text-xs sm:text-sm font-second">
 						<tr>
-							<td colspan="4" class="p-4 text-center text-gray-500">
-								Aucun utilisateur trouvé.
-							</td>
+							<th class="p-2 sm:p-3 text-left whitespace-nowrap">Rang</th>
+							<th class="p-2 sm:p-3 text-left whitespace-nowrap">Utilisateur</th>
+							<th class="p-2 sm:p-3 text-center whitespace-nowrap">Points</th>
+							<th class="p-2 sm:p-3 text-center whitespace-nowrap">Badges</th>
 						</tr>
-					{% endfor %}
-				</tbody>
-			</table>
+					</thead>
+					<tbody class="text-sm sm:text-base">
+						{% for u in users %}
+							<tr
+								class="odd:bg-white even:bg-blue/5 hover:bg-blue/10 transition-colors">
+								<!-- Rang -->
+								<td class="p-2 sm:p-3 font-second align-middle">
+									{% if loop.index == 1 %}
+										<i class="fa-solid fa-medal text-amber-300" aria-label="1er"></i>
+									{% elseif loop.index == 2 %}
+										<i class="fa-solid fa-medal text-slate-400" aria-label="2e"></i>
+									{% elseif loop.index == 3 %}
+										<i class="fa-solid fa-medal text-red-800" aria-label="3e"></i>
+									{% else %}
+										{{ loop.index }}
+									{% endif %}
+								</td>
+
+								<!-- Utilisateur -->
+								<td class="p-2 sm:p-3 align-middle">
+									<div class="flex items-center gap-3 min-w-[12rem]">
+										{% if u.avatarName %}
+											<img src="{{ vich_uploader_asset(u, 'avatarFile') }}" alt="Avatar" class="w-8 h-8 rounded-full object-cover">
+										{% else %}
+											<img src="{{ asset('images/avatar-placeholder.png') }}" alt="Avatar par défaut" class="w-8 h-8 rounded-full object-cover">
+										{% endif %}
+										<a href="{{ path('app_user_show', {username: u.username}) }}" class="hover:text-blue truncate">
+											{{ u.firstName }}
+											{{ u.lastName }}
+										</a>
+									</div>
+								</td>
+
+								<!-- Points -->
+								<td class="p-2 sm:p-3 text-center font-medium align-middle whitespace-nowrap">
+									{{ u.points }}
+								</td>
+
+								<!-- Badges -->
+								<td class="p-2 sm:p-3 text-center align-middle whitespace-nowrap">
+									{{ u.badges|length }}
+								</td>
+							</tr>
+						{% else %}
+							<tr>
+								<td colspan="4" class="p-4 text-center text-gray-500">
+									Aucun utilisateur trouvé.
+								</td>
+							</tr>
+						{% endfor %}
+					</tbody>
+				</table>
+			</div>
 		</div>
+
 	</div>
 {% endblock %}

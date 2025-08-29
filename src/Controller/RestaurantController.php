@@ -239,10 +239,28 @@ class RestaurantController extends AbstractController
         // Stats récapitulatives
         $totalReviews = array_sum($dataEvolution);
         $averagePerMonth = $totalReviews > 0 ? round($totalReviews / count($dataEvolution), 1) : 0;
-        $mostActiveMonth = $labels ? max(array_keys($reviewsByMonth)) : null;
-        $mostActiveCount = $mostActiveMonth ? $reviewsByMonth[$mostActiveMonth] : 0;
-        $leastActiveMonth = $labels ? min(array_keys($reviewsByMonth)) : null;
-        $leastActiveCount = $leastActiveMonth ? $reviewsByMonth[$leastActiveMonth] : 0;
+        $mostActiveMonth = null;
+        $mostActiveCount = 0;
+        $leastActiveMonth = null;
+        $leastActiveCount = PHP_INT_MAX;
+
+        foreach ($reviewsByMonth as $monthKey => $count) {
+            if ($count > $mostActiveCount) {
+                $mostActiveCount = $count;
+                $mostActiveMonth = $monthKey;
+            }
+            if ($count < $leastActiveCount) {
+                $leastActiveCount = $count;
+                $leastActiveMonth = $monthKey;
+            }
+        }
+
+        if ($leastActiveMonth === null) {
+            $leastActiveCount = 0;
+        }
+
+        $mostActiveDate = $mostActiveMonth ? \DateTimeImmutable::createFromFormat('Y-m-d', $mostActiveMonth . '-01') : null;
+        $leastActiveDate = $leastActiveMonth ? \DateTimeImmutable::createFromFormat('Y-m-d', $leastActiveMonth . '-01') : null;
 
         return $this->render('restaurant/profile.html.twig', [
             'restaurant' => $restaurant,
@@ -256,10 +274,10 @@ class RestaurantController extends AbstractController
             'chartDonut' => $chartDonut,
             'totalReviews' => $totalReviews,
             'averagePerMonth' => $averagePerMonth,
-            'mostActiveMonth' => $mostActiveMonth,
-            'mostActiveCount' => $mostActiveCount,
-            'leastActiveMonth' => $leastActiveMonth,
-            'leastActiveCount' => $leastActiveCount,
+            'mostActiveDate'    => $mostActiveDate,
+            'mostActiveCount'   => $mostActiveCount,
+            'leastActiveDate'   => $leastActiveDate,
+            'leastActiveCount'  => $leastActiveCount,
         ]);
     }
 

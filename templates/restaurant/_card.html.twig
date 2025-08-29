@@ -4,7 +4,7 @@
 {% set compact = compact is defined ? compact : false %}
 {% set isFavorite = userFavorites is defined and r in userFavorites %}
 
-<div class="relative bg-white rounded-2xl shadow-main p-4 flex flex-col gap-2 items-center w-full {{ compact ? 'max-w-sm' : 'max-w-xs' }}">
+<div class="relative bg-white rounded-2xl shadow-main p-4 flex flex-col gap-2 items-center w-full {{ compact ? 'max-w-sm' : 'max-w-xs' }} mx-auto">
 
   {# Bouton favoris hors du lien #}
   <button

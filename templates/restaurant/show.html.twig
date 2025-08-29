@@ -1,149 +1,177 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}
-	{{ restaurant.name }}
-{% endblock %}
+{% block title %}{{ restaurant.name }}{% endblock %}
 
 {% block meta %}
-	<meta name="description" content="{{ restaurant.description|length > 150 ? restaurant.description|slice(0,150) ~ '...' : restaurant.description }}">
-	<meta property="og:title" content="{{ restaurant.name }} – Restaurant partenaire Gourmy">
-	<meta property="og:description" content="Découvrez {{ restaurant.name }}, spécialiste {{ restaurant.types|map(t => t.name)|join(', ') }}. {{ restaurant.description|length > 150 ? restaurant.description|slice(0,150) ~ '...' : restaurant.description }}">
-	{% if restaurant.bannerName %}
-		<meta property="og:image" content="{{ vich_uploader_asset(restaurant, 'bannerFile') }}">
-	{% else %}
-		<meta property="og:image" content="{{ asset('images/pages/restaurants.jpg') }}">
-	{% endif %}
+  <meta name="description" content="{{ restaurant.description|length > 150 ? restaurant.description|slice(0,150) ~ '...' : restaurant.description }}">
+  <meta property="og:title" content="{{ restaurant.name }} – Restaurant partenaire Gourmy">
+  <meta property="og:description" content="Découvrez {{ restaurant.name }}, spécialiste {{ restaurant.types|map(t => t.name)|join(', ') }}. {{ restaurant.description|length > 150 ? restaurant.description|slice(0,150) ~ '...' : restaurant.description }}">
+  {% if restaurant.bannerName %}
+    <meta property="og:image" content="{{ vich_uploader_asset(restaurant, 'bannerFile') }}">
+  {% else %}
+    <meta property="og:image" content="{{ asset('images/pages/restaurants.jpg') }}">
+  {% endif %}
 {% endblock %}
 
 {% block body %}
-	<div class="w-3/4 mx-auto px-6 py-8 mt-28">
-		<section
-			class="flex flex-col md:flex-row gap-12 items-start relative">
-			{# Bouton favoris #}
-			<button class="absolute top-0 right-0 text-white text-lg z-20 bg-orange rounded-full pt-1 pb-0.5 px-2 favorite-btn" data-id="{{ restaurant.id }}">
-				<i class="{{ isFavorite ? 'fa-solid' : 'fa-regular' }} fa-heart"></i>
-			</button>
-			<div class="relative md:w-1/2 w-full">
-				{% if restaurant.bannerName %}
-					<img src="{{ vich_uploader_asset(restaurant, 'bannerFile') }}" alt="Image de {{ restaurant.name }}" class="rounded-xl w-full h-80 object-cover">
-				{% endif %}
-				<div class="absolute -bottom-5 -right-5 w-20 h-20 bg-white rounded-full shadow-lg flex items-center justify-center">
-					<img src="{{ asset('images/chef-hat-blue.svg') }}" alt="Badge" class="w-16 h-16">
-				</div>
-			</div>
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 mt-28">
 
-			<div class="flex-1">
-				<h1 class="text-3xl font-second font-medium text-blue mb-2">{{ restaurant.name }}</h1>
-				<p class="text-sm font-medium text-orange mb-3">
-					{{ restaurant.types|map(t => t.name)|join(', ') }}
-				</p>
-				<p class="mb-4">{{ restaurant.description }}</p>
+    {# HERO local: image + infos #}
+    <section class="relative flex flex-col lg:flex-row gap-6 sm:gap-8 items-start">
+      {# Bouton favoris: en haut à droite de la section (mobile + desktop) #}
+      <button
+        class="absolute top-2 right-10 sm:top-3 sm:right-3 md:top-4 md:right-4 text-white text-base sm:text-lg z-20 bg-orange rounded-full px-2 py-1 favorite-btn"
+        data-id="{{ restaurant.id }}" aria-label="Ajouter aux favoris" title="Ajouter aux favoris">
+        <i class="{{ isFavorite ? 'fa-solid' : 'fa-regular' }} fa-heart"></i>
+      </button>
 
-				<div class="flex items-center gap-1 text-orange mb-2">
-					{% set avg = restaurant.averageRating %}
-					{% for i in 1..5 %}
-						<i class="fa{{ avg >= i ? 's' : (avg >= i - 0.5 ? 's' : 'r') }} fa-star text-sm"></i>
-					{% endfor %}
-					<span class="text-sm text-black ml-2">
-						{{ restaurant.reviews|filter(r => not r.response)|length }}
-						avis
-					</span>
-				</div>
-			</div>
-		</section>
+      {# Visuel principal #}
+      <div class="relative w-full lg:w-1/2">
+        {% if restaurant.bannerName %}
+          <img src="{{ vich_uploader_asset(restaurant, 'bannerFile') }}"
+               alt="Image de {{ restaurant.name }}"
+               class="rounded-xl w-11/12 sm:w-full h-56 sm:h-72 lg:h-80 object-cover"
+               loading="lazy">
+        {% endif %}
+        <div class="absolute -bottom-4 right-1 sm:-bottom-5 sm:-right-5 w-16 h-16 sm:w-20 sm:h-20 bg-white rounded-full shadow-lg flex items-center justify-center">
+          <img src="{{ asset('images/chef-hat-blue.svg') }}" alt="Badge" class="w-10 h-10 sm:w-12 sm:h-12">
+        </div>
+      </div>
 
-		<section class="mt-12 flex flex-col md:flex-row gap-12 items-start">
-			<div class="md:w-1/2 w-full space-y-2 bg-blue/5 rounded-xl p-6">
-				<h2 class="text-xl font-medium flex gap-6 items-center font-second text-blue mb-4">
-					<span class="h-0.5 rounded-md bg-blue w-8 block"></span>Infos pratiques
-				</h2>
-				<p>
-					<strong class="font-medium">Adresse :</strong>
-					{{ restaurant.address ~ ', ' ~ restaurant.postalCode ~ ' ' ~ restaurant.city ~ ', ' ~ restaurant.country|country_name }}</p>
-				<p>
-					<strong class="font-medium">Horaires :</strong>
-					{{ restaurant.openingHours }}</p>
-				<p>
-					<strong class="font-medium">Tarifs :</strong>
-					{{ restaurant.priceRange }}</p>
-				{% if restaurant.phoneNumber %}
-					<p>
-						<strong class="font-medium">Téléphone :</strong>
-						{{ restaurant.phoneNumber }}</p>
-				{% endif %}
-				{% if restaurant.website %}
-					<p>
-						<strong class="font-medium">Site Web :</strong>
-						<a href="{{ restaurant.website }}" target="_blank" class="text-blue underline">{{ restaurant.website }}</a>
-					</p>
-				{% endif %}
-				{% if restaurant.types is not empty %}
-					<p>
-						<strong class="font-medium">Types de cuisine :</strong>
-						{{ restaurant.types|map(t => t.name)|join(', ') }}</p>
-				{% endif %}
-			</div>
+      {# Infos #}
+      <div class="flex-1 w-full">
+        <h1 class="text-2xl sm:text-3xl lg:text-4xl font-second font-medium text-blue mb-2">{{ restaurant.name }}</h1>
+        <p class="text-sm font-medium text-orange mb-3">
+          {{ restaurant.types|map(t => t.name)|join(', ') }}
+        </p>
+        <p class="text-sm sm:text-base leading-relaxed mb-4">{{ restaurant.description }}</p>
 
-			<div class="md:w-1/2 w-full">
-				<map-preview address="{{ restaurant.address|e('html_attr') }}" postal-code="{{ restaurant.postalCode|e('html_attr') }}" city="{{ restaurant.city|e('html_attr') }}" country="{{ restaurant.country|e('html_attr') }}" api-key="{{ google_maps_api_key }}" name="{{ restaurant.name }}" photo="{{ vich_uploader_asset(restaurant, 'bannerFile') }}">
-					<div id="map" class="rounded-xl" style="height: 400px; width: 100%;"></div>
-				</map-preview>
-			</div>
-		</section>
+        <div class="flex items-center gap-1 text-orange mb-2">
+          {% set avg = restaurant.averageRating %}
+          {% for i in 1..5 %}
+            <i class="fa{{ avg >= i ? 's' : (avg >= i - 0.5 ? 's' : 'r') }} fa-star text-sm"></i>
+          {% endfor %}
+          <span class="text-sm text-black ml-2">
+            {{ restaurant.reviews|filter(r => not r.response)|length }} avis
+          </span>
+        </div>
+      </div>
+    </section>
 
+    {# Infos pratiques + Carte #}
+    <section class="mt-10 sm:mt-12 grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 items-start">
+      <div class="w-full space-y-2 bg-blue/5 rounded-xl p-5 sm:p-6">
+        <h2 class="text-lg sm:text-xl font-medium flex gap-4 sm:gap-6 items-center font-second text-blue mb-2 sm:mb-3">
+          <span class="h-0.5 rounded-md bg-blue w-6 sm:w-8 block"></span>
+          Infos pratiques
+        </h2>
+        <p><strong class="font-medium">Adresse :</strong>
+          {{ restaurant.address ~ ', ' ~ restaurant.postalCode ~ ' ' ~ restaurant.city ~ ', ' ~ restaurant.country|country_name }}
+        </p>
+        <p><strong class="font-medium">Horaires :</strong> {{ restaurant.openingHours }}</p>
+        <p><strong class="font-medium">Tarifs :</strong> {{ restaurant.priceRange }}</p>
+        {% if restaurant.phoneNumber %}
+          <p><strong class="font-medium">Téléphone :</strong> {{ restaurant.phoneNumber }}</p>
+        {% endif %}
+        {% if restaurant.website %}
+          <p class="break-words">
+            <strong class="font-medium">Site Web :</strong>
+            <a href="{{ restaurant.website }}" target="_blank" class="text-blue underline break-all">{{ restaurant.website }}</a>
+          </p>
+        {% endif %}
+        {% if restaurant.types is not empty %}
+          <p><strong class="font-medium">Types de cuisine :</strong> {{ restaurant.types|map(t => t.name)|join(', ') }}</p>
+        {% endif %}
+      </div>
 
-		<section class="mt-12">
-			<my-carousel title="Images du restaurant" visible="5">
-				{% for image in restaurant.images %}
-					<img src="{{ vich_uploader_asset(image, 'imageFile') }}" alt="Image de {{ restaurant.name }}" class="rounded-lg object-cover w-full h-auto aspect-square"/>
-				{% endfor %}
-				{% for review in imagesReviews %}
-					<img src="{{ vich_uploader_asset(review, 'imageFile') }}" alt="Image de {{ restaurant.name }}" class="rounded-lg object-cover w-full h-auto aspect-square"/>
-				{% endfor %}
-				{% if imagesReviews|length == 0 and restaurant.images|length == 0 %}
-					<p class="text-center col-span-full text-sm">Aucune image pour ce restaurant.</p>
-				{% endif %}
-			</my-carousel>
-		</section>
+      <div class="w-full">
+        <div class="rounded-xl overflow-hidden h-64 sm:h-80 lg:h-[26rem]">
+          <map-preview
+            address="{{ restaurant.address|e('html_attr') }}"
+            postal-code="{{ restaurant.postalCode|e('html_attr') }}"
+            city="{{ restaurant.city|e('html_attr') }}"
+            country="{{ restaurant.country|e('html_attr') }}"
+            api-key="{{ google_maps_api_key }}"
+            name="{{ restaurant.name }}"
+            photo="{{ vich_uploader_asset(restaurant, 'bannerFile') }}"
+          >
+            <div id="map" class="w-full h-full"></div>
+          </map-preview>
+        </div>
+      </div>
+    </section>
 
-		<section class="mt-12">
-			<review-list restaurant-id="{{ restaurant.id }}" user-id="{{ app.user ? app.user.id : '' }}" user-username="{{ app.user ? app.user.username : '' }}" is-owner="{{ isOwner ? '1' : '0' }}" editable="true" added="true"></review-list>
-		</section>
-	</div>
+    {# Galerie #}
+    <section class="mt-10 sm:mt-12">
+      <my-carousel title="Images du restaurant" visible="5">
+        {% for image in restaurant.images %}
+          <img src="{{ vich_uploader_asset(image, 'imageFile') }}"
+               alt="Image de {{ restaurant.name }}"
+               class="rounded-lg object-cover w-full h-auto aspect-square"
+               loading="lazy" />
+        {% endfor %}
+        {% for review in imagesReviews %}
+          <img src="{{ vich_uploader_asset(review, 'imageFile') }}"
+               alt="Image de {{ restaurant.name }}"
+               class="rounded-lg object-cover w-full h-auto aspect-square"
+               loading="lazy" />
+        {% endfor %}
+        {% if imagesReviews|length == 0 and restaurant.images|length == 0 %}
+          <p class="text-center col-span-full text-sm">Aucune image pour ce restaurant.</p>
+        {% endif %}
+      </my-carousel>
+    </section>
 
-	<script type="module" src="{{ asset('webcomponents/reviews/ReviewList.js') }}"></script>
-	<script type="module" src="{{ asset('webcomponents/maps/MapPreview.js') }}"></script>
-	<script type="module" src="{{ asset('webcomponents/MyCarousel.js') }}"></script>
-	<script type="module" src="{{ asset('webcomponents/ModalConfirm.js') }}"></script>
+    {# Avis #}
+    <section class="mt-10 sm:mt-12">
+      <review-list
+        restaurant-id="{{ restaurant.id }}"
+        user-id="{{ app.user ? app.user.id : '' }}"
+        user-username="{{ app.user ? app.user.username : '' }}"
+        is-owner="{{ isOwner ? '1' : '0' }}"
+        editable="true"
+        added="true"
+      ></review-list>
+    </section>
 
-	<script type="module">
-		function initFavoriteBtns() {
-document.querySelectorAll('.favorite-btn').forEach(btn => {
-if (btn.dataset.init) 
-return;
+  </div>
 
+  {# Scripts composants #}
+  <script type="module" src="{{ asset('webcomponents/reviews/ReviewList.js') }}"></script>
+  <script type="module" src="{{ asset('webcomponents/maps/MapPreview.js') }}"></script>
+  <script type="module" src="{{ asset('webcomponents/MyCarousel.js') }}"></script>
+  <script type="module" src="{{ asset('webcomponents/ModalConfirm.js') }}"></script>
 
+  {# Favoris #}
+  <script type="module">
+    function initFavoriteBtns() {
+      document.querySelectorAll('.favorite-btn').forEach(btn => {
+        if (btn.dataset.init) return;
+        btn.dataset.init = "1";
 
-btn.dataset.init = "1";
+        btn.addEventListener('click', async (e) => {
+          e.preventDefault();
+          e.stopPropagation();
 
-btn.addEventListener('click', (e) => {
-e.preventDefault();
-e.stopPropagation();
+          const id = btn.dataset.id;
+          const icon = btn.querySelector('i');
+          const isFav = icon.classList.contains('fa-solid');
 
-const id = btn.dataset.id;
-const icon = btn.querySelector('i');
-const isFav = icon.classList.contains('fa-solid');
-
-fetch (`/api/user/restaurants/${id}/favorite`, {
-method: isFav ? 'DELETE' : 'POST'
-}).then(res => res.json()).then(() => {
-icon.classList.toggle('fa-solid', ! isFav);
-icon.classList.toggle('fa-regular', isFav);
-});
-});
-});
-}
-initFavoriteBtns();
-document.addEventListener('alpine:init', initFavoriteBtns);
-	</script>
+          try {
+            const res = await fetch(`/api/user/restaurants/${id}/favorite`, {
+              method: isFav ? 'DELETE' : 'POST',
+              headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            });
+            if (!res.ok) throw new Error('network');
+            icon.classList.toggle('fa-solid', !isFav);
+            icon.classList.toggle('fa-regular', isFav);
+          } catch (err) {
+            console.warn('Impossible de mettre à jour les favoris.');
+          }
+        });
+      });
+    }
+    initFavoriteBtns();
+    document.addEventListener('alpine:init', initFavoriteBtns);
+  </script>
 {% endblock %}

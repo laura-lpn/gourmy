@@ -5,16 +5,17 @@
 {% endblock %}
 
 {% block body %}
-	<div class="w-2/5 mx-auto px-6 py-8 mt-28">
+	<div class="max-w-4xl w-11/12 md:w-5/6 lg:w-3/4 mx-auto px-4 sm:px-6 lg:px-8 py-8 mt-28">
 
-		<h1 class="text-3xl font-second text-center font-medium text-orange mb-8">
+		<h1 class="text-2xl sm:text-3xl font-second text-center font-medium text-orange mb-8 leading-tight">
 			Charte Gourmy –
 			{{ restaurant.name }}
 		</h1>
 
+		{# Flashs #}
 		{% for label, messages in app.flashes %}
 			{% for message in messages %}
-				<div class="alert alert-{{ label }} mb-4">
+				<div class="alert alert-{{ label }} mb-4 max-w-3xl mx-auto">
 					{% autoescape false %}
 						{{ message }}
 					{% endautoescape %}
@@ -24,27 +25,41 @@
 
 		{{ form_start(charterForm, {'attr': {'class': 'space-y-8'}}) }}
 
-		<section class="bg-blue/5 rounded-xl p-6 space-y-4">
-			{{ form_row(charterForm.usesLocalProducts) }}
-			{{ form_row(charterForm.homemadeCuisine) }}
-			{{ form_row(charterForm.wasteReduction) }}
-			{{ form_row(charterForm.transparentOrigin) }}
-			{{ form_row(charterForm.professionalRepliesToReviews) }}
-			{{ form_row(charterForm.acceptsModeration) }}
+		<section class="bg-blue/5 rounded-xl p-5 sm:p-6">
+			<h2 class="text-lg sm:text-xl font-second font-medium text-blue mb-4 flex items-center gap-3">
+				<span class="block w-6 sm:w-8 h-0.5 bg-blue rounded-md"></span>
+				Vos engagements
+			</h2>
+
+			<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 gap-3 sm:gap-4">
+				<div>{{ form_row(charterForm.usesLocalProducts) }}</div>
+				<div>{{ form_row(charterForm.homemadeCuisine) }}</div>
+				<div>{{ form_row(charterForm.wasteReduction) }}</div>
+				<div>{{ form_row(charterForm.transparentOrigin) }}</div>
+				<div>{{ form_row(charterForm.professionalRepliesToReviews) }}</div>
+				<div>{{ form_row(charterForm.acceptsModeration) }}</div>
+			</div>
 		</section>
-		<section class="bg-orange/5 rounded-xl p-6 space-y-4">
-			<p>
+
+		{# Rappel texte #}
+		<section class="bg-orange/5 rounded-xl p-5 sm:p-6">
+			<h2 class="text-lg sm:text-xl font-second font-medium text-orange mb-3 flex items-center gap-3">
+				<span class="block w-6 sm:w-8 h-0.5 bg-orange rounded-md"></span>
+				Rappel
+			</h2>
+			<p class="text-xs sm:text-sm leading-relaxed">
 				En validant cette charte, vous vous engagez à respecter les valeurs de Gourmy et à offrir une expérience de qualité à vos clients.
-                En cas de non-respect, votre restaurant pourrait être suspendu ou retiré de la plateforme.
+				        En cas de non-respect, votre restaurant pourrait être suspendu ou retiré de la plateforme.
 			</p>
 		</section>
-		<p class="text-sm mt-4">
+
+		<p class="text-xs sm:text-sm mt-2 sm:mt-4 leading-relaxed">
 			Si vous souhaitez plus d'informations sur cette charte, vous pouvez consulter notre
-			<a href="{{ path('app_charte_restaurateur') }}" class="text-blue hover:text-blue/80">page dédiée à la charte restaurateur</a>
+			<a href="{{ path('app_charte_restaurateur') }}" class="text-blue hover:text-blue/80 underline underline-offset-2">page dédiée à la charte restaurateur</a>.
 		</p>
 
-		<div class="flex justify-center gap-4 mt-6">
-			<a href="{{ path('app_restaurateur') }}" class="btn-secondary">Annuler</a>
+		<div class="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4 mt-6">
+			<a href="{{ path('app_restaurateur') }}" class="btn-secondary text-center">Annuler</a>
 			<button type="submit" class="btn">Valider la charte</button>
 		</div>
 

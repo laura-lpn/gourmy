@@ -36,7 +36,7 @@ final class RoadtripController extends AbstractController
 
         foreach ($stepsInput as $index => $step) {
             $town = $step['town'];
-            $cuisine = $step['cuisine'] ?? null;
+            $cuisines = $step['cuisines'] ?? null;
             $meals = (int) ($step['meals'] ?? 1);
 
             $restaurants = $repo->findRandomByCriteria(
@@ -48,14 +48,14 @@ final class RoadtripController extends AbstractController
             $results[] = [
                 'town' => $town,
                 'meals' => $meals,
-                'cuisine' => $cuisine,
+                'cuisines' => $cuisines,
                 'restaurants' => $restaurants,
             ];
 
             $stepsForSave[] = [
                 'town' => $town,
                 'meals' => $meals,
-                'cuisine' => $cuisine,
+                'cuisines' => $cuisines,
                 'restaurantIds' => array_map(fn($r) => $r->getId(), $restaurants),
             ];
         }

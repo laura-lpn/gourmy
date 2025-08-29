@@ -16,7 +16,7 @@ export class UserRoadtrips extends HTMLElement {
   render() {
     this.innerHTML = `
       <div class="space-y-6">
-        <div id="roadtrips-container" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"></div>
+        <div id="roadtrips-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
         <modal-confirm id="modal"></modal-confirm>
       </div>
     `;
@@ -108,7 +108,9 @@ export class UserRoadtrips extends HTMLElement {
           </div>
         </div>
 
-        <p class="text-sm mt-2 text-blue/50 font-medium">${rt.isPublic ? 'Public' : 'Privé'}</p>
+        ${this.isPublicTab ? '' : `
+          <p class="text-sm mt-2 text-blue/50 font-medium">${rt.isPublic ? 'Public' : 'Privé'}</p>
+        `}
 
         <div class="flex flex-wrap gap-4 pt-2">
           <a href="/roadtrips/${rt.id}" title="Voir" class="text-blue text-sm"><i class="fa-solid fa-eye"></i></a>
