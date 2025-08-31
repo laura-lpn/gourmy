@@ -41,4 +41,28 @@ class HomeController extends AbstractController
             'users' => $users,
         ]);
     }
+
+    #[Route('/mentions-legales', name: 'app_mentions_legales')]
+    public function mentionsLegales(): Response
+    {
+        return $this->render('legals/mentions.html.twig');
+    }
+
+    #[Route('/cgu', name: 'app_cgu')]
+    public function cgu(): Response
+    {
+        return $this->render('legals/cgu.html.twig');
+    }
+
+    #[Route('/cgv', name: 'app_cgv')]
+    public function cgv(): Response
+    {
+        return $this->render('legals/cgv.html.twig');
+    }
+
+    #[Route('/politique-de-confidentialite', name: 'app_politique_confidentialite')]
+    public function politiqueConfidentialite(): Response
+    {
+        return $this->render('legals/politique_confidentialite.html.twig');
+    }
 }

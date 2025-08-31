@@ -1,0 +1,67 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Conditions Générales de Vente{% endblock %}
+
+{% block body %}
+<section class="max-w-7xl w-11/12 lg:w-3/4 mx-auto px-4 sm:px-6 lg:px-8 mt-28 mb-16">
+  <h1 class="text-2xl sm:text-3xl font-second text-blue font-medium mb-6">Conditions Générales de Vente (CGV)</h1>
+
+  <div class="space-y-8 text-sm sm:text-base leading-relaxed">
+    <section>
+      <h2 class="text-orange font-second font-medium text-xl mb-2">1. Objet</h2>
+      <p>Les présentes CGV régissent la vente d’abonnements et services numériques proposés via le site <strong>Gourmy</strong> (<em>projet fictif</em>).</p>
+    </section>
+
+    <section>
+      <h2 class="text-orange font-second font-medium text-xl mb-2">2. Offres & tarifs</h2>
+      <p>
+        Les caractéristiques et prix des offres sont indiqués sur le site. Les prix sont affichés <strong>TTC</strong> (TVA applicable).
+        Les tarifs peuvent être modifiés pour l’avenir.
+      </p>
+    </section>
+
+    <section>
+      <h2 class="text-orange font-second font-medium text-xl mb-2">3. Commande & paiement</h2>
+      <p>
+        Le paiement est traité par <strong>Stripe</strong>. La commande est validée après confirmation du paiement.
+        Les factures sont mises à disposition dans l’espace client et/ou envoyées par email.
+      </p>
+    </section>
+
+    <section>
+      <h2 class="text-orange font-second font-medium text-xl mb-2">4. Durée, reconduction & résiliation</h2>
+      <p>
+        Les abonnements sont reconduits tacitement (mensuel/annuel). Résiliation possible à tout moment avant l’échéance,
+        avec effet à la fin de la période en cours. Manquement grave : résiliation après mise en demeure restée sans effet.
+      </p>
+    </section>
+
+    <section>
+      <h2 class="text-orange font-second font-medium text-xl mb-2">5. Droit de rétractation</h2>
+      <p>
+        Consommateurs : 14 jours, sauf exécution immédiate du service avec accord et renoncement exprès.
+        Professionnels : pas de rétractation, sauf dispositions spécifiques. Exercice à
+        <a class="text-blue" href="mailto:contact@gourmy.travel">contact@gourmy.travel</a>.
+      </p>
+    </section>
+
+    <section>
+      <h2 class="text-orange font-second font-medium text-xl mb-2">6. Service & disponibilité</h2>
+      <p>Accès au service selon l’offre souscrite. Des interruptions ponctuelles (maintenance, incidents) peuvent survenir.</p>
+    </section>
+
+    <section>
+      <h2 class="text-orange font-second font-medium text-xl mb-2">7. Responsabilité</h2>
+      <p>Responsabilité limitée aux montants versés sur la période contractuelle en cours, pour les dommages directs uniquement.</p>
+    </section>
+
+    <section>
+      <h2 class="text-orange font-second font-medium text-xl mb-2">8. Litiges & médiation</h2>
+      <p>
+        En cas de litige, tentative de résolution amiable. À défaut : juridictions compétentes de Toulouse – Droit français.
+        Médiation de la consommation (si applicable) : <a class="text-blue" href="mailto:contact@gourmy.travel">contact@gourmy.travel</a>.
+      </p>
+    </section>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,69 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Politique de confidentialité{% endblock %}
+
+{% block body %}
+<section class="max-w-7xl w-11/12 lg:w-3/4 mx-auto px-4 sm:px-6 lg:px-8 mt-28 mb-16">
+  <h1 class="text-2xl sm:text-3xl font-second text-blue font-medium mb-6">Politique de confidentialité</h1>
+
+  <div class="space-y-8 text-sm sm:text-base leading-relaxed">
+    <section>
+      <p>
+        Cette politique décrit comment <strong>Gourmy</strong> (<em>projet fictif</em>) traite vos données personnelles,
+        conformément au RGPD et à la loi « Informatique et Libertés ». Pour toute question :
+        <a class="text-blue" href="mailto:contact@gourmy.travel">contact@gourmy.travel</a>.
+      </p>
+    </section>
+
+    <section>
+      <h2 class="text-orange font-second font-medium text-xl mb-2">Données traitées</h2>
+      <ul class="list-disc list-inside space-y-1">
+        <li>Données de compte : nom, prénom, email, pseudo, mot de passe (haché), avatar.</li>
+        <li>Contenus : avis, photos, roadtrips, favoris.</li>
+        <li>Données de paiement : traitées par notre prestataire <strong>Stripe</strong> (nous n’avons pas accès aux données de carte).</li>
+        <li>Données techniques minimales nécessaires au bon fonctionnement et à la sécurité du site.</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2 class="text-orange font-second font-medium text-xl mb-2">Finalités & bases légales</h2>
+      <ul class="list-disc list-inside space-y-1">
+        <li>Gestion du compte et fourniture du service (exécution du contrat).</li>
+        <li>Support, sécurité, prévention des abus (intérêt légitime).</li>
+        <li>Facturation, obligations comptables et fiscales (obligation légale – <strong>TVA applicable</strong>).</li>
+        <li>Information et communications liées au service (intérêt légitime).</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2 class="text-orange font-second font-medium text-xl mb-2">Cookies</h2>
+      <p><strong>Aucun cookie</strong> (ni traceur soumis au consentement) n’est utilisé. Si cela évolue, un bandeau d’information et un gestionnaire de consentement seront déployés.</p>
+    </section>
+
+    <section>
+      <h2 class="text-orange font-second font-medium text-xl mb-2">Destinataires & sous-traitants</h2>
+      <p>
+        Accès limité à l’éditeur. Hébergement : <strong>Hostinger</strong>. Paiement : <strong>Stripe</strong>.
+        Les sous-traitants agissent sur instruction et mettent en œuvre des mesures de sécurité appropriées.
+      </p>
+    </section>
+
+    <section>
+      <h2 class="text-orange font-second font-medium text-xl mb-2">Durées de conservation</h2>
+      <ul class="list-disc list-inside space-y-1">
+        <li>Compte : durée d’utilisation + 3 ans (puis suppression/anonymisation).</li>
+        <li>Pièces comptables/factures : 10 ans (obligation légale).</li>
+        <li>Contenus publics : tant que le compte existe ou jusqu’à suppression par l’utilisateur.</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2 class="text-orange font-second font-medium text-xl mb-2">Vos droits</h2>
+      <p>
+        Accès, rectification, effacement, opposition, limitation, portabilité, directives post-mortem.
+        Exercez-les à <a class="text-blue" href="mailto:contact@gourmy.travel">contact@gourmy.travel</a>. Vous pouvez saisir la CNIL en cas de litige.
+      </p>
+    </section>
+  </div>
+</section>
+{% endblock %}
