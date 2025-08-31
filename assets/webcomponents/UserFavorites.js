@@ -130,7 +130,7 @@ export class UserFavorites extends HTMLElement {
       <div class="bg-white rounded-2xl shadow-main p-4 flex flex-col gap-2 w-full">
         <a href="/restaurants/${r.slug}" class="block w-full">
           ${r.banner
-            ? `<div class="w-full aspect-[4/3] overflow-hidden rounded-xl">
+            ? `<div class="w-full h-40 overflow-hidden rounded-xl">
                  <img src="${r.banner}" alt="Photo de ${this.escape(r.name)}" class="w-full h-full object-cover">
                </div>`
             : `<div class="w-full aspect-[4/3] bg-gray-100 rounded-xl flex items-center justify-center text-gray-400">
