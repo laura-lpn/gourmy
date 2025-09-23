@@ -5,26 +5,27 @@ RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
 COPY ./docker/vhost.conf /etc/apache2/sites-enabled/000-default.conf
 COPY ./docker/php.ini /usr/local/etc/php/conf.d/php-overrides.ini
 
-# Extensions (les deux drivers DB -> réutilisable pour tous tes projets)
+# Extensions (mets les 2 drivers DB pour réutiliser le même Dockerfile partout)
 ADD https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions /usr/local/bin/
 RUN chmod +x /usr/local/bin/install-php-extensions \
- && install-php-extensions intl zip pgsql pdo_pgsql opcache @composer
+ && install-php-extensions intl zip pdo_mysql pgsql pdo_pgsql opcache @composer
 
 RUN a2enmod rewrite
 WORKDIR /var/www/html
 
-# 1) Fichiers Composer d'abord (cache build)
-COPY composer.json composer.lock symfony.lock* ./
+# 1) Dépendances Composer sans scripts (bin/console pas encore là)
+COPY composer.json composer.lock ./
+ENV COMPOSER_ALLOW_SUPERUSER=1
+RUN composer install --no-dev --prefer-dist --no-interaction --optimize-autoloader --no-scripts
 
-# 2) Installer deps
-RUN composer install --no-dev --prefer-dist --no-interaction --optimize-autoloader
-
-# 3) Copier le reste du code
+# 2) Copier le reste du code
 COPY . .
 
-# 4) Build prod
+# 3) Build prod : warmup + (optionnel) auto-scripts si tu les veux
 ENV APP_ENV=prod APP_DEBUG=0
 RUN mkdir -p var/cache var/log public/uploads \
  && chown -R www-data:www-data var public/uploads \
+ && php -d opcache.enable_cli=0 bin/console cache:clear --env=prod \
  && php -d opcache.enable_cli=0 bin/console cache:warmup --env=prod \
- && php -d opcache.enable_cli=0 bin/console asset-map:compile --env=prod
+ && php -d opcache.enable_cli=0 bin/console asset-map:compile --env=prod \
+ && composer run-script post-install-cmd || true
