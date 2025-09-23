@@ -10,7 +10,7 @@ use Doctrine\ORM\Events;
 use Doctrine\Persistence\Event\LifecycleEventArgs;
 
 #[AsDoctrineListener(event: Events::postPersist)]
-class UserActivityListener
+class UserBadgeListener
 {
   public function __construct(private BadgeManager $badgeManager) {}
 
