@@ -18,7 +18,8 @@ services:
       - default
       - global_reverse_proxy
     volumes:
-      - ./:/var/www/html
+      - ./var:/var/www/html/var
+      - ./public/uploads:/var/www/html/public/uploads
     working_dir: /var/www/html
     restart: unless-stopped
     build:

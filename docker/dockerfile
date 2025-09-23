@@ -1,37 +1,30 @@
 FROM php:8.3-apache
 
-# Suppress Apache warning about ServerName
+# Apache & PHP
 RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
+COPY ./docker/vhost.conf /etc/apache2/sites-enabled/000-default.conf
+COPY ./docker/php.ini /usr/local/etc/php/conf.d/php-overrides.ini
 
-# Create default VirtualHost
-COPY "./docker/vhost.conf" "/etc/apache2/sites-enabled/000-default.conf"
-
-# Override some php.ini configuration for our needs
-COPY "./docker/php.ini" "/usr/local/etc/php/conf.d/php-overrides.ini"
-
-# Generate fake .gitconfig file
-RUN printf "[user]\n\tname = example\n\temail = example@example.com\n" > /etc/gitconfig
-
-# Install tool to manage PHP extensions as official Docker images
+# Extensions (les deux drivers DB -> réutilisable pour tous tes projets)
 ADD https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions /usr/local/bin/
+RUN chmod +x /usr/local/bin/install-php-extensions \
+ && install-php-extensions intl zip pgsql pdo_pgsql opcache @composer
 
-# Install symfony-cli
-RUN curl -1sLf 'https://dl.cloudsmith.io/public/symfony/stable/setup.deb.sh' | bash; \
-  apt install -y symfony-cli;
-
-# Install required dependencies
-RUN chmod +x /usr/local/bin/install-php-extensions; \
-  install-php-extensions intl zip pdo_mysql @composer;
-
-RUN composer install --no-dev --optimize-autoloader && \
-  symfony asset-map:compile
-
-# Enable mod_rewrite module for Apache (not enabled by default)
 RUN a2enmod rewrite
+WORKDIR /var/www/html
 
-# Set working directory
-WORKDIR /var/www/html/
+# 1) Fichiers Composer d'abord (cache build)
+COPY composer.json composer.lock symfony.lock* ./
 
-RUN mkdir -p var/cache var/log && \
-  chown -R www-data:www-data var/cache var/log && \
-  chmod -R 775 var/cache var/log
+# 2) Installer deps
+RUN composer install --no-dev --prefer-dist --no-interaction --optimize-autoloader
+
+# 3) Copier le reste du code
+COPY . .
+
+# 4) Build prod
+ENV APP_ENV=prod APP_DEBUG=0
+RUN mkdir -p var/cache var/log public/uploads \
+ && chown -R www-data:www-data var public/uploads \
+ && php -d opcache.enable_cli=0 bin/console cache:warmup --env=prod \
+ && php -d opcache.enable_cli=0 bin/console asset-map:compile --env=prod
