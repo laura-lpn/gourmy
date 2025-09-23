@@ -1,5 +1,8 @@
 FROM php:8.3-apache
 
+# Update system packages to address vulnerabilities
+RUN apt-get update && apt-get upgrade -y && apt-get clean
+
 # Suppress Apache warning about ServerName
 RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
 
