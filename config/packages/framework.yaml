@@ -2,7 +2,7 @@
 framework:
     secret: '%env(APP_SECRET)%'
     trusted_proxies: '127.0.0.1,REMOTE_ADDR'
-    trusted_hosts: '^runic-arena\.lauralpn\.fr$'
+    trusted_hosts: '^gourmy\.lauralpn\.fr$'
     #csrf_protection: true
 
     # Note that the session will be started ONLY if you read or write from it.
