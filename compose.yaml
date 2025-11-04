@@ -29,7 +29,6 @@ services:
       - php
       - db
     labels:
-      caddy: "gourmy.lauralpn.fr"
       caddy.reverse_proxy: "{{upstreams 80}}"
 
   db:
@@ -41,24 +40,6 @@ services:
     restart: unless-stopped
     image: postgres:16.3
     environment:
-      POSTGRES_USER: laura
-      POSTGRES_PASSWORD: lauralpn
-      POSTGRES_DB: gourmy
-
-  adminer:
-    container_name: gourmy_adminer
-    networks:
-      - default
-      - global_reverse_proxy
-    restart: unless-stopped
-    image: adminer
-    labels:
-      caddy: "db.gourmy.lauralpn.fr"
-      caddy.reverse_proxy: "{{upstreams 8080}}"
-    environment:
-      ADMINER_DESIGN: pepa-linha
-    depends_on:
-      - db
 
 volumes:
   postgres_data:
