@@ -1,58 +1,92 @@
-# Gourmy Back
+<img src="public/images/favicon.svg" width="100">
 
-[![docker](https://img.shields.io/badge/Docker-2CA5E0?style=for-the-badge&logo=docker&logoColor=white)](https://www.docker.com/)
+# Gourmy
 
-[![symfony](https://img.shields.io/badge/Symfony-000000?style=for-the-badge&logo=Symfony&logoColor=white)](https://symfony.com/doc/current/index.html)
+**Gourmy** est une plateforme web permettant de **créer et partager des roadtrips culinaires** à travers la France.  
+Les utilisateurs peuvent découvrir des **restaurants locaux**, **laisser des avis**, et **composer leurs propres itinéraires gourmands**.  
+Les restaurateurs peuvent quant à eux **répondre aux avis**, **mettre à jour leurs informations**, et **valoriser leur engagement local**.
 
-[![PostGreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
+[lien du site](https://gourmy.lauralpn.fr)
 
-[![Tailwind](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
+---
 
+## Fonctionnalités
 
+1. **Gestion des utilisateurs**
+   - Inscription et connexion (avec confirmation par email via Brevo).
+   - Modification du profil (formulaires séparés par champ).
+   - Accès à ses avis et à ses roadtrips depuis le tableau de bord.
 
-## Préréquis
+2. **Restaurants**
+   - Fiche complète avec description, type de cuisine, coordonnées, et images.
+   - Carte interactive avec position géographique (API Google Maps).
+   - Ajout d'avis et notes.
+   - Réponses du restaurateur (uniquement accessibles depuis le profil du restaurateur).
 
-Avant de commencer, assurez-vous que vous avez les éléments suivants :
+3. **Avis et réponses**
+   - Création, édition et suppression d’avis en temps réel (composant React avec Symfony UX).
+   - Réponses du restaurateur affichées uniquement dans son tableau de bord.
+   - Modales génériques pour confirmation ou édition (`<my-modal>`).
 
-- Installer [Docker](https://docs.docker.com/get-docker/)
-- Installer [Docker compose](https://docs.docker.com/compose/)
-- Installer [Just](https://just-install.github.io/)
-- Avoir le container Docker [local_env](https://github.com/laura-lpn/local_env)
+4. **Roadtrips**
+   - Création via un formulaire dynamique avec étapes.
+   - Chaque étape comprend une **ville**, un **type de cuisine** et un ou plusieurs **restaurants**.
+   - Validation automatique si les restaurants d’une étape partagent le même type de cuisine.
+   - Possibilité de réorganiser les étapes par **drag & drop**.
+   - Affichage de toutes les étapes sur une **carte interactive**.
 
-## installation
+5. **Charte restaurateur**
+   - Engagements pour les restaurateurs (produits locaux, durabilité, etc.).
+   - Accessible via un formulaire dédié lors de l’inscription.
 
-> Créez un fichier .env.local à la racine du projet et remplissez-le avec le fichier .env
+---
 
-Avec Docker et Just
+## Aperçu du projet
 
-```bash
-  just up
-```
+### Page d'accueil
 
-```bash
-  just composer install
-```
+<img src="public/images/screenshots/home.png" width="40%">
 
-### Sur Windows
+### Page de connexion
 
-Dans le fichier %SystemRoot%\System32\drivers\etc\hosts ouvert avec le bloc note en administrateur
+<img src="public/images/screenshots/connexion.jpg" width="40%">
 
-Ajouter après les autres IPs :
+### Page de création de restaurant
 
-```bash
-127.0.0.1 db.gourmy.aaa
-127.0.0.1 backend.gourmy.aaa
-127.0.0.1 mailer.gourmy.aaa
-```
+<img src="public/images/screenshots/add-resto.jpg" width="40%">
 
-## Convention de commits
+### Page d'un restaurant
 
-- [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/)
+<img src="public/images/screenshots/resto.jpg" width="40%">
 
-## Auteur
+### Espace utilisateur
 
-- [Laura Lepannetier](https://github.com/laura-lpn)
+<img src="public/images/screenshots/profil.jpg" width="40%">
 
-## License
+### Espace restaurateur
 
-This project is proprietary and confidential. Code duplication and re-use without explicit permission is not allowed.
+<img src="public/images/screenshots/restaurateur.jpg" width="40%">
+
+### Espace administrateur
+
+<img src="public/images/screenshots/dashboard.jpg" width="40%">
+
+---
+
+## Technologies
+
+ - Symfony 7.1
+ - Docker + Caddy
+ - Doctrine ORM
+ - TailwindCSS (via Asset Mapper)
+ - PostgreSQL
+ - Google Maps API
+ - Brevo API (email de confirmation)
+
+---
+
+ ## Auteure
+ 👩‍💻 Laura Lepannetier
+Projet réalisé dans le cadre du Mastère Tech Lead.
+
+[GitHub](https://github.com/laura-lpn)
