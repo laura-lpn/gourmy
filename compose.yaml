@@ -29,6 +29,7 @@ services:
       - php
       - db
     labels:
+      caddy: "gourmy.lauralpn.fr"
       caddy.reverse_proxy: "{{upstreams 80}}"
 
   db:
@@ -40,6 +41,9 @@ services:
     restart: unless-stopped
     image: postgres:16.3
     environment:
+      POSTGRES_USER: laura
+      POSTGRES_PASSWORD: lauralpn
+      POSTGRES_DB: gourmy
 
 volumes:
   postgres_data:
