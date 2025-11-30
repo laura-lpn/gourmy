@@ -81,7 +81,6 @@ Les restaurateurs peuvent quant à eux **répondre aux avis**, **mettre à jour 
  - TailwindCSS (via Asset Mapper)
  - PostgreSQL
  - Google Maps API
- - Brevo API (email de confirmation)
 
 ---
 
