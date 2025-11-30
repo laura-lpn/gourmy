@@ -23,8 +23,6 @@ COPY . .
 
 # 3) Build prod : warmup + (optionnel) auto-scripts si tu les veux
 ENV APP_ENV=prod APP_DEBUG=0
-RUN mkdir -p var/cache var/log public/uploads \
- && chown -R www-data:www-data var public/uploads public \
- && php -d opcache.enable_cli=0 bin/console cache:warmup --env=prod \
+RUN php -d opcache.enable_cli=0 bin/console importmap:install --env=prod \
  && php -d opcache.enable_cli=0 bin/console tailwind:build --minify --env=prod \
- && php -d opcache.enable_cli=0 bin/console asset-map:compile --env=pro
+ && php -d opcache.enable_cli=0 bin/console asset-map:compile --env=prod
