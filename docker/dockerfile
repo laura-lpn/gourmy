@@ -22,7 +22,7 @@ RUN composer install --no-dev --prefer-dist --no-interaction --optimize-autoload
 COPY . .
 
 # 3) Build prod : warmup + (optionnel) auto-scripts si tu les veux
-ENV APP_ENV=prod APP_DEBUG=0
+ENV APP_ENV=prod APP_DEBUG=1
 RUN php -d opcache.enable_cli=0 bin/console importmap:install --env=prod \
  && php -d opcache.enable_cli=0 bin/console tailwind:build --minify --env=prod \
  && php -d opcache.enable_cli=0 bin/console asset-map:compile --env=prod
