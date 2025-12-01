@@ -41,9 +41,6 @@ services:
     restart: unless-stopped
     image: postgres:16.3
     environment:
-      POSTGRES_USER: laura
-      POSTGRES_PASSWORD: lauralpn
-      POSTGRES_DB: gourmy
 
 volumes:
   postgres_data:
