@@ -68,7 +68,7 @@ class LoginController extends AbstractController
                     'app_verify_email',
                     $user,
                     (new TemplatedEmail())
-                        ->from(new Address('contact@gourmy.travel', 'Gourmy'))
+                        ->from(new Address('contact@asyafood.fr', 'Gourmy'))
                         ->to((string) $user->getEmail())
                         ->subject('Veuillez confirmer votre adresse email')
                         ->htmlTemplate('email/confirmation_email.html.twig')

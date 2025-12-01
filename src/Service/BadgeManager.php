@@ -92,7 +92,7 @@ class BadgeManager
     $absolutePath = $this->params->get('kernel.project_dir') . '/public/' . $badgeImagePath;
 
     $email = (new TemplatedEmail())
-      ->from(new Address('contact@gourmy.fr', 'Gourmy'))
+      ->from(new Address('contact@asyafood.fr', 'Gourmy'))
       ->to($user->getEmail())
       ->subject('Nouveau badge débloqué !')
       ->htmlTemplate('email/badge_won.html.twig')

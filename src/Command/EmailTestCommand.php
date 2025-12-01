@@ -85,7 +85,7 @@ class EmailTestCommand extends Command
     $badgeImagePath = $this->params->get('kernel.project_dir') . '/public/images/badges/review.png';
 
     $email = (new TemplatedEmail())
-      ->from(new Address('contact@gourmy.travel', 'Gourmy'))
+      ->from(new Address('contact@asyafood.fr', 'Gourmy'))
       ->to($toEmail)
       ->subject('🎖 Nouveau badge débloqué ! (TEST)')
       ->htmlTemplate('email/badge_won.html.twig')
@@ -104,7 +104,7 @@ class EmailTestCommand extends Command
   private function sendConfirmEmail(User $user, string $toEmail, string $logoPath): void
   {
     $email = (new TemplatedEmail())
-      ->from(new Address('contact@gourmy.travel', 'Gourmy'))
+      ->from(new Address('contact@asyafood.fr', 'Gourmy'))
       ->to($toEmail)
       ->subject('Veuillez confirmer votre email (TEST)')
       ->htmlTemplate('email/confirmation_email.html.twig')
@@ -123,7 +123,7 @@ class EmailTestCommand extends Command
   private function sendResetEmail(User $user, string $toEmail, string $logoPath): void
   {
     $email = (new TemplatedEmail())
-      ->from(new Address('support@gourmy.travel', 'Gourmy'))
+      ->from(new Address('contact@asyafood.fr', 'Gourmy'))
       ->to($toEmail)
       ->subject('Réinitialisation du mot de passe (TEST)')
       ->htmlTemplate('email/email_reset.html.twig')
