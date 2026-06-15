@@ -86,6 +86,7 @@ Les restaurateurs peuvent quant à eux **répondre aux avis**, **mettre à jour 
 
  ## Auteure
  👩‍💻 Laura Lepannetier
+
 Projet réalisé dans le cadre du Mastère Tech Lead.
 
 [GitHub](https://github.com/laura-lpn)
